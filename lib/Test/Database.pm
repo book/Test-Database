@@ -100,8 +100,14 @@ Return the list of supported DBI drivers that have been detected as installed.
 
 =item handle( $driver [, $name ] )
 
-If C<$name> is not provided, a test database is provided. No garantees
-are made on its being empty.
+If C<$name> is not provided, the default C<Test::Database::Handle> object
+for the driver is provided. No garantees are made on its being empty.
+
+The default database handle is obtained from the local configuration
+(stored in the C<Test::Database::MyConfig> module), then from the global
+configuration (stored in the C<Test::Database::Config> module). If no
+configuration information is available, C<Test::Database> will then try
+to create a default temporary database, if the driver supports it.
 
 The database will be created the first time, and and subsequent calls
 are garanteed to provide connection information to the same database,
@@ -124,6 +130,8 @@ Shortcut methods for:
     Test::Database->handle( $driver [, $name ] )->dsn();
     Test::Database->handle( $driver [, $name ] )->username();
     Test::Database->handle( $driver [, $name ] )->password();
+
+See C<Test::Database::Handle> for details.
 
 =item handles( [ $name ] )
 

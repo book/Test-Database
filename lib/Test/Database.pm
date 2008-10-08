@@ -1,52 +1,123 @@
 package Test::Database;
-
 use warnings;
 use strict;
 
-=head1 NAME
-
-Test::Database - The great new Test::Database!
-
-=head1 VERSION
-
-Version 0.01
-
-=cut
-
 our $VERSION = '0.01';
 
+'TRUE';
+
+__END__
+
+=head1 NAME
+
+Test::Database - Database handles ready for testing
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
-
-Perhaps a little code snippet.
+Maybe you need a test database for a specific database driver:
 
     use Test::Database;
 
-    my $foo = Test::Database->new();
-    ...
+    # connection information
+    my ( $dsn, $username, $password )
+        = Test::Database->connection_info('SQLite');
 
-=head1 EXPORT
+    # database handle
+    my $dbh = Test::Database->dbh('SQLite');
 
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
+Maybe you want to use the same test database over several test scripts:
 
-=head1 FUNCTIONS
+    use Test::Database;
 
-=head2 function1
+    # connection information
+    my ( $dsn, $username, $password )
+        = Test::Database->connection_info( SQLite => 'mydb' );
+
+    # database handle
+    my $dbh = Test::Database->dbh( SQLite => 'mydb' );
+
+Maybe you wrote generic code you want to test on all available databases:
+
+    use Test::Database;
+
+    my @drivers = Test::Database->drivers();
+
+    for my $driver (@drivers) {
+        my $handle = Test::Database->handle( $driver );
+    }
+
+=head1 DESCRIPTION
+
+Quoting Michael Schwern:
+
+I<There's plenty of modules which need a database, and they all have
+to be configured differently and they're always a PITA when you first
+install and each and every time they upgrade.>
+
+I<User setup can be dealt with by making Test::Database a build
+dependency. As part of Test::Database's install process it walks the
+user through the configuration process. Once it's done, it writes out
+a config file and then it's done for good.>
+
+=head1 METHODS
+
+C<Test::Database> provides the following methods:
+
+=over 4
+
+=item drivers()
+
+Return the list of supported drivers that have been detected.
+
+=item handle( $driver [, $name ] )
+
+If C<$name> is not provided, a test database is provided. No garantees
+are made on its being empty.
+
+The database will be created the first time, and and subsequent calls
+are garanteed to provide connection information to the same database,
+so you can share data between your scripts.
+
+=item dbh( $driver [, $name ] )
+
+=item connection_info( $driver [, $name ] )
+
+=item dsn( $driver [, $name ] )
+
+=item username( $driver [, $name ] )
+
+=item password( $driver [, $name ] )
+
+Shortcut methods for:
+
+    Test::Database->handle( $driver [, $name ] )->dbh();
+    Test::Database->handle( $driver [, $name ] )->connection_info();
+    Test::Database->handle( $driver [, $name ] )->dsn();
+    Test::Database->handle( $driver [, $name ] )->username();
+    Test::Database->handle( $driver [, $name ] )->password();
+
+=item handles( [ $name ] )
+
+Return the list of handles associated to C<$name> for all drivers.
+
+=back
+
+=head1 EXPORTS
+
+All the methods can be exported as functions (prefixed with C<test_db_>)
+using the C<:functions> tag.
+
+So you can either do:
+
+    use Test::Database;
+    my $dbh = Test::Database->dbh( 'SQLite' );
+
+or:
+
+    use Test::Database qw( :functions );
+    my $dbh = test_db_dbh( 'SQLite' );
 
 =cut
-
-sub function1 {
-}
-
-=head2 function2
-
-=cut
-
-sub function2 {
-}
 
 =head1 AUTHOR
 
@@ -58,15 +129,11 @@ Please report any bugs or feature requests to C<bug-test-database at rt.cpan.org
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Test-Database>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
-
-
-
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
     perldoc Test::Database
-
 
 You can also look for information at:
 
@@ -93,15 +160,19 @@ L<http://search.cpan.org/dist/Test-Database>
 
 =head1 ACKNOWLEDGEMENTS
 
+Thanks to perl-qa@perl.org for early comments.
 
-=head1 COPYRIGHT & LICENSE
+Thanks to Nelson Ferraz for C<DBIx::Slice>, the testing of which made
+me want to have a generic way to obtain a test database.
+
+=head1 COPYRIGHT
 
 Copyright 2008 Philippe Bruhat (BooK), all rights reserved.
+
+=head1 LICENSE
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
-
 =cut
 
-1; # End of Test::Database

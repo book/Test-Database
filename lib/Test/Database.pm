@@ -2,7 +2,32 @@ package Test::Database;
 use warnings;
 use strict;
 
+use File::Spec;
+use DBI;
+
 our $VERSION = '0.01';
+
+#
+# driver information
+#
+my @DRIVERS;
+my @ALL_DRIVERS;
+my %DBI_DRIVERS = map { $_ => 1 } DBI->available_drivers();
+
+# find the list of all drivers we support
+for my $dir (@INC) {
+    opendir my $dh, File::Spec->catdir( $dir, qw< Test Database Driver > )
+        or next;
+    push @ALL_DRIVERS,
+        map { s/\.pm$//; $_ } grep { -f && /\.pm$/ } readdir $dh;
+    closedir $dh;
+}
+
+@ALL_DRIVERS = sort @ALL_DRIVERS;
+@DRIVERS = grep { exists $DBI_DRIVERS{$_} } @ALL_DRIVERS;
+
+sub available_drivers { return @ALL_DRIVERS }
+sub drivers           { return @DRIVERS }
 
 'TRUE';
 
@@ -65,9 +90,13 @@ C<Test::Database> provides the following methods:
 
 =over 4
 
+=item available_drivers()
+
+Return the list of supported DBI drivers.
+
 =item drivers()
 
-Return the list of supported drivers that have been detected.
+Return the list of supported DBI drivers that have been detected as installed.
 
 =item handle( $driver [, $name ] )
 

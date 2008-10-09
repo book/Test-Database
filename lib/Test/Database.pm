@@ -161,7 +161,7 @@ or:
 
 =head1 AUTHOR
 
-Philippe Bruhat (BooK), C<< <book at cpan.org> >>
+Philippe Bruhat (BooK), C<< <book@cpan.org> >>
 
 =head1 BUGS
 
@@ -211,7 +211,7 @@ Copyright 2008 Philippe Bruhat (BooK), all rights reserved.
 
 =head1 LICENSE
 
-This program is free software; you can redistribute it and/or modify it
+This module is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
 =cut

@@ -18,8 +18,7 @@ my %DBI_DRIVERS = map { $_ => 1 } DBI->available_drivers();
 for my $dir (@INC) {
     opendir my $dh, File::Spec->catdir( $dir, qw< Test Database Driver > )
         or next;
-    push @ALL_DRIVERS,
-        map { s/\.pm$//; $_ } grep { -f && /\.pm$/ } readdir $dh;
+    push @ALL_DRIVERS, map { s/\.pm$//; $_ } grep {/\.pm$/} readdir $dh;
     closedir $dh;
 }
 
@@ -97,6 +96,10 @@ Return the list of supported DBI drivers.
 =item drivers()
 
 Return the list of supported DBI drivers that have been detected as installed.
+
+This is the intersection of the results of
+C<< Test::Database->available_drivers() >> and 
+C<< DBI->available_drivers() >>.
 
 =item handle( $driver [, $name ] )
 

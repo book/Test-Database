@@ -1,9 +1,16 @@
 #!perl -T
 
-use Test::More tests => 1;
+use Test::More;
 
-BEGIN {
-	use_ok( 'Test::Database' );
-}
+my @modules = qw(
+	Test::Database
+	Test::Database::Handle
+	Test::Database::Driver
+);
+
+plan tests => scalar @modules;
+
+use_ok( $_ ) for @modules;
 
 diag( "Testing Test::Database $Test::Database::VERSION, Perl $], $^X" );
+

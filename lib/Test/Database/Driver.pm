@@ -36,7 +36,11 @@ sub create_database {
 #
 sub name { return ( $_[0] =~ /^Test::Database::Driver::(.*)/g )[0]; }
 
-sub base_dir { return File::Spec->catdir( $root, $_[0]->name() ); }
+sub base_dir {
+    return $_[0] eq __PACKAGE__
+        ? $root
+        : File::Spec->catdir( $root, $_[0]->name() );
+}
 
 my %started;
 my %handle;
@@ -108,7 +112,11 @@ If C<$name> is not given, the name C<default> is used.
 
 =item cleanup()
 
-Delete the content of the C<base_dir()> directory.
+Delete the C<base_dir()> directory and its content.
+
+When called on C<Test::Database> directly, it will delete the main
+directory that contains all the individual directories used by
+C<Test::Database> drivers.
 
 =back
 

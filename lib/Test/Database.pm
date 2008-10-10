@@ -6,6 +6,8 @@ use File::Spec;
 use DBI;
 use Carp;
 
+use Test::Database::Driver;
+
 our $VERSION = '0.01';
 
 #
@@ -56,6 +58,8 @@ sub handles {
     my ( $class, $name ) = @_;
     return map { $class->handle( $_ => $name ) } $class->drivers();
 }
+
+sub cleanup { Test::Database::Driver->cleanup(); }
 
 'TRUE';
 
@@ -171,6 +175,10 @@ See C<Test::Database::Handle> for details.
 =item handles( [ $name ] )
 
 Return the list of handles associated to C<$name> for all drivers.
+
+=item cleanup()
+
+Remove the directory used by C<Test::Database> drivers.
 
 =back
 

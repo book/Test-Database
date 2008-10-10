@@ -14,21 +14,34 @@ my @sql = (
 my $select = "SELECT id, name FROM users";
 my $drop   = 'DROP TABLE users';
 
-plan tests => ( 3 + @sql ) * @drivers;
+plan tests => ( 4 + @sql ) * 2 * @drivers;
+
+Test::Database->cleanup;
 
 for my $driver (@drivers) {
 
-    my $dbh = Test::Database->dbh( $driver => 'test' );
-    isa_ok( $dbh, 'DBI::db' );
+    for my $dbname ( '', 'test' ) {
 
-    # create some information
-    ok( $dbh->do($_), "$driver: $_" ) for @sql;
+        my $dbh = Test::Database->dbh( $driver => $dbname );
+        isa_ok( $dbh, 'DBI::db' );
 
-    # check the data is there
-    my $lines = $dbh->selectall_arrayref($select);
-    is_deeply( $lines, [ [ 1, 'book' ], [ 2, 'echo' ] ], "$driver: $select" );
+        # create some information
+        ok( $dbh->do($_), "$driver($dbname): $_" ) for @sql;
 
-    # remove everything
-    ok( $dbh->do($drop), "$driver: $drop" );
+        # check the data is there
+        my $lines = $dbh->selectall_arrayref($select);
+        is_deeply(
+            $lines,
+            [ [ 1, 'book' ], [ 2, 'echo' ] ],
+            "$driver($dbname): $select"
+        );
+
+        # remove everything
+        ok( $dbh->do($drop), "$driver($dbname): $drop" );
+
+        # check the dbh is cached
+        is( Test::Database->dbh( $driver => $dbname ),
+            $dbh, "$driver($dbname): dbh cached" );
+    }
 }
 

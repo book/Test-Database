@@ -21,7 +21,7 @@ my @modules =
     grep { $_ ne 'Test::Database' }
     grep { !/Driver::/ or push @drivers, $_ and 0 } all_modules();
 
-plan tests => @modules + @drivers;
+plan tests =>  @modules + @drivers + 1;
 
 # Test::Database exports are not documented
 pod_coverage_ok( 'Test::Database', { trustme => [qr/^test_db_\w+$/] } );

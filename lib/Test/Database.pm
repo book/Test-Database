@@ -108,6 +108,9 @@ dependency. As part of Test::Database's install process it walks the
 user through the configuration process. Once it's done, it writes out
 a config file and then it's done for good.>
 
+See L<http://www.nntp.perl.org/group/perl.qa/2008/10/msg11645.html>
+for the thread that led to the creation of C<Test::Database>.
+
 =head1 METHODS
 
 C<Test::Database> provides the following methods:
@@ -222,6 +225,30 @@ L<http://search.cpan.org/dist/Test-Database>
 
 =back
 
+=head1 TODO
+
+Some of the items on the TODO list:
+
+=over 4
+
+=item *
+
+allow C<handle()> to be called with no parameter and return
+a handle to a test database (need to find an ordering scheme for
+the drivers).
+
+=item *
+
+add support for C<DBI_DSN>. If C<handle()> is called with no parameters,
+or if DBI_DSN matches the requested driver, first use this DSN.
+
+=item *
+
+add support for a Test::Database::Config module, holding system-wide
+test database configuration. Probably need to create an interactive way
+to set it up.
+
+=back
 
 =head1 ACKNOWLEDGEMENTS
 

@@ -1,16 +1,32 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Database;
+use Test::Database qw( :all );
 
-plan tests => 2;
+my @methods = qw( handle dbh );
 
-ok( !eval { Test::Database->handle( Zapeth => 'test' ); 1 },
-    'Zapeth driver unknown' );
+plan tests => 4 * @methods;
 
-like(
-    $@,
-    qr{^Can't locate Test/Database/Driver/Zapeth.pm in \@INC },
-    'Expected error message'
-);
+for my $method (@methods) {
+
+    # direct class call
+    ok( !eval { Test::Database->$method( Zapeth => 'test' ); 1 },
+        "$method: 'Zapeth' driver unknown" );
+    like(
+        $@,
+        qr{^Can't locate Test/Database/Driver/Zapeth.pm in \@INC },
+        'Expected error message'
+    );
+
+    # exported method call
+    ok( !eval "test_db_$method( Zapeth => 'test' ); 1",
+        "test_db_$method: 'Zapeth' driver unknown"
+    );
+    like(
+        $@,
+        qr{^Can't locate Test/Database/Driver/Zapeth.pm in \@INC },
+        'Expected error message'
+    );
+
+}
 

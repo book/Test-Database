@@ -2,22 +2,23 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Database::Handle;
+use List::Util qw( sum );
 
 my @tests = (
+
+    # args, expected result, error regex
     [ [], undef, qr/^dsn argument required/ ],
     [   [qw( dsn dbi:SQLite:dbname=zlonk )],
-        bless(
-            {   dsn      => 'dbi:SQLite:dbname=zlonk',
-                username => '',
-                password => '',
-                driver   => 'SQLite',
-            }
-        ),
-        'Test::Database::Handle'
+        {   dsn      => 'dbi:SQLite:dbname=zlonk',
+            username => '',
+            password => '',
+            driver   => 'SQLite',
+        }
     ],
 );
+my @attr = qw( dsn username password driver );
 
-plan tests => scalar @tests;
+plan tests => sum map { $_->[2] ? 1 : 1 + @attr } @tests;
 
 for my $t (@tests) {
     my ( $args, $expected, $err ) = @$t;
@@ -30,7 +31,8 @@ for my $t (@tests) {
         like( $@, $err, "Expected error message for $call" );
     }
     else {
-        is_deeply( $got, $expected, "Expected object for $call" );
+        isa_ok( $got, 'Test::Database::Handle' );
+        is( $got->$_, $expected->{$_}, "$_ for $call" ) for @attr;
     }
 }
 

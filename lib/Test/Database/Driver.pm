@@ -10,8 +10,10 @@ use Test::Database::Handle;
 #
 # global configuration
 #
-my $root = File::Spec->catdir( File::Spec->tmpdir(),
-    'Test-Database-' . getlogin() );
+my $root
+    = File::Spec->rel2abs(
+    File::Spec->catdir( File::Spec->tmpdir(), 'Test-Database-' . getlogin() )
+    );
 
 #
 # base implementations

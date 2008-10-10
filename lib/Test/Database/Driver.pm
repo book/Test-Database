@@ -2,8 +2,10 @@ package Test::Database::Driver;
 use strict;
 use warnings;
 use Carp;
-
 use File::Spec;
+use File::Path;
+
+use Test::Database::Handle;
 
 #
 # global configuration
@@ -33,6 +35,23 @@ sub create_database {
 sub name { return ( $_[0] =~ /^Test::Database::Driver::(.*)/g )[0]; }
 
 sub base_dir { return File::Spec->catdir( $root, $_[0]->name() ); }
+
+my %started;
+my %handle;
+
+sub handle {
+    my ( $class, $name ) = @_;
+
+    $name ||= 'default';
+
+    # make sure the database server has been started
+    $started{$class} ||= $class->start_engine();
+
+    # return the handle
+    return $handle{$class}{$name} ||= $class->create_database($name);
+}
+
+sub cleanup { rmtree $_[0]->base_dir() }
 
 'CONNECTION';
 

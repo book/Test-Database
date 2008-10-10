@@ -4,6 +4,7 @@ use strict;
 
 use File::Spec;
 use DBI;
+use Carp;
 
 our $VERSION = '0.01';
 
@@ -27,6 +28,30 @@ for my $dir (@INC) {
 
 sub available_drivers { return @ALL_DRIVERS }
 sub drivers           { return @DRIVERS }
+
+#
+# methods delegated to the handle
+#
+for my $attr (qw< dbh dsn username password connection_info >) {
+    no strict 'refs';
+    *{"test_db_$attr"} = *{$attr} = sub {
+        my $class = shift;
+        return $class->handle(@_)->$attr;
+    };
+}
+
+sub handle {
+    my ( $class, $driver, $name ) = @_;
+
+    eval "use Test::Database::Driver::$driver; 1;" or croak $@;
+
+    return "Test::Database::Driver::$driver"->handle($name);
+}
+
+sub handles {
+    my ( $class, $name ) = @_;
+    return map { $class->handle( $_ => $name ) } $class->drivers();
+}
 
 'TRUE';
 

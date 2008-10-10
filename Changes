@@ -1,5 +1,12 @@
 Revision history for Test-Database
 
-0.01    Date/time
-        First version, released on an unsuspecting world.
+0.01 Fri Oct 10 17:44:24 CEST 2008
+        [FEATURES]
+        - provide a simple interface for obtaining a database handle
+        [DRIVERS]
+        - add a driver for DBD::SQlite
+        - add a driver for DBD::CSV
+        - add a driver for DBD::DBM
+        [TESTS]
+        - over 97% test coverage
 

@@ -13,7 +13,6 @@ META.yml
 README
 t/00-load.t
 t/07-database.t
-t/08-handles.t
 t/09-handle.t
 t/10-drivers.t
 t/11-baddriver.t

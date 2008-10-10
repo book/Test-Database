@@ -42,16 +42,23 @@ for my $dir (@INC) {
 @DRIVERS = grep { exists $DBI_DRIVERS{$_} } @ALL_DRIVERS;
 
 sub available_drivers { return @ALL_DRIVERS }
-sub drivers           { return @DRIVERS }
+
+sub drivers {
+    my ( $class, @requested ) = @_;
+    return @DRIVERS if !@requested;
+
+    my %requested = map { $_ => '' } @requested;
+    return grep { exists $requested{$_} } @DRIVERS;
+}
 
 #
 # methods delegated to the handle
 #
-for my $attr ( 'handle', @attributes) {
+for my $attr ( 'handle', @attributes ) {
     no strict 'refs';
-    *{"test_db_$attr"} = sub { __PACKAGE__->$attr( @_ ) };
+    *{"test_db_$attr"} = sub { __PACKAGE__->$attr(@_) };
 
-    next if $attr eq 'handle';  # skip this one
+    next if $attr eq 'handle';    # skip this one
     *{$attr} = sub {
         my $class = shift;
         return $class->handle(@_)->$attr;
@@ -166,13 +173,16 @@ C<Test::Database> provides the following methods:
 
 Return the list of supported DBI drivers.
 
-=item drivers()
+=item drivers( @list )
 
 Return the list of supported DBI drivers that have been detected as installed.
 
 This is the intersection of the results of
 C<< Test::Database->available_drivers() >> and 
 C<< DBI->available_drivers() >>.
+
+If C<@list> is provided, only the available drivers in the list are
+returned.
 
 =item handle( $driver [, $name ] )
 

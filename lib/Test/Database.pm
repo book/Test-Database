@@ -119,6 +119,34 @@ a config file and then it's done for good.>
 See L<http://www.nntp.perl.org/group/perl.qa/2008/10/msg11645.html>
 for the thread that led to the creation of C<Test::Database>.
 
+C<Test::Database> provides a simple way for test authors to request
+a test database, without worrying about environment variables or the
+test host configuration.
+
+Typical usage if the module require a specific database:
+
+   use Test::More;
+   use Test::Database;
+
+   my $dbh = Test::Database->dbh( SQLite => 'test' );
+   plan skip_all => 'No test SQLite database available' if !$dbh;
+
+   # rest of the test script
+
+Typical usage if the module wants to run the test on as many databases
+as possible:
+
+   use Test::More;
+   use Test::Database;
+
+   for my $handle ( Test::Database->handles( 'test' ) ) {
+
+       diag 'Testing on ' . $handle->driver();
+       my $dbh = $handle->dbh();
+
+       # rest of the test script
+   }
+
 =head1 METHODS
 
 C<Test::Database> provides the following methods:

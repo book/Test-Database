@@ -136,12 +136,25 @@ Creating a driver requires writing the following methods:
 Start the corresponding database engine, and return a true value if the
 server was successfully started (meaning it will need to be stopped).
 
+C<Test::Database::Driver> provides a default implementation if no startup
+is required.
+
 =item stop_engine( $info )
 
 Stops a running database engine.
 
 C<$info> is the return value of C<start_server()>, which allows driver
 authors to pass information to the C<stop_engine()> method.
+
+C<Test::Database::Driver> provides a default implementation if no shutdown
+is required.
+
+=item create_database( $name )
+
+Create the database for the corresponding DBD driver.
+
+Return a C<Test::Database::Handle> in case of success, and nothing in
+case of failure to create the database.
 
 =back
 

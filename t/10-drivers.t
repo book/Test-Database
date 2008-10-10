@@ -6,7 +6,7 @@ use File::Spec;
 use DBI;
 
 # hardcoded list of our drivers
-my @available_drivers = qw( SQLite );
+my @available_drivers = qw( CSV SQLite );
 
 plan tests => 2 + 3 * @available_drivers;
 

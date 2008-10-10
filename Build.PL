@@ -9,9 +9,9 @@ my $builder = Module::Build->new(
     dist_version_from   => 'lib/Test/Database.pm',
     build_requires => {
         'Test::More' => 0,
+        'DBI'        => 1,
     },
     add_to_cleanup      => [ 'Test-Database-*' ],
-    create_makefile_pl => 'traditional',
 );
 
 $builder->create_build_script();

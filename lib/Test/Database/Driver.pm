@@ -42,6 +42,8 @@ sub base_dir {
         : File::Spec->catdir( $root, $_[0]->name() );
 }
 
+sub cleanup { rmtree $_[0]->base_dir() }
+
 my %started;
 my %handle;
 
@@ -53,11 +55,13 @@ sub handle {
     # make sure the database server has been started
     $started{$class} ||= $class->start_engine();
 
-    # return the handle
+    # return the cached handle
     return $handle{$class}{$name} ||= $class->create_database($name);
 }
 
-sub cleanup { rmtree $_[0]->base_dir() }
+# stop all database engines that were started
+END { $_->stop_engine( $started{$_} ) for keys %started; }
+
 
 'CONNECTION';
 
@@ -77,6 +81,7 @@ Test::Database::Driver - Base class for Test::Database drivers
     our @ISA = qw( Test::Database::Driver );
     
     sub start_server { ... }
+
     sub stop_server  { ... }
 
     sub create_database {
@@ -126,11 +131,17 @@ Creating a driver requires writing the following methods:
 
 =over 4
 
-=item start_server()
+=item start_engine()
 
-Start a server for the corresponding database engine, and return a
+Start the corresponding database engine, and return a true value if the
+server was successfully started (meaning it will need to be stopped).
 
-=item stop_server()
+=item stop_engine( $info )
+
+Stops a running database engine.
+
+C<$info> is the return value of C<start_server()>, which allows driver
+authors to pass information to the C<stop_engine()> method.
 
 =back
 

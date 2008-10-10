@@ -234,18 +234,25 @@ Some of the items on the TODO list:
 
 =item *
 
-allow C<handle()> to be called with no parameter and return
+Allow options to be passed to handle()
+
+At the moment, it's possible to use connection_info() and  pass options
+to DBI->connect() directly.
+
+=item *
+
+Allow C<handle()> to be called with no parameter and return
 a handle to a test database (need to find an ordering scheme for
 the drivers).
 
 =item *
 
-add support for C<DBI_DSN>. If C<handle()> is called with no parameters,
+Add support for C<DBI_DSN>. If C<handle()> is called with no parameters,
 or if DBI_DSN matches the requested driver, first use this DSN.
 
 =item *
 
-add support for a Test::Database::Config module, holding system-wide
+Add support for a C<Test::Database::Config> module, holding system-wide
 test database configuration. Probably need to create an interactive way
 to set it up.
 
@@ -253,10 +260,10 @@ to set it up.
 
 =head1 ACKNOWLEDGEMENTS
 
-Thanks to perl-qa@perl.org for early comments.
+Thanks to C<< <perl-qa@perl.org> >> for early comments.
 
-Thanks to Nelson Ferraz for C<DBIx::Slice>, the testing of which made
-me want to have a generic way to obtain a test database.
+Thanks to Nelson Ferraz for writing C<DBIx::Slice>, the testing of
+which made me want to have a generic way to obtain a test database.
 
 =head1 COPYRIGHT
 

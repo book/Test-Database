@@ -23,7 +23,10 @@ for my $dir (@INC) {
     closedir $dh;
 }
 
-@ALL_DRIVERS = sort @ALL_DRIVERS;
+@ALL_DRIVERS = do {
+    my %seen;
+    sort grep { !$seen{$_}++ } @ALL_DRIVERS;
+};
 @DRIVERS = grep { exists $DBI_DRIVERS{$_} } @ALL_DRIVERS;
 
 sub available_drivers { return @ALL_DRIVERS }

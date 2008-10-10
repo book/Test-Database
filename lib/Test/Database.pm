@@ -67,11 +67,6 @@ sub handle {
     return "Test::Database::Driver::$driver"->handle($name);
 }
 
-sub handles {
-    my ( $class, $name ) = @_;
-    return map { $class->handle( $_ => $name ) } $class->drivers();
-}
-
 sub cleanup { Test::Database::Driver->cleanup(); }
 
 'TRUE';
@@ -149,16 +144,17 @@ Typical usage if the module require a specific database:
 Typical usage if the module wants to run the test on as many databases
 as possible:
 
-   use Test::More;
-   use Test::Database;
+    use Test::More;
+    use Test::Database;
 
-   for my $handle ( Test::Database->handles( 'test' ) ) {
+    for my $handle ( map { Test::Database->handle( $_ => 'test' ) }
+        Test::Database->drivers() )
+    {
+        diag 'Testing on ' . $handle->driver();
+        my $dbh = $handle->dbh();
 
-       diag 'Testing on ' . $handle->driver();
-       my $dbh = $handle->dbh();
-
-       # rest of the test script
-   }
+        # rest of the test script
+    }
 
 =head1 METHODS
 
@@ -212,10 +208,6 @@ Shortcut methods for:
     Test::Database->handle( $driver [, $name ] )->password();
 
 See C<Test::Database::Handle> for details.
-
-=item handles( [ $name ] )
-
-Return the list of handles associated to C<$name> for all drivers.
 
 =item cleanup()
 

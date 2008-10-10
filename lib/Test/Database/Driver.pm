@@ -84,6 +84,46 @@ Test::Database::Driver - Base class for Test::Database drivers
 C<Test::Database::Driver> is a base class for creating C<Test::Database>
 drivers.
 
+=head1 METHODS
+
+The class provides the following methods:
+
+=over 4
+
+=item name()
+
+The driver's short name (everything after C<Test::Database::Driver::>).
+
+=item base_dir()
+
+The directory where the driver should store all the files for its databases.
+Typically used to configure the DSN or the database engine.
+
+=item handle( [ $name ] )
+
+Return a C<Test::Database::Handle> object for a database named C<$name>.
+If C<$name> is not given, the name C<default> is used.
+
+=item cleanup()
+
+Delete the content of the C<base_dir()> directory.
+
+=back
+
+=head1 WRITING A DRIVER FOR YOUR DATABASE OF CHOICE
+
+Creating a driver requires writing the following methods:
+
+=over 4
+
+=item start_server()
+
+Start a server for the corresponding database engine, and return a
+
+=item stop_server()
+
+=back
+
 =head1 AUTHOR
 
 Philippe Bruhat (BooK), C<< <book@cpan.org> >>

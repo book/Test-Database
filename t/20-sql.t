@@ -5,7 +5,7 @@ use Test::Database;
 
 my @drivers = Test::Database->drivers();
 
-# som
+# some SQL statements to try out
 my @sql = (
     q{CREATE TABLE users (id INTEGER, name CHAR(64))},
     q{INSERT INTO users (id, name) VALUES (1, 'book')},

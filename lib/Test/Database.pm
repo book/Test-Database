@@ -6,9 +6,19 @@ use File::Spec;
 use DBI;
 use Carp;
 
-use Test::Database::Driver;
-
 our $VERSION = '0.01';
+
+use Exporter;
+our @ISA = qw( Exporter );
+
+our @EXPORT_OK = (
+    'test_db_handle',
+    map {"test_db_$_"} my @attributes
+        = qw( dbh dsn username password connection_info )
+);
+our %EXPORT_TAGS = ( all => \@EXPORT_OK );
+
+use Test::Database::Driver;
 
 #
 # driver information
@@ -37,9 +47,12 @@ sub drivers           { return @DRIVERS }
 #
 # methods delegated to the handle
 #
-for my $attr (qw< dbh dsn username password connection_info >) {
+for my $attr ( 'handle', @attributes) {
     no strict 'refs';
-    *{"test_db_$attr"} = *{$attr} = sub {
+    *{"test_db_$attr"} = sub { __PACKAGE__->$attr( @_ ) };
+
+    next if $attr eq 'handle';  # skip this one
+    *{$attr} = sub {
         my $class = shift;
         return $class->handle(@_)->$attr;
     };
@@ -213,7 +226,7 @@ Remove the directory used by C<Test::Database> drivers.
 =head1 EXPORTS
 
 All the methods can be exported as functions (prefixed with C<test_db_>)
-using the C<:functions> tag.
+using the C<:all> tag.
 
 So you can either do:
 
@@ -222,7 +235,12 @@ So you can either do:
 
 or:
 
-    use Test::Database qw( :functions );
+    use Test::Database qw( :all );
+    my $dbh = test_db_dbh( 'SQLite' );
+
+or export only the one you want:
+
+    use Test::Database qw( test_db_dbh );
     my $dbh = test_db_dbh( 'SQLite' );
 
 =cut

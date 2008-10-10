@@ -43,7 +43,8 @@ for my $attr (qw< dbh dsn username password connection_info >) {
 sub handle {
     my ( $class, $driver, $name ) = @_;
 
-    eval "use Test::Database::Driver::$driver; 1;" or croak $@;
+    eval "use Test::Database::Driver::$driver; 1;"
+        or croak $@ =~ /^(.*) at /g;
 
     return "Test::Database::Driver::$driver"->handle($name);
 }

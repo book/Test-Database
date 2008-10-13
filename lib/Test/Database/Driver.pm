@@ -37,7 +37,7 @@ sub init {
 my %setup;
 my %started;
 sub is_engine_setup   { return exists $setup{ $_[0] } }
-sub is_engine_started { return exists $setup{ $_[0] } }
+sub is_engine_started { return exists $started{ $_[0] } }
 
 # MAY be implemented in the derived class
 sub setup_engine { }
@@ -82,7 +82,8 @@ sub handle {
         if !$class->is_engine_started();
 
     # return the cached handle
-    return $handle{$class}{$name} ||= $class->create_database($name);
+    return $handle{$class}{$name}
+        ||= $class->create_database( $setup{$class}, $name );
 }
 
 # stop all database engines that were started

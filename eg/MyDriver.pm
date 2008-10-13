@@ -36,7 +36,9 @@ sub stop_engine {
 }
 
 sub create_database {
-    my ( $class, $dbname ) = @_;
+    my ( $class, $config, $dbname ) = @_;
+
+    # $config is the return value of setup_engine()
 
     # return a Test::Database::Handle object
     # or false if unable to create the handle

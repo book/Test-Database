@@ -10,7 +10,7 @@ use File::Spec;
 __PACKAGE__->init();
 
 sub create_database {
-    my ( $class, $dbname ) = @_;
+    my ( $class, $config, $dbname ) = @_;
     my $dbfile = File::Spec->catfile( $class->base_dir(), $dbname );
 
     return Test::Database::Handle->new( dsn => "dbi:SQLite:dbname=$dbfile", );

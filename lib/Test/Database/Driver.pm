@@ -46,7 +46,7 @@ sub stop_engine  { }
 
 # MUST be implemented in the derived class
 sub create_database {
-    my ( $class, $name ) = @_;
+    my ( $class, $config, $name ) = @_;
 
     croak "$class doesn't define a create_database() method."
         . " Can't create database '$name'";
@@ -161,12 +161,14 @@ Creating a driver requires writing the following methods:
 
 Setup the corresponding database engine, and return a true value
 corresponding to the configuration information needed to start the
-database engine.
+database engine and to create new databases.
 
-=item start_engine()
+=item start_engine( $config )
 
 Start the corresponding database engine, and return a true value if the
 server was successfully started (meaning it will need to be stopped).
+
+C<$config> is the return value from C<setup_engine()>.
 
 C<Test::Database::Driver> provides a default implementation if no startup
 is required.
@@ -181,9 +183,11 @@ authors to pass information to the C<stop_engine()> method.
 C<Test::Database::Driver> provides a default implementation if no shutdown
 is required.
 
-=item create_database( $name )
+=item create_database( $config, $name )
 
 Create the database for the corresponding DBD driver.
+
+C<$config> is the return value from C<setup_engine()>.
 
 Return a C<Test::Database::Handle> in case of success, and nothing in
 case of failure to create the database.

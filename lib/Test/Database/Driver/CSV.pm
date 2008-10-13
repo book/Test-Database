@@ -11,7 +11,7 @@ use File::Path;
 __PACKAGE__->init();
 
 sub create_database {
-    my ( $class, $dbname ) = @_;
+    my ( $class, $config, $dbname ) = @_;
     my $dbdir = File::Spec->catdir( $class->base_dir(), $dbname );
 
     return Test::Database::Handle->new( dsn => "dbi:CSV:f_dir=$dbdir" );

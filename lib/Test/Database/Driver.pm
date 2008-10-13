@@ -10,10 +10,11 @@ use Test::Database::Handle;
 #
 # global configuration
 #
-my $root
-    = File::Spec->rel2abs(
-    File::Spec->catdir( File::Spec->tmpdir(), 'Test-Database-' . getlogin() )
-    );
+my $root = File::Spec->rel2abs(
+    File::Spec->catdir(
+        File::Spec->tmpdir(), 'Test-Database-' . __PACKAGE__->username()
+    )
+);
 
 #
 # base implementations
@@ -34,6 +35,8 @@ sub create_database {
 #
 # common methods
 #
+sub username { return getlogin() }
+
 sub name { return ( $_[0] =~ /^Test::Database::Driver::(.*)/g )[0]; }
 
 sub base_dir {

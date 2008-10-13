@@ -20,7 +20,14 @@ my $root = File::Spec->rel2abs(
 # base implementations
 #
 
+# some information methods
+my %setup;
+my %started;
+sub is_engine_setup   { return exists $setup{ $_[0] } }
+sub is_engine_started { return exists $setup{ $_[0] } }
+
 # MAY be implemented in the derived class
+sub setup_engine { }
 sub start_engine { }
 sub stop_engine  { }
 
@@ -47,7 +54,6 @@ sub base_dir {
 
 sub cleanup { rmtree $_[0]->base_dir() }
 
-my %started;
 my %handle;
 
 sub handle {
@@ -55,8 +61,12 @@ sub handle {
 
     $name ||= 'default';
 
+    # make sure the database server has been setup
+    $setup{$class} = $class->setup_engine() if !$class->is_engine_setup();
+
     # make sure the database server has been started
-    $started{$class} ||= $class->start_engine();
+    $started{$class} = $class->start_engine( $setup{$class} )
+        if !$class->is_engine_started();
 
     # return the cached handle
     return $handle{$class}{$name} ||= $class->create_database($name);
@@ -133,6 +143,12 @@ C<Test::Database> drivers.
 Creating a driver requires writing the following methods:
 
 =over 4
+
+=item setup_engine()
+
+Setup the corresponding database engine, and return a true value
+corresponding to the configuration information needed to start the
+database engine.
 
 =item start_engine()
 

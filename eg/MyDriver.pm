@@ -5,10 +5,19 @@ use warnings;
 use Test::Database::Driver;
 our @ISA = qw( Test::Database::Driver );
 
-sub start_engine {
-    my ( $class ) = @_;
+__PACKAGE__->init();
 
-    # setup the database server, and start it
+sub setup_engine {
+
+    # setup the database engine
+    # return configuration information to be used by start_engine()
+    return;
+}
+
+sub start_engine {
+    my ( $class, $config ) = @_;
+
+    # start the database server using the information in $config
 
     # return true is the engine was started
     # and will need to be stopped

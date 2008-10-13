@@ -8,15 +8,13 @@ our @ISA = qw( Test::Database::Driver );
 use File::Spec;
 use File::Path;
 
+__PACKAGE__->init();
+
 sub create_database {
     my ( $class, $dbname ) = @_;
-
     my $dbdir = File::Spec->catdir( $class->base_dir(), $dbname );
-    mkpath $dbdir if ! -e $dbdir;
 
-    return Test::Database::Handle->new(
-        dsn      => "dbi:DBM:f_dir=$dbdir",
-    );
+    return Test::Database::Handle->new( dsn => "dbi:DBM:f_dir=$dbdir" );
 }
 
 'DBM';

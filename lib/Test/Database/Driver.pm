@@ -16,9 +16,22 @@ my $root = File::Spec->rel2abs(
     )
 );
 
+__PACKAGE__->init();
+
 #
 # base implementations
 #
+
+sub init {
+    my ($class) = @_;
+    my $dir = $class->base_dir();
+    if ( !-e $dir ) {
+        mkpath $dir;
+    }
+    elsif ( !-d $dir ) {
+        croak "$dir is not a directory. Initializing $class failed";
+    }
+}
 
 # some information methods
 my %setup;

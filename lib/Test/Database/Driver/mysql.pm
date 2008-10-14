@@ -18,17 +18,17 @@ sub setup_engine {
     if ( !-e $cnf ) {
         open my $fh, '>', $cnf or die "Unable to open $cnf for writing: $!";
         $config = {
-            datadir  => $dir,
-            socket   => File::Spec->catfile( $dir, 'mysqld.sock' ),
-            pid_file => File::Spec->catfile( $dir, 'mysqld.pid' ),
-            port     => $class->available_port(),
-            cnf      => $cnf,
+            datadir    => $dir,
+            socket     => File::Spec->catfile( $dir, 'mysqld.sock' ),
+            'pid-file' => File::Spec->catfile( $dir, 'mysqld.pid' ),
+            port       => $class->available_port(),
+            cnf        => $cnf,
         };
         print {$fh} << "CNF";
 [mysqld]
 datadir   = $config->{datadir}
 socket    = $config->{socket}
-pid-file  = $config->{pid_file}
+pid-file  = $config->{'pid-file'}
 port      = $config->{port}
 log-error = mysqld.err
 [client]
@@ -68,7 +68,7 @@ sub start_engine {
     my ( $class, $config ) = @_;
 
     # is the server already started?
-    if (   !-e $config->{pid_file} || !-e $config->{socket} ) {
+    if ( !-e $config->{'pid-file'} || !-e $config->{socket} ) {
 
         # spawn a new mysqld process (must fork)
         $class->spawn_cmd( 'mysqld_safe', "--defaults-file=$config->{cnf}" );
@@ -99,7 +99,7 @@ sub create_database {
     # check if the requested database exists
     if ( !-e File::Spec->catdir( $class->base_dir(), $dbname ) ) {
         my $dbh = DBI->connect( $dsn, 'root', '' );
-        $dbh->do( "CREATE DATABASE $dbname" );
+        $dbh->do("CREATE DATABASE $dbname");
     }
 
     # return the handle

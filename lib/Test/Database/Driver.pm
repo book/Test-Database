@@ -76,7 +76,7 @@ sub cleanup {
         $_->cleanup() for keys %init;
     }
     else {
-        $class->stop_engine( $started{$class} ) if $class->is_engine_started();
+        $class->stop_engine( $started{$class} ) if $started{$class};
         delete $started{$class};
         delete $setup{$class};
     }
@@ -108,8 +108,7 @@ sub handle {
 
 # stop all database engines that were started
 END {
-    $_->stop_engine( $started{$_} )
-        for grep { $_->is_engine_started() } keys %started;
+    $_->stop_engine( $started{$_} ) for grep { $started{$_} } keys %started;
 }
 
 #

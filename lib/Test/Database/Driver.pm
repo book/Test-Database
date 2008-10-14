@@ -73,7 +73,7 @@ my %handle;
 sub handle {
     my ( $class, $name ) = @_;
 
-    $name ||= 'default';
+    $name ||= 'test_database';
 
     # make sure the database server has been setup
     $setup{$class} = $class->setup_engine() if !$class->is_engine_setup();
@@ -216,7 +216,7 @@ Typically used to configure the DSN or the database engine.
 =item handle( [ $name ] )
 
 Return a C<Test::Database::Handle> object for a database named C<$name>.
-If C<$name> is not given, the name C<default> is used.
+If C<$name> is not given, the name C<test_database> is used.
 
 =item cleanup()
 

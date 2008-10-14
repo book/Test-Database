@@ -21,7 +21,7 @@ ok( !eval { Test::Database->handle('Bad'); 1 },
 );
 like(
     $@,
-    qr/^Test::Database::Driver::Bad doesn't define a create_database\(\) method. Can't create database 'default'/,
+    qr/^Test::Database::Driver::Bad doesn't define a create_database\(\) method. Can't create database 'test_database'/,
     'Expected error message'
 );
 

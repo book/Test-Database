@@ -5,8 +5,6 @@ use warnings;
 use Test::Database::Driver;
 our @ISA = qw( Test::Database::Driver );
 
-__PACKAGE__->init();
-
 sub setup_engine {
 
     # setup the database engine

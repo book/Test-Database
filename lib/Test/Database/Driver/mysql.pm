@@ -5,11 +5,8 @@ use warnings;
 use Test::Database::Driver;
 our @ISA = qw( Test::Database::Driver );
 
-use Carp;
 use File::Spec;
 use DBI;
-
-__PACKAGE__->init();
 
 sub setup_engine {
     my ($class) = @_;

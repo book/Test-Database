@@ -6,9 +6,6 @@ use Test::Database::Driver;
 our @ISA = qw( Test::Database::Driver );
 
 use File::Spec;
-use File::Path;
-
-__PACKAGE__->init();
 
 sub create_database {
     my ( $class, $config, $dbname ) = @_;

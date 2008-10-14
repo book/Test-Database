@@ -75,7 +75,7 @@ sub start_engine {
 
         # wait until the server has started
         my $i = 0;
-        sleep 1 while ! -e $config->{socket} && $i < 10;
+        sleep 1 while !-e $config->{socket} && $i++ < 10;
     }
 
     return $config;

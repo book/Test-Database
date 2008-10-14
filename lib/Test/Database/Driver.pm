@@ -4,6 +4,7 @@ use warnings;
 use Carp;
 use File::Spec;
 use File::Path;
+use POSIX qw( WIFEXITED WEXITSTATUS WIFSIGNALED WTERMSIG );
 
 use Test::Database::Handle;
 
@@ -87,8 +88,83 @@ sub handle {
 }
 
 # stop all database engines that were started
-END { $_->stop_engine( $started{$_} ) for keys %started; }
+END {
+    $_->stop_engine( $started{$_} )
+        for grep { $_->is_engine_started() } keys %started;
+}
 
+#
+# useful tools
+#
+sub run_cmd {
+    my ( $class, $cmd, @args ) = @_;
+
+    # call system() with indirect syntax
+    system {$cmd} $cmd, @args;
+
+    # error handling
+    if ( $? == -1 ) {
+        croak "Failed to execute $cmd: $!\n";
+    }
+
+    my $status;
+    if ( WIFEXITED($?) ) {
+        $status = WEXITSTATUS($?);
+        croak "$cmd exited with status $status" if $status;
+    }
+
+    my $signal;
+    if ( WIFSIGNALED($?) ) {
+        $signal = WTERMSIG($?);
+        croak "$cmd died with signal $signal";
+    }
+
+    return;
+}
+
+sub spawn_cmd {
+    my ( $class, $cmd, @args ) = @_;
+
+    my $ProcessObj;
+
+    if ( $^O eq 'MSWin32' ) {    # the Windows way
+
+        require Win32::Process;
+        require Win32;
+        no strict 'subs';
+        Win32::Process::Create( $ProcessObj, $cmd, "@args", 0,
+            NORMAL_PRIORITY_CLASS, '.' )
+            || croak Win32::FormatMessage( Win32::GetLastError() );
+    }
+    else {                       # try the Unix way
+
+        $ProcessObj = fork();
+        croak "Cannot fork $cmd: $!" if !defined $ProcessObj;
+        if ($ProcessObj) {
+            exec {$cmd} $cmd, @args or die "Cannot exec $cmd: $!";
+        }
+    }
+
+    # either a Win32::Process object or a PID number
+    return $ProcessObj;
+}
+
+sub available_port {
+    my ($class);
+
+    require IO::Socket::INET;
+    my $sock = IO::Socket::INET->new(
+        PeerAddr => 'localhost',
+        PeerPort => 0,
+        Proto    => 'tcp',
+        Listen   => 1,
+    ) or croak "Unable to find an available tcp port: $@";
+
+    my $port = $sock->sockport();
+    $sock->close();
+
+    return $port;
+}
 
 'CONNECTION';
 
@@ -149,6 +225,40 @@ Delete the C<base_dir()> directory and its content.
 When called on C<Test::Database> directly, it will delete the main
 directory that contains all the individual directories used by
 C<Test::Database> drivers.
+
+=back
+
+The class also provides a few helpful commands that may be useful for driver
+authors:
+
+=over 4
+
+=item init()
+
+The method does the general configuration needed for a database driver.
+All drivers should start by calling C<< __PACKAGE__->init() >> to ensure
+they have been correctly initialized.
+
+=item username()
+
+Return the username of the user running the current program.
+
+=item run_cmd( $cmd, @args )
+
+Run the requested command using C<system()>. Will C<die()> in case of
+a problem (non-zero exit status, signal).
+
+=item spawn_cmd( $cmd, @args )
+
+Create a new process to run the requested command.
+Will C<die()> in case of a problem.
+
+Will use C<fork()>+C<exec()> on Unix systems, and
+C<Win32::Process::Create> under Win32 systems.
+
+=item available_port()
+
+Return an available TCP port (useful for setting up a TCP server).
 
 =back
 

@@ -20,6 +20,8 @@ Test::Database->cleanup;
 
 for my $driver (@drivers) {
 
+    diag "Testing driver $driver";
+
     for my $dbname ( '', 'test' ) {
 
         my $dbh = Test::Database->dbh( $driver => $dbname );

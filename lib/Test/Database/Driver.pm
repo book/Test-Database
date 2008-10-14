@@ -17,14 +17,22 @@ my $root = File::Spec->rel2abs(
     )
 );
 
-__PACKAGE__->init();
-
 #
 # base implementations
 #
 
+# some information methods
+my %init;
+my %setup;
+my %started;
+sub is_initialized    { return exists $init{ $_[0] } }
+sub is_engine_setup   { return exists $setup{ $_[0] } }
+sub is_engine_started { return exists $started{ $_[0] } }
+
+# DON'T implement this in the derived class
 sub init {
     my ($class) = @_;
+
     my $dir = $class->base_dir();
     if ( !-e $dir ) {
         mkpath $dir;
@@ -32,13 +40,8 @@ sub init {
     elsif ( !-d $dir ) {
         croak "$dir is not a directory. Initializing $class failed";
     }
+    ++$init{$class};
 }
-
-# some information methods
-my %setup;
-my %started;
-sub is_engine_setup   { return exists $setup{ $_[0] } }
-sub is_engine_started { return exists $started{ $_[0] } }
 
 # MAY be implemented in the derived class
 sub setup_engine { }
@@ -66,7 +69,20 @@ sub base_dir {
         : File::Spec->catdir( $root, $_[0]->name() );
 }
 
-sub cleanup { rmtree $_[0]->base_dir() }
+sub cleanup {
+    my ($class) =  @_;
+
+    if( $class eq __PACKAGE__ ) {
+        $_->cleanup() for keys %init;
+    }
+    else {
+        $class->stop_engine( $started{$class} ) if $class->is_engine_started();
+        delete $started{$class};
+        delete $setup{$class};
+    }
+    rmtree $class->base_dir();
+    delete $init{$class};
+}
 
 my %handle;
 
@@ -74,6 +90,9 @@ sub handle {
     my ( $class, $name ) = @_;
 
     $name ||= 'test_database';
+
+    # common initialisation for all drivers
+    $init{$class} = $class->init() if !$class->is_initialized();
 
     # make sure the database server has been setup
     $setup{$class} = $class->setup_engine() if !$class->is_engine_setup();
@@ -260,12 +279,14 @@ C<Win32::Process::Create> under Win32 systems.
 
 Return an available TCP port (useful for setting up a TCP server).
 
+=item is_initialized()
+
 =item is_engine_setup()
 
 =item is_engine_started()
 
-Routines that let the driver know if the engine has been setup or started.
-(Used internally.)
+Routines that let the driver know if the driver has been initialized, or
+if engine has been setup or started. (Used internally.)
 
 =back
 

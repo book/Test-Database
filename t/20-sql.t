@@ -45,3 +45,5 @@ for my $driver (@drivers) {
     }
 }
 
+Test::Database->cleanup;
+

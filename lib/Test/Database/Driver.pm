@@ -260,6 +260,13 @@ C<Win32::Process::Create> under Win32 systems.
 
 Return an available TCP port (useful for setting up a TCP server).
 
+=item is_engine_setup()
+
+=item is_engine_started()
+
+Routines that let the driver know if the engine has been setup or started.
+(Used internally.)
+
 =back
 
 =head1 WRITING A DRIVER FOR YOUR DATABASE OF CHOICE

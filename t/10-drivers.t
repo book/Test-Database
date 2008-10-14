@@ -7,7 +7,7 @@ use DBI;
 use List::Util qw( shuffle );
 
 # hardcoded sorted list of our drivers
-my @available_drivers = qw( CSV DBM SQLite );
+my @available_drivers = qw( CSV DBM SQLite mysql );
 
 # intersection with DBI->available_drivers
 my %available_drivers = map { $_ => 1 } @available_drivers;

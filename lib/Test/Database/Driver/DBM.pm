@@ -20,7 +20,7 @@ __END__
 
 =head1 NAME
 
-Test::Database::Driver::DBM - A Test::Database driver for CSV
+Test::Database::Driver::DBM - A Test::Database driver for DBM
 
 =head1 SYNOPSIS
 

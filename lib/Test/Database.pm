@@ -6,7 +6,7 @@ use File::Spec;
 use DBI;
 use Carp;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use Exporter;
 our @ISA = qw( Exporter );

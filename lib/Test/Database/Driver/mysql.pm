@@ -16,7 +16,7 @@ sub setup_engine {
     # is there a my.cnf file already?
     my $cnf = File::Spec->catfile( $dir, 'my.cnf' );
     if ( !-e $cnf ) {
-        open my $fh, '>', $cnf or croak "Unable to open $cnf for writing: $!";
+        open my $fh, '>', $cnf or die "Unable to open $cnf for writing: $!";
         $config = {
             datadir  => $dir,
             socket   => File::Spec->catfile( $dir, 'mysqld.sock' ),
@@ -41,7 +41,7 @@ CNF
 
         # read the file we just wrote
         # FIXME - should I depend on Config::Tiny for this?
-        open my $fh, $cnf or croak "Unable to open $cnf for reading: $!";
+        open my $fh, $cnf or die "Unable to open $cnf for reading: $!";
 
         $config = { cnf => $cnf };
         my $section;

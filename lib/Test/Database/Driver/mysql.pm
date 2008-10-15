@@ -134,6 +134,10 @@ L<Test::Database::Driver>
 
 Philippe Bruhat (BooK), C<< <book@cpan.org> >>
 
+=head1 ACKNOWLEDGEMENTS
+
+Many thanks to Kristian Köhntopp who helped me while writing this module.
+
 =head1 COPYRIGHT
 
 Copyright 2008 Philippe Bruhat (BooK), all rights reserved.

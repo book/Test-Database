@@ -21,10 +21,16 @@ my $root = File::Spec->rel2abs(
 # base implementations
 #
 
-# some information methods
+# some information stores, indexed by driver class name
+# - key exists: routine called
+# - true value: data to be passed to next step (for setup/started)
+# - undef:      routined didn't do anything
+# - 0/'':       undecided (failure? routines usually die)
 my %init;
 my %setup;
 my %started;
+
+# some information methods
 sub is_initialized    { return exists $init{ $_[0] } }
 sub is_engine_setup   { return exists $setup{ $_[0] } }
 sub is_engine_started { return exists $started{ $_[0] } }

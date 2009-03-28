@@ -4,41 +4,25 @@ use warnings;
 use Carp;
 use File::Spec;
 use File::Path;
-use POSIX qw( WIFEXITED WEXITSTATUS WIFSIGNALED WTERMSIG );
-
-use Test::Database::Handle;
 
 #
 # global configuration
 #
+# the location where all drivers-related files will be stored
 my $root = File::Spec->rel2abs(
     File::Spec->catdir(
-        File::Spec->tmpdir(), 'Test-Database-' . __PACKAGE__->username()
+        File::Spec->tmpdir(), 'Test-Database-' . getlogin()
     )
 );
 
-#
-# base implementations
-#
-
 # some information stores, indexed by driver class name
-# - key exists: routine called
-# - true value: data to be passed to next step (for setup/started)
-# - undef:      routined didn't do anything
-# - 0/'':       undecided (failure? routines usually die)
-my %init;
-my %setup;
-my %started;
+my %drh;
 
-# some information methods
-sub is_initialized    { return exists $init{ $_[0] } }
-sub is_engine_setup   { return exists $setup{ $_[0] } }
-sub is_engine_started { return exists $started{ $_[0] } }
-
-# DON'T implement this in the derived class
-sub init {
+# generic driver class initialisation
+sub __init {
     my ($class) = @_;
 
+    # create directory if needed
     my $dir = $class->base_dir();
     if ( !-e $dir ) {
         mkpath $dir;
@@ -46,28 +30,19 @@ sub init {
     elsif ( !-d $dir ) {
         croak "$dir is not a directory. Initializing $class failed";
     }
-    ++$init{$class};
+
+    # load the DBI driver
+    $drh{$class} = DBI->install_driver( $class->name() );
 }
 
-# MAY be implemented in the derived class
-sub setup_engine { }
-sub start_engine { }
-sub stop_engine  { }
-
-# MUST be implemented in the derived class
-sub create_database {
-    my ( $class, $config, $name ) = @_;
-
-    croak "$class doesn't define a create_database() method."
-        . " Can't create database '$name'";
+sub new {
+    my ( $class, %args ) = @_;
+    bless {%args}, $class;
 }
-
-#
-# common methods
-#
-sub username { return getlogin() }
 
 sub name { return ( $_[0] =~ /^Test::Database::Driver::(.*)/g )[0]; }
+
+sub drh { return $drh{ $_[0]->name() } }
 
 sub base_dir {
     return $_[0] eq __PACKAGE__
@@ -75,120 +50,10 @@ sub base_dir {
         : File::Spec->catdir( $root, $_[0]->name() );
 }
 
-sub cleanup {
-    my ($class) =  @_;
-
-    if( $class eq __PACKAGE__ ) {
-        $_->cleanup() for keys %init;
-    }
-    else {
-        $class->stop_engine( $started{$class} ) if $started{$class};
-        delete $started{$class};
-        delete $setup{$class};
-    }
-    rmtree $class->base_dir();
-    delete $init{$class};
-}
-
-my %handle;
-
-sub handle {
-    my ( $class, $name ) = @_;
-
-    $name ||= 'test_database';
-
-    # common initialisation for all drivers
-    $init{$class} = $class->init() if !$class->is_initialized();
-
-    # make sure the database server has been setup
-    $setup{$class} = $class->setup_engine() if !$class->is_engine_setup();
-
-    # make sure the database server has been started
-    $started{$class} = $class->start_engine( $setup{$class} )
-        if !$class->is_engine_started();
-
-    # return the cached handle
-    return $handle{$class}{$name}
-        ||= $class->create_database( $setup{$class}, $name );
-}
-
-# stop all database engines that were started
-END {
-    $_->stop_engine( $started{$_} ) for grep { $started{$_} } keys %started;
-}
-
-#
-# useful tools
-#
-sub run_cmd {
-    my ( $class, $cmd, @args ) = @_;
-
-    # call system() with indirect syntax
-    system {$cmd} $cmd, @args;
-
-    # error handling
-    if ( $? == -1 ) {
-        croak "Failed to execute $cmd: $!\n";
-    }
-
-    my $status;
-    if ( WIFEXITED($?) ) {
-        $status = WEXITSTATUS($?);
-        croak "$cmd exited with status $status" if $status;
-    }
-
-    my $signal;
-    if ( WIFSIGNALED($?) ) {
-        $signal = WTERMSIG($?);
-        croak "$cmd died with signal $signal";
-    }
-
-    return;
-}
-
-sub spawn_cmd {
-    my ( $class, $cmd, @args ) = @_;
-
-    my $ProcessObj;
-
-    if ( $^O eq 'MSWin32' ) {    # the Windows way
-
-        require Win32::Process;
-        require Win32;
-        no strict 'subs';
-        Win32::Process::Create( $ProcessObj, $cmd, "@args", 0,
-            NORMAL_PRIORITY_CLASS, '.' )
-            || croak Win32::FormatMessage( Win32::GetLastError() );
-    }
-    else {                       # try the Unix way
-
-        $ProcessObj = fork();
-        croak "Cannot fork $cmd: $!" if !defined $ProcessObj;
-        if ($ProcessObj) {
-            exec {$cmd} $cmd, @args or die "Cannot exec $cmd: $!";
-        }
-    }
-
-    # either a Win32::Process object or a PID number
-    return $ProcessObj;
-}
-
-sub available_port {
-    my ($class);
-
-    require IO::Socket::INET;
-    my $sock = IO::Socket::INET->new(
-        PeerAddr => 'localhost',
-        PeerPort => 0,
-        Proto    => 'tcp',
-        Listen   => 1,
-    ) or croak "Unable to find an available tcp port: $@";
-
-    my $port = $sock->sockport();
-    $sock->close();
-
-    return $port;
-}
+# THESE MUST BE IMPLEMENTED IN THE DERIVED CLASSES
+sub create_database { die "$_[0] doesn't have a create_database() method\n" }
+sub drop_database   { die "$_[0] doesn't have a drop_database() method\n" }
+sub databases       { die "$_[0] doesn't have a databases() method\n" }
 
 'CONNECTION';
 
@@ -206,15 +71,24 @@ Test::Database::Driver - Base class for Test::Database drivers
     
     use Test::Database::Driver;
     our @ISA = qw( Test::Database::Driver );
+
+    __PACKAGE__->__init();
     
-    sub start_server { ... }
-
-    sub stop_server  { ... }
-
     sub create_database {
         my ( $class, $name ) = @_;
         ...
         return $handle;
+    }
+
+    sub drop_database {
+        my ( $class, $name ) = @_;
+        ...
+    }
+
+    sub databases {
+        my ( $class ) = @_;
+        ...
+        return @databases;
     }
 
 =head1 DESCRIPTION
@@ -234,21 +108,8 @@ The driver's short name (everything after C<Test::Database::Driver::>).
 
 =item base_dir()
 
-The directory where the driver should store all the files for its databases.
-Typically used to configure the DSN or the database engine.
-
-=item handle( [ $name ] )
-
-Return a C<Test::Database::Handle> object for a database named C<$name>.
-If C<$name> is not given, the name C<test_database> is used.
-
-=item cleanup()
-
-Delete the C<base_dir()> directory and its content.
-
-When called on C<Test::Database> directly, it will delete the main
-directory that contains all the individual directories used by
-C<Test::Database> drivers.
+The directory where the driver should store all the files for its databases,
+if needed. Typically used by file-based database drivers.
 
 =back
 
@@ -257,41 +118,11 @@ authors:
 
 =over 4
 
-=item init()
+=item __init()
 
 The method does the general configuration needed for a database driver.
-All drivers should start by calling C<< __PACKAGE__->init() >> to ensure
+All drivers should start by calling C<< __PACKAGE__->__init() >> to ensure
 they have been correctly initialized.
-
-=item username()
-
-Return the username of the user running the current program.
-
-=item run_cmd( $cmd, @args )
-
-Run the requested command using C<system()>. Will C<die()> in case of
-a problem (non-zero exit status, signal).
-
-=item spawn_cmd( $cmd, @args )
-
-Create a new process to run the requested command.
-Will C<die()> in case of a problem.
-
-Will use C<fork()>+C<exec()> on Unix systems, and
-C<Win32::Process::Create> under Win32 systems.
-
-=item available_port()
-
-Return an available TCP port (useful for setting up a TCP server).
-
-=item is_initialized()
-
-=item is_engine_setup()
-
-=item is_engine_started()
-
-Routines that let the driver know if the driver has been initialized, or
-if engine has been setup or started. (Used internally.)
 
 =back
 
@@ -301,40 +132,20 @@ Creating a driver requires writing the following methods:
 
 =over 4
 
-=item setup_engine()
-
-Setup the corresponding database engine, and return a true value
-corresponding to the configuration information needed to start the
-database engine and to create new databases.
-
-=item start_engine( $config )
-
-Start the corresponding database engine, and return a true value if the
-server was successfully started (meaning it will need to be stopped).
-
-C<$config> is the return value from C<setup_engine()>.
-
-C<Test::Database::Driver> provides a default implementation if no startup
-is required.
-
-=item stop_engine( $info )
-
-Stops a running database engine.
-
-C<$info> is the return value of C<start_server()>, which allows driver
-authors to pass information to the C<stop_engine()> method.
-
-C<Test::Database::Driver> provides a default implementation if no shutdown
-is required.
-
-=item create_database( $config, $name )
+=item create_database( $name )
 
 Create the database for the corresponding DBD driver.
 
-C<$config> is the return value from C<setup_engine()>.
-
 Return a C<Test::Database::Handle> in case of success, and nothing in
 case of failure to create the database.
+
+=item drop_database( $name )
+
+Drop the database named C<$name>.
+
+=item databases()
+
+Return the names of all existing databases for this driver as a list.
 
 =back
 
@@ -344,7 +155,7 @@ Philippe Bruhat (BooK), C<< <book@cpan.org> >>
 
 =head1 COPYRIGHT
 
-Copyright 2008 Philippe Bruhat (BooK), all rights reserved.
+Copyright 2008-2009 Philippe Bruhat (BooK), all rights reserved.
 
 =head1 LICENSE
 

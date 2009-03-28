@@ -4,6 +4,7 @@ use warnings;
 use Carp;
 use File::Spec;
 use File::Path;
+use version;
 
 #
 # global configuration
@@ -50,10 +51,16 @@ sub base_dir {
         : File::Spec->catdir( $root, $_[0]->name() );
 }
 
+sub version {
+    my ($self) = @_;
+    return $self->{version} ||= version->new( $self->_version() );
+}
+
 # THESE MUST BE IMPLEMENTED IN THE DERIVED CLASSES
 sub create_database { die "$_[0] doesn't have a create_database() method\n" }
 sub drop_database   { die "$_[0] doesn't have a drop_database() method\n" }
 sub databases       { die "$_[0] doesn't have a databases() method\n" }
+sub _version        { die "$_[0] doesn't have a _version() method\n" }
 
 'CONNECTION';
 

@@ -31,6 +31,6 @@ pod_coverage_ok($_) for @modules;
 
 # the drivers methods are documented Test::Database::Driver
 pod_coverage_ok( $_,
-    { trustme => [qr/^(?:(?:setup|start|stop)_engine|create_database)$/] } )
+    { trustme => [qr/^(?:(?:create|drop)_database|databases|is_filebased)$/] } )
     for @drivers;
 

@@ -14,10 +14,15 @@ sub _version { return Text::CSV_XS->VERSION; }
 
 sub create_database {
     my ( $self, $dbname ) = @_;
+    $dbname ||= $self->available_dbname();
     my $dbdir = File::Spec->catdir( $self->base_dir(), $dbname );
     mkpath( [$dbdir] );
 
-    return Test::Database::Handle->new( dsn => "dbi:CSV:f_dir=$dbdir" );
+    return Test::Database::Handle->new(
+        dsn    => "dbi:CSV:f_dir=$dbdir",
+        name   => $dbname,
+        driver => $self,
+    );
 }
 
 sub drop_database {

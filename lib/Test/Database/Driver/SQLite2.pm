@@ -14,9 +14,14 @@ sub _version { return DBI->connect( $_[0]->dsn() )->{sqlite_version}; }
 
 sub create_database {
     my ( $self, $dbname ) = @_;
+    $dbname ||= $self->available_dbname();
     my $dbfile = File::Spec->catfile( $self->base_dir(), $dbname );
 
-    return Test::Database::Handle->new( dsn => "dbi:SQLite2:dbname=$dbfile" );
+    return Test::Database::Handle->new(
+        dsn    => "dbi:SQLite2:dbname=$dbfile",
+        name   => $dbname,
+        driver => $self,
+    );
 }
 
 sub drop_database {

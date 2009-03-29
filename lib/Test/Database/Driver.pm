@@ -92,6 +92,14 @@ sub _filebased_databases {
     return @databases;
 }
 
+sub available_dbname {
+    my ($self) = @_;
+    my $name = join '_', 'Test', 'Database', $self->name(), '0';
+    my %taken = map { $_ => 1 } $self->databases();
+    $name++ while $taken{$name};
+    return $name;
+}
+
 sub _quote {
     my ($string) = @_;
     return $string if $string =~ /^\w+$/;

@@ -6,7 +6,7 @@ use File::Spec;
 use DBI;
 use Carp;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use Exporter;
 our @ISA = qw( Exporter );
@@ -24,52 +24,71 @@ use Test::Database::Driver;
 # driver information
 #
 my @DRIVERS;
-my @ALL_DRIVERS;
-my %DBI_DRIVERS = map { $_ => 1 } DBI->available_drivers();
+my @DRIVERS_OUR;
+my %DRIVERS_DBI = map { $_ => 1 } DBI->available_drivers();
+my @DRIVERS_OK;
 
 # find the list of all drivers we support
-for my $dir (@INC) {
-    opendir my $dh, File::Spec->catdir( $dir, qw< Test Database Driver > )
-        or next;
-    push @ALL_DRIVERS, map { s/\.pm$//; $_ } grep {/\.pm$/} readdir $dh;
-    closedir $dh;
+{
+    my %seen;
+    for my $dir (@INC) {
+        opendir my $dh, File::Spec->catdir( $dir, qw< Test Database Driver > )
+            or next;
+        $seen{$_}++ for map { s/\.pm$//; $_ } grep {/\.pm$/} readdir $dh;
+        closedir $dh;
+    }
+    @DRIVERS_OUR = sort keys %seen;
 }
 
-@ALL_DRIVERS = do {
-    my %seen;
-    sort grep { !$seen{$_}++ } @ALL_DRIVERS;
-};
-@DRIVERS = grep { exists $DBI_DRIVERS{$_} } @ALL_DRIVERS;
+@DRIVERS_OK = grep { exists $DRIVERS_DBI{$_} } @DRIVERS_OUR;
 
-sub available_drivers { return @ALL_DRIVERS }
+# automatically load all drivers in @DRIVERS_OK
+# (but ignore compilation errors)
+eval "require Test::Database::Driver::$_" for @DRIVERS_OK;
 
-sub drivers {
-    my ( $class, @requested ) = @_;
-    return @DRIVERS if !@requested;
+# load all file-based drivers
+push @DRIVERS, map { Test::Database::Driver->new( driver => $_ ) }
+    grep { "Test::Database::Driver::$_"->is_filebased() } @DRIVERS_OK;
 
     my %requested = map { $_ => '' } @requested;
     return grep { exists $requested{$_} } @DRIVERS;
 }
 
 #
-# methods delegated to the handle
+# methods
 #
-for my $attr ( 'handle', @attributes ) {
-    no strict 'refs';
-    *{"test_db_$attr"} = sub { __PACKAGE__->$attr(@_) };
+sub unload_drivers { @DRIVERS = (); }
 
-    next if $attr eq 'handle';    # skip this one
-    *{$attr} = sub {
-        my $class = shift;
-        return $class->handle(@_)->$attr;
-    };
+sub all_drivers { return @DRIVERS_OUR }
+
+sub available_drivers { return @DRIVERS_OK }
+
+sub drivers {
+    my ( $class, @requests ) = @_;
+    return @DRIVERS if !@requests;
+
+    my @drivers;
+    for my $request (@requests) {
+        $request = { driver => $request } if !ref $request;
+        for my $driver ( grep { $_->{driver} eq $request->{driver} }
+            @DRIVERS )
+        {
+            next
+                if exists $request->{min_version}
+                    && $driver->{version} < $request->{min_version};
+            next
+                if exists $request->{max_version}
+                    && $driver->{version} > $request->{max_version};
+            push @drivers, $driver;
+        }
+    }
+
+    my %seen;
+    return grep { !$seen{$_}++ } @drivers;
 }
 
 sub handle {
-    my ( $class, $driver, $name ) = @_;
-
-    eval "use Test::Database::Driver::$driver; 1;"
-        or croak $@ =~ /^(.*) at /g;
+    my ( $class, $driver, $name ) = @_
 
     return "Test::Database::Driver::$driver"->handle($name);
 }
@@ -169,20 +188,23 @@ C<Test::Database> provides the following methods:
 
 =over 4
 
+=item all_drivers()
+
+Return the list of supported drivers.
+
 =item available_drivers()
 
 Return the list of supported DBI drivers.
 
-=item drivers( @list )
+This is the intersection of the results of
+C<< Test::Database->all_drivers() >> and C<< DBI->available_drivers() >>.
+
+=item drivers( @requests )
 
 Return the list of supported DBI drivers that have been detected as installed.
 
-This is the intersection of the results of
-C<< Test::Database->available_drivers() >> and 
-C<< DBI->available_drivers() >>.
-
-If C<@list> is provided, only the available drivers in the list are
-returned.
+If C<@requests> is provided, only the drivers that match one of the
+requests are returned.
 
 =item handle( $driver [, $name ] )
 

@@ -25,7 +25,7 @@ sub __init {
     # create directory if needed
     my $dir = $class->base_dir();
     if ( !-e $dir ) {
-        mkpath [$dir];
+        mkpath( [$dir] );
     }
     elsif ( !-d $dir ) {
         croak "$dir is not a directory. Initializing $class failed";

@@ -7,7 +7,6 @@ use File::Path;
 
 use Test::Database::Driver;
 our @ISA = qw( Test::Database::Driver );
-__PACKAGE__->__init();
 
 sub is_filebased {1}
 

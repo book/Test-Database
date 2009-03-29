@@ -4,7 +4,6 @@ use warnings;
 
 use Test::Database::Driver;
 our @ISA = qw( Test::Database::Driver );
-__PACKAGE__->__init();
 
 use DBI;
 use File::Spec;

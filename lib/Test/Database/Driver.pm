@@ -130,8 +130,6 @@ Test::Database::Driver - Base class for Test::Database drivers
     use Test::Database::Driver;
     our @ISA = qw( Test::Database::Driver );
 
-    __PACKAGE__->__init();
-
     sub _version {
         my ($class) = @_;
         ...;

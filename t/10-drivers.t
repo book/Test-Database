@@ -9,6 +9,8 @@ my @drivers = Test::Database->all_drivers();
 plan tests => @drivers * ( 1 + 2 * 9 ) + 1;
 
 my $base = 'Test::Database::Driver';
+$base->cleanup();
+ok( !-d $base->base_dir(), "no base_dir() " . $base->base_dir() );
 
 for my $name ( Test::Database->all_drivers() ) {
     my $class = "Test::Database::Driver::$name";
@@ -40,7 +42,4 @@ for my $name ( Test::Database->all_drivers() ) {
         ok( $driver->dsn(), "$desc has a dsn()" );
     }
 }
-
-$base->cleanup();
-ok( !-d $base->base_dir(), "removed " . $base->base_dir() );
 

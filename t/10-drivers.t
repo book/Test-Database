@@ -6,7 +6,7 @@ use Test::Database::Driver;
 
 my @drivers = Test::Database->all_drivers();
 
-plan tests => @drivers * ( 1 + 2 * 8 ) + 1;
+plan tests => @drivers * ( 1 + 2 * 9 ) + 1;
 
 my $base = 'Test::Database::Driver';
 
@@ -26,7 +26,9 @@ for my $name ( Test::Database->all_drivers() ) {
         isa_ok( $driver, $class, $desc );
         is( $driver->name(), $name, "$desc has the expected name()" );
         my $dir = $driver->base_dir();
-        ok( $dir,    "$desc has a base_dir(): $dir" );
+        ok( $dir, "$desc has a base_dir(): $dir" );
+        like( $dir, qr/Test-Database-.*\Q$name\E/,
+            "$desc\'s base_dir() looks like expected" );
         ok( -d $dir, "$desc base_dir() is a directory" );
         my $version;
         ok( eval { $version = $driver->version() },
@@ -40,5 +42,5 @@ for my $name ( Test::Database->all_drivers() ) {
 }
 
 $base->cleanup();
-ok( ! -d $base->base_dir(), "removed " . $base->base_dir() );
+ok( !-d $base->base_dir(), "removed " . $base->base_dir() );
 

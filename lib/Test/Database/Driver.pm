@@ -43,6 +43,7 @@ sub new {
         eval "require Test::Database::Driver::$args{driver}"
             or croak $@;
         $class = "Test::Database::Driver::$args{driver}";
+        $class->__init();    # survive a cleanup()
     }
     bless {
         username => '',

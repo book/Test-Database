@@ -94,8 +94,8 @@ sub _filebased_databases {
 
 sub as_string {
     return join '',
-        map( { "$_ = " . $_[0]->$_ . "\n" } qw< dsn username password > ),
-        "\n";
+        map { "$_ = " . ( $_[0]{$_} || '' ) . "\n" }
+        driver => $_[0]->essentials();
 }
 
 # THESE MUST BE IMPLEMENTED IN THE DERIVED CLASSES
@@ -108,6 +108,7 @@ sub databases       {
 }
 
 # THESE MAY BE OVERRIDDEN IN THE DERIVED CLASSES
+sub essentials   { }
 sub is_filebased {0}
 sub _dsn { join ':', 'dbi', $_[0]->name(), ''; }
 
@@ -210,6 +211,11 @@ Return the connection information triplet (C<dsn>, C<username>, C<password>).
 Return a boolean value indicating if the database engine is file-based
 or not, i.e. if all the database information is stored in a file or a
 directory, and no external database server is needed.
+
+=item as_string()
+
+Return a string representation of the C<Test::Database::Driver>,
+suitable to be saved in a configuration file.
 
 =item cleanup()
 

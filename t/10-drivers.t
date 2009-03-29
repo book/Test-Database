@@ -56,8 +56,8 @@ for my $name ( Test::Database->all_drivers() ) {
         );
 
         # as_string
-        my $re = join '', map { "$_ = .*\n" } qw< dsn username password >;
-        like( $driver->as_string(), qr/\A$re\n\z/, "$desc as string" );
+        my $re = join '', map { "$_ = .*\n" } driver => $driver->essentials();
+        like( $driver->as_string(), qr/\A$re\z/, "$desc as string" );
     }
 }
 

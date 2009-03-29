@@ -4,14 +4,26 @@ use warnings;
 
 use Test::Database::Driver;
 our @ISA = qw( Test::Database::Driver );
+__PACKAGE__->__init();
 
+use DBI;
 use File::Spec;
 
-sub create_database {
-    my ( $class, $config, $dbname ) = @_;
-    my $dbfile = File::Spec->catfile( $class->base_dir(), $dbname );
+sub is_filebased {1}
 
-    return Test::Database::Handle->new( dsn => "dbi:SQLite:dbname=$dbfile", );
+sub _version { return DBI->connect( $_[0]->dsn() )->{sqlite_version}; }
+
+sub create_database {
+    my ( $self, $dbname ) = @_;
+    my $dbfile = File::Spec->catfile( $self->base_dir(), $dbname );
+
+    return Test::Database::Handle->new( dsn => "dbi:SQLite:dbname=$dbfile" );
+}
+
+sub drop_database {
+    my ( $self, $dbname ) = @_;
+    my $dbfile = File::Spec->catfile( $self->base_dir(), $dbname );
+    unlink $dbfile;
 }
 
 'SQLite';

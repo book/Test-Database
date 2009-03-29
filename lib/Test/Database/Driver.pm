@@ -92,9 +92,29 @@ sub _filebased_databases {
     return @databases;
 }
 
+sub _quote {
+    my ($string) = @_;
+    return $string if $string =~ /^\w+$/;
+
+    $string =~ s/\\/\\\\/g;
+    $string =~ s/"/\\"/g;
+    $string =~ s/\n/\\n/g;
+    return qq<"$string">;
+}
+
+sub _unquote {
+    my ($string) = @_;
+    return $string if $string !~ /\A(["']).*\1\z/s;
+
+    my $quote = chop $string;
+    $string = substr( $string, 1);
+    $string =~ s/\\(.)/$1 eq 'n' ? "\n" : $1/eg;
+    return $string;
+}
+
 sub as_string {
     return join '',
-        map { "$_ = " . ( $_[0]{$_} || '' ) . "\n" }
+        map { "$_ = " . _quote( $_[0]{$_} || '' ) . "\n" }
         driver => $_[0]->essentials();
 }
 

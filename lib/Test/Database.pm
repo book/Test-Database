@@ -127,13 +127,20 @@ sub drivers {
     return grep { !$seen{$_}++ } @drivers;
 }
 
-sub handle {
-    my ( $class, $driver, $name ) = @_
+sub handles {
+    my ( $class, @requests ) = @_;
 
-    return "Test::Database::Driver::$driver"->handle($name);
+    # first filter on the drivers
+    my @drivers = $class->drivers(@requests);
+
+    # then on the handles
+    return map { $_->handles(@requests) } @drivers;
 }
 
-sub cleanup { Test::Database::Driver->cleanup(); }
+sub dbh {
+    my ( $class, @requests ) = @_;
+    return map { $_->dbh() } $class->handles(@requests);
+}
 
 'TRUE';
 
@@ -280,10 +287,6 @@ Shortcut methods for:
     Test::Database->handle( $driver [, $name ] )->password();
 
 See C<Test::Database::Handle> for details.
-
-=item cleanup()
-
-Remove the directory used by C<Test::Database> drivers.
 
 =back
 

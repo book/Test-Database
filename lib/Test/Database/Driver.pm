@@ -97,26 +97,32 @@ Test::Database::Driver - Base class for Test::Database drivers
     package Test::Database::Driver::MyDatabase;
     use strict;
     use warnings;
-    
+
     use Test::Database::Driver;
     our @ISA = qw( Test::Database::Driver );
 
     __PACKAGE__->__init();
-    
+
+    sub _version {
+        my ($class) = @_;
+        ...;
+        return $version;
+    }
+
     sub create_database {
         my ( $class, $name ) = @_;
-        ...
+        ...;
         return $handle;
     }
 
     sub drop_database {
         my ( $class, $name ) = @_;
-        ...
+        ...;
     }
 
     sub databases {
-        my ( $class ) = @_;
-        ...
+        my ($class) = @_;
+        ...;
         return @databases;
     }
 
@@ -131,6 +137,13 @@ The class provides the following methods:
 
 =over 4
 
+=item new( %args )
+
+Create a new C<Test::Database::Driver> object.
+
+If called as C<< Test::Database::Driver->new() >>, requires a C<driver>
+parameter to define the actual object class.
+
 =item name()
 
 The driver's short name (everything after C<Test::Database::Driver::>).
@@ -139,6 +152,41 @@ The driver's short name (everything after C<Test::Database::Driver::>).
 
 The directory where the driver should store all the files for its databases,
 if needed. Typically used by file-based database drivers.
+
+=item version()
+
+C<version> object representing the version of the underlying database enginge.
+This object is build with the return value of C<_version()>.
+
+=item drh()
+
+The DBI driver for this driver.
+
+=item dsn()
+
+Return the Data Source Name.
+
+=item username()
+
+Return the connection username.
+
+=item password()
+
+Return the connection password.
+
+=item connection_info()
+
+Return the connection information triplet (C<dsn>, C<username>, C<password>).
+
+=item is_filebased()
+
+Return a boolean value indicating if the database engine is file-based
+or not, i.e. if all the database information is stored in a file or a
+directory, and no external database server is needed.
+
+=item cleanup()
+
+Remove the directory used by C<Test::Database> drivers.
 
 =back
 
@@ -160,6 +208,10 @@ they have been correctly initialized.
 Creating a driver requires writing the following methods:
 
 =over 4
+
+=item _version()
+
+Return the version of the underlying database engine.
 
 =item create_database( $name )
 

@@ -92,6 +92,12 @@ sub _filebased_databases {
     return @databases;
 }
 
+sub as_string {
+    return join '',
+        map( { "$_ = " . $_[0]->$_ . "\n" } qw< dsn username password > ),
+        "\n";
+}
+
 # THESE MUST BE IMPLEMENTED IN THE DERIVED CLASSES
 sub create_database { die "$_[0] doesn't have a create_database() method\n" }
 sub drop_database   { die "$_[0] doesn't have a drop_database() method\n" }

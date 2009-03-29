@@ -10,11 +10,10 @@ use version;
 # global configuration
 #
 # the location where all drivers-related files will be stored
-my $root = File::Spec->rel2abs(
-    File::Spec->catdir(
-        File::Spec->tmpdir(), 'Test-Database-' . getlogin()
-    )
-);
+my $root
+    = File::Spec->rel2abs(
+    File::Spec->catdir( File::Spec->tmpdir(), 'Test-Database-' . getlogin() )
+    );
 
 # some information stores, indexed by driver class name
 my %drh;
@@ -26,24 +25,32 @@ sub __init {
     # create directory if needed
     my $dir = $class->base_dir();
     if ( !-e $dir ) {
-        mkpath $dir;
+        mkpath [$dir];
     }
     elsif ( !-d $dir ) {
         croak "$dir is not a directory. Initializing $class failed";
     }
 
     # load the DBI driver
-    $drh{$class} = DBI->install_driver( $class->name() );
+    $drh{ $class->name() } ||= DBI->install_driver( $class->name() );
 }
 
 sub new {
     my ( $class, %args ) = @_;
-    bless {%args}, $class;
+
+    if ( $class eq __PACKAGE__ ) {
+        croak "No driver defined" if !exists $args{driver};
+        eval "require Test::Database::Driver::$args{driver}"
+            or croak $@;
+        $class = "Test::Database::Driver::$args{driver}";
+    }
+    bless { %args, driver => $class->name() }, $class;
 }
 
-sub name { return ( $_[0] =~ /^Test::Database::Driver::(.*)/g )[0]; }
-
-sub drh { return $drh{ $_[0]->name() } }
+#
+# accessors
+#
+sub name { return ( $_[0] =~ /^Test::Database::Driver::([:\w]*)/g )[0]; }
 
 sub base_dir {
     return $_[0] eq __PACKAGE__
@@ -52,15 +59,30 @@ sub base_dir {
 }
 
 sub version {
-    my ($self) = @_;
-    return $self->{version} ||= version->new( $self->_version() );
+    no warnings;
+    return $_[0]{version} ||= version->new( $_[0]->_version() );
 }
+
+sub drh      { return $drh{ $_[0]->name() } }
+sub dsn      { return $_[0]{dsn} ||= $_[0]->_dsn() }
+sub username { return $_[0]{username} ||= '' }
+sub password { return $_[0]{password} ||= '' }
+
+sub connection_info {
+    return ( $_[0]->dsn(), $_[0]->username(), $_[0]->password() );
+}
+
+sub cleanup { rmtree $_[0]->base_dir(); }
 
 # THESE MUST BE IMPLEMENTED IN THE DERIVED CLASSES
 sub create_database { die "$_[0] doesn't have a create_database() method\n" }
 sub drop_database   { die "$_[0] doesn't have a drop_database() method\n" }
 sub databases       { die "$_[0] doesn't have a databases() method\n" }
 sub _version        { die "$_[0] doesn't have a _version() method\n" }
+
+# THESE MAY BE OVERRIDDEN IN THE DERIVED CLASSES
+sub is_filebased {0}
+sub _dsn { join ':', 'dbi', $_[0]->name(), ''; }
 
 'CONNECTION';
 

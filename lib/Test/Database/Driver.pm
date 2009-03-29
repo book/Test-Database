@@ -102,7 +102,8 @@ sub as_string {
 sub create_database { die "$_[0] doesn't have a create_database() method\n" }
 sub drop_database   { die "$_[0] doesn't have a drop_database() method\n" }
 sub _version        { die "$_[0] doesn't have a _version() method\n" }
-sub databases       {
+
+sub databases {
     goto &_filebased_databases if $_[0]->is_filebased();
     die "$_[0] doesn't have a databases() method\n";
 }
@@ -110,7 +111,7 @@ sub databases       {
 # THESE MAY BE OVERRIDDEN IN THE DERIVED CLASSES
 sub essentials   { }
 sub is_filebased {0}
-sub _dsn { join ':', 'dbi', $_[0]->name(), ''; }
+sub _dsn         { join ':', 'dbi', $_[0]->name(), ''; }
 
 'CONNECTION';
 
@@ -238,6 +239,9 @@ they have been correctly initialized.
 
 =head1 WRITING A DRIVER FOR YOUR DATABASE OF CHOICE
 
+The L<SYNOPSIS> contains a good template for writing a
+C<Test::Database::Driver> class.
+
 Creating a driver requires writing the following methods:
 
 =over 4
@@ -257,9 +261,21 @@ case of failure to create the database.
 
 Drop the database named C<$name>.
 
+=back
+
+Some methods have defaults implementations in C<Test::Database::Driver>,
+but those can be overridden in the derived class:
+
+=over 4
+
+=item essentials()
+
+Return the I<essential> fields needed to serialize the driver.
+
 =item databases()
 
-Return the names of all existing databases for this driver as a list.
+Return the names of all existing databases for this driver as a list
+(the default implementation is only valid for file-based drivers).
 
 =back
 

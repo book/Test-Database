@@ -2,21 +2,12 @@ package Test::Database;
 use warnings;
 use strict;
 
+use File::HomeDir;
 use File::Spec;
 use DBI;
 use Carp;
 
 our $VERSION = '0.03';
-
-use Exporter;
-our @ISA = qw( Exporter );
-
-our @EXPORT_OK = (
-    'test_db_handle',
-    map {"test_db_$_"} my @attributes
-        = qw( dbh dsn username password connection_info )
-);
-our %EXPORT_TAGS = ( all => \@EXPORT_OK );
 
 use Test::Database::Driver;
 
@@ -50,8 +41,16 @@ eval "require Test::Database::Driver::$_" for @DRIVERS_OK;
 push @DRIVERS, map { Test::Database::Driver->new( driver => $_ ) }
     grep { "Test::Database::Driver::$_"->is_filebased() } @DRIVERS_OK;
 
-    my %requested = map { $_ => '' } @requested;
-    return grep { exists $requested{$_} } @DRIVERS;
+#
+# private functions
+#
+sub _rcfile {
+    File::Spec->catfile( File::HomeDir->my_data(), '.test-database' );
+}
+
+sub _canonicalize_drivers {
+    my %seen;
+    @DRIVERS = grep { !$seen{ $_->as_string() }++ } @DRIVERS;
 }
 
 #
@@ -62,6 +61,47 @@ sub unload_drivers { @DRIVERS = (); }
 sub all_drivers { return @DRIVERS_OUR }
 
 sub available_drivers { return @DRIVERS_OK }
+
+sub save_drivers {
+    my ( $class, $file ) = @_;
+    $file ||= _rcfile();
+
+    _canonicalize_drivers();
+    open my $fh, '>', $file or croak "Can't open $file for writing: $!";
+    print $fh map { $_->as_string, "\n" } @DRIVERS;
+    close $fh;
+}
+
+sub load_drivers {
+    my ( $class, $file ) = @_;
+    $file ||= _rcfile();
+
+    my %args;
+    open my $fh, '<', $file or croak "Can't open $file for reading: $!";
+    while (<$fh>) {
+        next if /^\s*(?:#|$)/;    # skip blank lines and comments
+
+        /\s*(\w+)\s*=\s*(.*)\s*/ && do {
+            my ( $key, $value ) = ( $1, $2 );
+            $value = Test::Database::Driver::_unquote( $value )
+                 if $value =~ /\A["']/;
+            if ( $key eq 'driver' && keys %args ) {
+                push @DRIVERS, Test::Database::Driver->new(%args);
+                %args = ();
+            }
+            $args{$key} = $value;
+            next;
+            };
+
+        # unknown line
+        croak "Can't parse line at $file, line $.:\n$_\n ";
+    }
+    push @DRIVERS, Test::Database::Driver->new(%args)
+        if keys %args;
+    close $fh;
+
+    _canonicalize_drivers();
+}
 
 sub drivers {
     my ( $class, @requests ) = @_;

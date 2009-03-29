@@ -2,16 +2,29 @@ package Test::Database::Driver::CSV;
 use strict;
 use warnings;
 
+use File::Spec;
+use File::Path;
+
 use Test::Database::Driver;
 our @ISA = qw( Test::Database::Driver );
+__PACKAGE__->__init();
 
-use File::Spec;
+sub is_filebased {1}
+
+sub _version { return Text::CSV_XS->VERSION; }
 
 sub create_database {
-    my ( $class, $config, $dbname ) = @_;
-    my $dbdir = File::Spec->catdir( $class->base_dir(), $dbname );
+    my ( $self, $dbname ) = @_;
+    my $dbdir = File::Spec->catdir( $self->base_dir(), $dbname );
+    mkpath( [$dbdir] );
 
     return Test::Database::Handle->new( dsn => "dbi:CSV:f_dir=$dbdir" );
+}
+
+sub drop_database {
+    my ( $self, $dbname ) = @_;
+    my $dbdir = File::Spec->catdir( $self->base_dir(), $dbname );
+    rmtree($dbdir);
 }
 
 'CSV';

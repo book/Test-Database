@@ -74,11 +74,25 @@ sub connection_info {
 
 sub cleanup { rmtree $_[0]->base_dir(); }
 
+sub _filebased_databases {
+    my ($self) = @_;
+    my $dir = $self->base_dir();
+
+    opendir my $dh, $dir or croak "Can't open directory $dir for reading: $!";
+    my @databases = File::Spec->no_upwards( readdir($dh) );
+    closedir $dh;
+
+    return @databases;
+}
+
 # THESE MUST BE IMPLEMENTED IN THE DERIVED CLASSES
 sub create_database { die "$_[0] doesn't have a create_database() method\n" }
 sub drop_database   { die "$_[0] doesn't have a drop_database() method\n" }
-sub databases       { die "$_[0] doesn't have a databases() method\n" }
 sub _version        { die "$_[0] doesn't have a _version() method\n" }
+sub databases       {
+    goto &_filebased_databases if $_[0]->is_filebased();
+    die "$_[0] doesn't have a databases() method\n";
+}
 
 # THESE MAY BE OVERRIDDEN IN THE DERIVED CLASSES
 sub is_filebased {0}

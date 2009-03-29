@@ -44,7 +44,13 @@ sub new {
             or croak $@;
         $class = "Test::Database::Driver::$args{driver}";
     }
-    bless { %args, driver => $class->name() }, $class;
+    bless {
+        username => '',
+        password => '',
+        %args,
+        driver => $class->name()
+        },
+        $class;
 }
 
 #
@@ -65,8 +71,8 @@ sub version {
 
 sub drh      { return $drh{ $_[0]->name() } }
 sub dsn      { return $_[0]{dsn} ||= $_[0]->_dsn() }
-sub username { return $_[0]{username} ||= '' }
-sub password { return $_[0]{password} ||= '' }
+sub username { return $_[0]{username} }
+sub password { return $_[0]{password} }
 
 sub connection_info {
     return ( $_[0]->dsn(), $_[0]->username(), $_[0]->password() );

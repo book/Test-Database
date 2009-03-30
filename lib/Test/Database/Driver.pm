@@ -156,6 +156,16 @@ sub handles {
     return map { $self->create_database( $_, $keep{$_} ) } keys %keep;
 }
 
+my @DROP;
+sub register_drop { push @DROP, [@_]; }
+
+END {
+    for my $drop (@DROP) {
+        my ( $driver, $dbname ) = @$drop;
+        $driver->drop_database($dbname);
+    }
+}
+
 # THESE MUST BE IMPLEMENTED IN THE DERIVED CLASSES
 sub create_database { die "$_[0] doesn't have a create_database() method\n" }
 sub drop_database   { die "$_[0] doesn't have a drop_database() method\n" }

@@ -25,18 +25,23 @@ sub __init {
     my ($class) = @_;
 
     # create directory if needed
-    my $dir = $class->base_dir();
-    if ( !-e $dir ) {
-        mkpath( [$dir] );
-    }
-    elsif ( !-d $dir ) {
-        croak "$dir is not a directory. Initializing $class failed";
+    if ( $class->is_filebased() ) {
+        my $dir = $class->base_dir();
+        if ( !-e $dir ) {
+            mkpath( [$dir] );
+        }
+        elsif ( !-d $dir ) {
+            croak "$dir is not a directory. Initializing $class failed";
+        }
     }
 
     # load the DBI driver
     $drh{ $class->name() } ||= DBI->install_driver( $class->name() );
 }
 
+#
+# METHODS
+#
 sub new {
     my ( $class, %args ) = @_;
 
@@ -57,43 +62,7 @@ sub new {
         $class;
 }
 
-#
-# accessors
-#
-sub name { return ( $_[0] =~ /^Test::Database::Driver::([:\w]*)/g )[0]; }
-
-sub base_dir {
-    return $_[0] eq __PACKAGE__
-        ? $root
-        : File::Spec->catdir( $root, $_[0]->name() );
-}
-
-sub version {
-    no warnings;
-    return $_[0]{version} ||= version->new( $_[0]->_version() );
-}
-
-sub drh      { return $drh{ $_[0]->name() } }
-sub bare_dsn { return $_[0]{dsn} ||= $_[0]->_bare_dsn() }
-sub username { return $_[0]{username} }
-sub password { return $_[0]{password} }
-
-sub connection_info {
-    return ( $_[0]->bare_dsn(), $_[0]->username(), $_[0]->password() );
-}
-
-sub cleanup { rmtree $_[0]->base_dir(); }
-
-sub _filebased_databases {
-    my ($self) = @_;
-    my $dir = $self->base_dir();
-
-    opendir my $dh, $dir or croak "Can't open directory $dir for reading: $!";
-    my @databases = File::Spec->no_upwards( readdir($dh) );
-    closedir $dh;
-
-    return @databases;
-}
+sub cleanup { rmtree $_[0]->base_dir() if $_[0]->is_filebased(); }
 
 sub available_dbname {
     my ($self) = @_;
@@ -104,39 +73,10 @@ sub available_dbname {
     return "$name$n";
 }
 
-sub _quote {
-    my ($string) = @_;
-    return $string if $string =~ /^\w+$/;
-
-    $string =~ s/\\/\\\\/g;
-    $string =~ s/"/\\"/g;
-    $string =~ s/\n/\\n/g;
-    return qq<"$string">;
-}
-
-sub _unquote {
-    my ($string) = @_;
-    return $string if $string !~ /\A(["']).*\1\z/s;
-
-    my $quote = chop $string;
-    $string = substr( $string, 1 );
-    $string =~ s/\\(.)/$1 eq 'n' ? "\n" : $1/eg;
-    return $string;
-}
-
 sub as_string {
     return join '',
         map { "$_ = " . _quote( $_[0]{$_} || '' ) . "\n" }
         driver => $_[0]->essentials();
-}
-
-sub _handle {
-    my ( $self, $name ) = @_;
-    return Test::Database::Handle->new(
-        dsn    => $self->dsn($name),
-        name   => $name,
-        driver => $self,
-    );
 }
 
 sub handles {
@@ -168,6 +108,31 @@ END {
     }
 }
 
+#
+# ACCESSORS
+#
+sub name { return ( $_[0] =~ /^Test::Database::Driver::([:\w]*)/g )[0]; }
+
+sub base_dir {
+    return $_[0] eq __PACKAGE__
+        ? $root
+        : File::Spec->catdir( $root, $_[0]->name() );
+}
+
+sub version {
+    no warnings;
+    return $_[0]{version} ||= version->new( $_[0]->_version() );
+}
+
+sub drh      { return $drh{ $_[0]->name() } }
+sub bare_dsn { return $_[0]{dsn} ||= $_[0]->_bare_dsn() }
+sub username { return $_[0]{username} }
+sub password { return $_[0]{password} }
+
+sub connection_info {
+    return ( $_[0]->bare_dsn(), $_[0]->username(), $_[0]->password() );
+}
+
 # THESE MUST BE IMPLEMENTED IN THE DERIVED CLASSES
 sub create_database { die "$_[0] doesn't have a create_database() method\n" }
 sub drop_database   { die "$_[0] doesn't have a drop_database() method\n" }
@@ -183,6 +148,52 @@ sub databases {
 sub essentials   { }
 sub is_filebased {0}
 sub _bare_dsn    { join ':', 'dbi', $_[0]->name(), ''; }
+
+#
+# PRIVATE METHODS
+#
+sub _filebased_databases {
+    my ($self) = @_;
+    my $dir = $self->base_dir();
+
+    opendir my $dh, $dir or croak "Can't open directory $dir for reading: $!";
+    my @databases = File::Spec->no_upwards( readdir($dh) );
+    closedir $dh;
+
+    return @databases;
+}
+
+sub _handle {
+    my ( $self, $name ) = @_;
+    return Test::Database::Handle->new(
+        dsn    => $self->dsn($name),
+        name   => $name,
+        driver => $self,
+    );
+}
+
+#
+# PRIVATE FUNCTIONS
+#
+sub _quote {
+    my ($string) = @_;
+    return $string if $string =~ /^\w+$/;
+
+    $string =~ s/\\/\\\\/g;
+    $string =~ s/"/\\"/g;
+    $string =~ s/\n/\\n/g;
+    return qq<"$string">;
+}
+
+sub _unquote {
+    my ($string) = @_;
+    return $string if $string !~ /\A(["']).*\1\z/s;
+
+    my $quote = chop $string;
+    $string = substr( $string, 1 );
+    $string =~ s/\\(.)/$1 eq 'n' ? "\n" : $1/eg;
+    return $string;
+}
 
 'CONNECTION';
 

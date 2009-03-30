@@ -254,15 +254,15 @@ Return the list of supported drivers.
 
 =item available_drivers()
 
-Return the list of supported DBI drivers.
+Return the list of supported DBI drivers that are installed.
 
 This is the intersection of the results of
 C<< Test::Database->all_drivers() >> and C<< DBI->available_drivers() >>.
 
 =item drivers( @requests )
 
-Return the C<Test::Database::Driver> objects corresponding to the
-drivers list returned by C<available_drivers()>.
+Return the C<Test::Database::Driver> objects corresponding to
+all the available drivers.
 
 If C<@requests> is provided, only the drivers that match one of the
 requests are returned.
@@ -277,6 +277,8 @@ given C<@requests>.
 If C<@requests> is not provided, return a handle for each database
 that exists in each driver.
 
+See L<REQUESTS> for details about writing requests.
+
 =item dbh( @requests )
 
 Return the DBI database handles for the given C<@requests>.
@@ -284,7 +286,12 @@ Return the DBI database handles for the given C<@requests>.
 It returns a dbh for each handle that would be returned by
 calling C<handles( @requests )>.
 
-See C<Test::Database::Handle> for details.
+See L<REQUESTS> for details about writing requests.
+See C<Test::Database::Handle> for details about handles.
+
+=item cleanup()
+
+Call the C<cleanup()> method of all available drivers.
 
 =back
 

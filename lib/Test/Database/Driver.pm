@@ -62,7 +62,22 @@ sub new {
         $class;
 }
 
-sub cleanup { rmtree $_[0]->base_dir() if $_[0]->is_filebased(); }
+sub cleanup {
+    my ($self) = @_;
+    if ( $self->is_filebased() ) {
+        my $dir = $self->base_dir();
+        for my $entry ( map { File::Spec->catfile( $dir, $_ ) }
+            $self->_filebased_databases() )
+        {
+            if ( -d $entry ) {
+                rmtree( [$entry] );
+            }
+            else {
+                unlink $entry;
+            }
+        }
+    }
+}
 
 sub available_dbname {
     my ($self) = @_;

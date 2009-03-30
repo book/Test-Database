@@ -259,6 +259,23 @@ Return the list of supported DBI drivers that are installed.
 This is the intersection of the results of
 C<< Test::Database->all_drivers() >> and C<< DBI->available_drivers() >>.
 
+=item load_drivers( [ $file ] )
+
+Read the database drivers configuration from the given C<$file> and
+load them.
+
+If C<$file> is not given, the local equivalent of F<~/.test-database> is used.
+
+=item save_drivers( [ $file ] )
+
+Saver the available database drivers configuration to the given C<$file>.
+
+If C<$file> is not given, the local equivalent of F<~/.test-database> is used.
+
+=item unload_drivers()
+
+Unload all drivers.
+
 =item drivers( @requests )
 
 Return the C<Test::Database::Driver> objects corresponding to

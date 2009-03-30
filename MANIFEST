@@ -18,7 +18,6 @@ t/08-handle.t
 t/09-drivers_lists.t
 t/10-drivers.t
 t/11-quote.t
-t/12-load.t
 t/20-sql.t
 t/pod-coverage.t
 t/pod.t

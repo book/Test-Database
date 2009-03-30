@@ -62,6 +62,12 @@ sub databases {
         grep { $_ !~ /^(?:information_schema|mysql)/ } map {@$_} @$databases;
 }
 
+sub cleanup {
+    my ($self) = @_;
+    my $basename = qr/@{[$self->_basename()]}/;
+    $self->drop_database($_) for grep {/$basename/} $self->databases();
+}
+
 'mysql';
 
 __END__

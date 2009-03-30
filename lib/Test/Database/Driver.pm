@@ -66,7 +66,7 @@ sub cleanup { rmtree $_[0]->base_dir() if $_[0]->is_filebased(); }
 
 sub available_dbname {
     my ($self) = @_;
-    my $name = 'Test_Database_' . $self->name() . '_';
+    my $name = $self->_basename();
     my %taken = map { $_ => 1 } $self->databases();
     my $n = 0;
     $n++ while $taken{"$name$n"};
@@ -152,6 +152,8 @@ sub _bare_dsn    { join ':', 'dbi', $_[0]->name(), ''; }
 #
 # PRIVATE METHODS
 #
+sub _basename { return 'Test_Database_' . $_[0]->name() . '_' }
+
 sub _filebased_databases {
     my ($self) = @_;
     my $dir = $self->base_dir();
@@ -358,6 +360,13 @@ Return the I<essential> fields needed to serialize the driver.
 
 Return the names of all existing databases for this driver as a list
 (the default implementation is only valid for file-based drivers).
+
+=item cleanup()
+
+Clean all databases created with names generated with C<available_dbname()>.
+
+For file-based databases, the directory used by the C<Test::Database::Driver>
+subclass will be deleted.
 
 =back
 

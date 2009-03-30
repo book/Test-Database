@@ -41,6 +41,9 @@ eval "require Test::Database::Driver::$_" for @DRIVERS_OK;
 push @DRIVERS, map { Test::Database::Driver->new( driver => $_ ) }
     grep { "Test::Database::Driver::$_"->is_filebased() } @DRIVERS_OK;
 
+# load drivers from configuration
+__PACKAGE__->load_drivers();
+
 #
 # private functions
 #

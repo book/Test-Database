@@ -6,11 +6,9 @@ use Test::Database::Driver;
 
 my @drivers = Test::Database->all_drivers();
 
-plan tests => 1 + @drivers * ( 1 + 2 * 13 );
+plan tests => @drivers * ( 1 + 2 * 13 );
 
 my $base = 'Test::Database::Driver';
-$base->cleanup();
-ok( !-d $base->base_dir(), "no base_dir() " . $base->base_dir() );
 
 for my $name ( Test::Database->all_drivers() ) {
     my $class = "Test::Database::Driver::$name";

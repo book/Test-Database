@@ -295,28 +295,6 @@ Call the C<cleanup()> method of all available drivers.
 
 =back
 
-=head1 EXPORTS
-
-All the methods can be exported as functions (prefixed with C<test_db_>)
-using the C<:all> tag.
-
-So you can either do:
-
-    use Test::Database;
-    my $dbh = Test::Database->dbh( 'SQLite' );
-
-or:
-
-    use Test::Database qw( :all );
-    my $dbh = test_db_dbh( 'SQLite' );
-
-or export only the one you want:
-
-    use Test::Database qw( test_db_dbh );
-    my $dbh = test_db_dbh( 'SQLite' );
-
-=cut
-
 =head1 AUTHOR
 
 Philippe Bruhat (BooK), C<< <book@cpan.org> >>

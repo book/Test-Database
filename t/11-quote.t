@@ -9,7 +9,6 @@ my @strings = (
     'abc def',
     "abc\ndef",
     'abc\def',
-    "abc\def",
     'abc\\def',
     'abc\\\\def',
     'abc\\\\\\def',

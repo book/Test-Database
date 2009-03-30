@@ -97,10 +97,11 @@ sub _filebased_databases {
 
 sub available_dbname {
     my ($self) = @_;
-    my $name = 'TestDatabase' . $self->name() . '0';
+    my $name = 'Test_Database_' . $self->name() . '_';
     my %taken = map { $_ => 1 } $self->databases();
-    $name++ while $taken{$name};
-    return $name;
+    my $n = 0;
+    $n++ while $taken{"$name$n"};
+    return "$name$n";
 }
 
 sub _quote {

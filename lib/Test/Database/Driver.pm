@@ -50,6 +50,7 @@ sub new {
     bless {
         username => '',
         password => '',
+        map ( { $_ => '' } $class->essentials() ),
         %args,
         driver => $class->name()
         },

@@ -356,27 +356,8 @@ Some of the items on the TODO list:
 
 =item *
 
-Allow options to be passed to handle()
-
-At the moment, it's possible to use connection_info() and  pass options
-to DBI->connect() directly.
-
-=item *
-
-Allow C<handle()> to be called with no parameter and return
-a handle to a test database (need to find an ordering scheme for
-the drivers).
-
-=item *
-
-Add support for C<DBI_DSN>. If C<handle()> is called with no parameters,
-or if DBI_DSN matches the requested driver, first use this DSN.
-
-=item *
-
-Add support for a C<Test::Database::Config> module, holding system-wide
-test database configuration. Probably need to create an interactive way
-to set it up.
+Add a database engine autodetection script/module, to automatically
+write the F<.test-database> configuration file.
 
 =back
 

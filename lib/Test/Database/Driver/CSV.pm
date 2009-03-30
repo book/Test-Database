@@ -14,7 +14,7 @@ sub _version { return Text::CSV_XS->VERSION; }
 
 sub create_database {
     my ( $self, $dbname, $keep ) = @_;
-    $dbname ||= $self->available_dbname();
+    $dbname = $self->available_dbname() if !defined $dbname;
 
     my $dbdir = File::Spec->catdir( $self->base_dir(), $dbname );
     mkpath( [$dbdir] );
@@ -30,7 +30,7 @@ sub create_database {
 sub drop_database {
     my ( $self, $dbname ) = @_;
     my $dbdir = File::Spec->catdir( $self->base_dir(), $dbname );
-    rmtree($dbdir);
+    rmtree( [$dbdir] );
 }
 
 'CSV';

@@ -27,7 +27,7 @@ sub essentials {qw< host port username password >}
 
 sub create_database {
     my ( $self, $dbname, $keep ) = @_;
-    $dbname ||= $self->available_dbname();
+    $dbname = $self->available_dbname() if !defined $dbname;
 
     # create the database if it doesn't exist
     $self->drh()

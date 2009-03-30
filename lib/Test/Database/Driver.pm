@@ -306,16 +306,16 @@ Return the connection password.
 Return the connection information triplet (C<bare_dsn>, C<username>,
 C<password>).
 
-=item is_filebased()
-
-Return a boolean value indicating if the database engine is file-based
-or not, i.e. if all the database information is stored in a file or a
-directory, and no external database server is needed.
-
 =item as_string()
 
 Return a string representation of the C<Test::Database::Driver>,
 suitable to be saved in a configuration file.
+
+=item handles( @requests )
+
+Return C<Test::Database::Handler> objects matching the given requests.
+
+If no request is given, return a handler for each of the existing databases.
 
 =item cleanup()
 
@@ -328,11 +328,19 @@ authors:
 
 =over 4
 
-=item __init()
+=item available_dbname()
 
-The method does the general configuration needed for a database driver.
-All drivers should start by calling C<< __PACKAGE__->__init() >> to ensure
-they have been correctly initialized.
+Return an unused database name that can be used to create a new database
+for the driver.
+
+=item dsn( $dbname )
+
+Return a bare Data Source Name, for the database with the given C<$dbname>.
+
+=item register_drop( $dbname )
+
+Register the database with the given C<$dbname> to be dropped automatically
+when the current program ends.
 
 =back
 
@@ -366,6 +374,12 @@ Some methods have defaults implementations in C<Test::Database::Driver>,
 but those can be overridden in the derived class:
 
 =over 4
+
+=item is_filebased()
+
+Return a boolean value indicating if the database engine is file-based
+or not, i.e. if all the database information is stored in a file or a
+directory, and no external database server is needed.
 
 =item essentials()
 

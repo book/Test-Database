@@ -110,6 +110,9 @@ sub drivers {
     my ( $class, @requests ) = @_;
     return @DRIVERS if !@requests;
 
+    # turn strings (driver name) into actual requests
+    @requests = map { (ref) ? $_ : { driver => $_ } } @requests;
+
     my @drivers;
     for my $request (@requests) {
         for my $driver ( grep { $_->{driver} eq $request->{driver} }

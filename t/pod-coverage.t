@@ -17,11 +17,11 @@ plan skip_all => "Pod::Coverage $min_pc required for testing POD coverage"
     if $@;
 
 my @drivers;
-my @modules = 
-    grep { $_ ne 'Test::Database' }
+my @modules
+    = grep { $_ ne 'Test::Database' }
     grep { !/Driver::/ or push @drivers, $_ and 0 } all_modules();
 
-plan tests =>  @modules + @drivers + 1;
+plan tests => @modules + @drivers + 1;
 
 # Test::Database exports are not documented
 pod_coverage_ok( 'Test::Database', { trustme => [qr/^test_db_\w+$/] } );
@@ -30,7 +30,11 @@ pod_coverage_ok( 'Test::Database', { trustme => [qr/^test_db_\w+$/] } );
 pod_coverage_ok($_) for @modules;
 
 # the drivers methods are documented Test::Database::Driver
-pod_coverage_ok( $_,
-    { trustme => [qr/^(?:(?:create|drop)_database|databases|is_filebased)$/] } )
-    for @drivers;
+pod_coverage_ok(
+    $_,
+    {   trustme => [
+            qr/^(?:(?:create|drop)_database|databases|dsn|is_filebased|cleanup|essentials)$/
+        ]
+    }
+) for @drivers;
 

@@ -2,16 +2,36 @@ package Test::Database::Driver::DBM;
 use strict;
 use warnings;
 
+use File::Spec;
+use File::Path;
+use DBD::DBM;
+
 use Test::Database::Driver;
 our @ISA = qw( Test::Database::Driver );
 
-use File::Spec;
+sub is_filebased {1}
+
+sub _version { return DBD::DBM->VERSION; }
 
 sub create_database {
-    my ( $class, $config, $dbname ) = @_;
-    my $dbdir = File::Spec->catdir( $class->base_dir(), $dbname );
+    my ( $self, $dbname, $keep ) = @_;
+    $dbname = $self->available_dbname() if !$dbname;
 
-    return Test::Database::Handle->new( dsn => "dbi:DBM:f_dir=$dbdir" );
+    my $dbdir = File::Spec->catdir( $self->base_dir(), $dbname );
+    mkpath( [$dbdir] );
+    $self->register_drop($dbname) if !$keep;
+
+    return Test::Database::Handle->new(
+        dsn    => "dbi:DBM:f_dir=$dbdir",
+        name   => $dbname,
+        driver => $self,
+    );
+}
+
+sub drop_database {
+    my ( $self, $dbname ) = @_;
+    my $dbdir = File::Spec->catdir( $self->base_dir(), $dbname );
+    rmtree( [$dbdir] );
 }
 
 'DBM';
@@ -41,7 +61,7 @@ Philippe Bruhat (BooK), C<< <book@cpan.org> >>
 
 =head1 COPYRIGHT
 
-Copyright 2008 Philippe Bruhat (BooK), all rights reserved.
+Copyright 2008-2009 Philippe Bruhat (BooK), all rights reserved.
 
 =head1 LICENSE
 

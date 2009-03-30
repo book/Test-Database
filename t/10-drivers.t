@@ -6,7 +6,7 @@ use Test::Database::Driver;
 
 my @drivers = Test::Database->all_drivers();
 
-plan tests => @drivers * ( 1 + 2 * 13 );
+plan tests => @drivers * ( 1 + 2 * 13 ) + 2;
 
 my $base = 'Test::Database::Driver';
 
@@ -58,4 +58,13 @@ for my $name ( Test::Database->all_drivers() ) {
         like( $driver->as_string(), qr/\A$re\z/, "$desc as string" );
     }
 }
+
+# get all loaded drivers
+@drivers = Test::Database->drivers();
+cmp_ok( scalar @drivers, '>=', 1, 'At least on driver loaded' );
+
+# unload them
+Test::Database->unload_drivers();
+@drivers = Test::Database->drivers();
+is( scalar @drivers, 0, 'All drivers were unloaded' );
 

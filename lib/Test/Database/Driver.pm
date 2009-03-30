@@ -6,6 +6,8 @@ use File::Spec;
 use File::Path;
 use version;
 
+use Test::Database::Handle;
+
 #
 # global configuration
 #
@@ -124,6 +126,34 @@ sub as_string {
     return join '',
         map { "$_ = " . _quote( $_[0]{$_} || '' ) . "\n" }
         driver => $_[0]->essentials();
+}
+
+sub _handle {
+    my ( $self, $name ) = @_;
+    return Test::Database::Handle->new(
+        dsn    => $self->dsn($name),
+        name   => $name,
+        driver => $self,
+    );
+}
+
+sub handles {
+    my ( $self, @requests ) = @_;
+
+    # return all available handles if no request
+    my @databases = $self->databases();
+    return map { $self->_handle($_) } @databases if !@requests;
+
+    # get unique names, with higher priority on keep
+    # '' will get a random name
+    my %keep;
+    for my $request (@requests) {
+        my $dbname = exists $request->{name} ? $request->{name} : '';
+        $keep{$dbname} ||= $request->{keep};
+    }
+
+    # create all databases if needed
+    return map { $self->create_database( $_, $keep{$_} ) } keys %keep;
 }
 
 # THESE MUST BE IMPLEMENTED IN THE DERIVED CLASSES

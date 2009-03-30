@@ -112,7 +112,6 @@ sub drivers {
 
     my @drivers;
     for my $request (@requests) {
-        $request = { driver => $request } if !ref $request;
         for my $driver ( grep { $_->{driver} eq $request->{driver} }
             @DRIVERS )
         {
@@ -132,6 +131,9 @@ sub drivers {
 
 sub handles {
     my ( $class, @requests ) = @_;
+
+    # turn strings (driver name) into actual requests
+    @requests = map { (ref) ? $_ : { driver => $_ } } @requests;
 
     # first filter on the drivers
     my @drivers = $class->drivers(@requests);

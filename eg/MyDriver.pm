@@ -5,42 +5,56 @@ use warnings;
 use Test::Database::Driver;
 our @ISA = qw( Test::Database::Driver );
 
-sub setup_engine {
+# uncomment only if your database engine is file-based
+#sub is_filebased {1}
 
-    # setup the database engine
-    # return configuration information to be used by start_engine()
-    return;
+sub _version {
+    # return a version string
 }
 
-sub start_engine {
-    my ( $class, $config ) = @_;
-
-    # start the database server using the information in $config
-
-    # return true is the engine was started
-    # and will need to be stopped
-    return;
-
-    # the returned value will be passed to stop_engine()
-    # and can contain information necessary to stop the engine
+sub dsn {
+    my ($self, $dbname) = @_;
+    # retunr a dsn for $dbname
 }
 
-sub stop_engine {
-    my ( $class, $info ) = @_;
-
-    # this method will stop the database server
-    # $info contains information provided by start_engine()
-
+sub essentials {
+    # OPTIONAL
+    # return the list of essentials fields for string representation
 }
 
+# this routine has a default implementation for filed-based database engines
 sub create_database {
-    my ( $class, $config, $dbname ) = @_;
+    my ( $self, $dbname, $keep ) = @_;
+    $dbname = $self->available_dbname() if !$dbname;
 
-    # $config is the return value of setup_engine()
+    # create the database if it doesn't exist
+    # ...
 
-    # return a Test::Database::Handle object
-    # or false if unable to create the handle
-    return;
+    # return the handle
+    return Test::Database::Handle->new(
+        dsn      => $self->dsn($dbname),
+        name     => $dbname,
+        driver   => $self,
+        # ... other fields, like username, password
+    );
+}
+
+sub drop_database {
+    my ( $self, $dbname ) = @_;
+
+    # drop the database
+}
+
+# this routine has a default implementation for filed-based database engines
+sub databases {
+    my ($self) = @_;
+    # return the names of all databases existing in this driver
+}
+
+# this routine has a default implementation for filed-based database engines
+sub cleanup {
+    my ($self) = @_;
+    # remove all databases created using available_dbname()
 }
 
 'MyDriver';
@@ -70,7 +84,7 @@ Philippe Bruhat (BooK), C<< <book@cpan.org> >>
 
 =head1 COPYRIGHT
 
-Copyright 2008 Philippe Bruhat (BooK), all rights reserved.
+Copyright 2008-2009 Philippe Bruhat (BooK), all rights reserved.
 
 =head1 LICENSE
 

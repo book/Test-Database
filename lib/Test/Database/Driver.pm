@@ -149,10 +149,14 @@ sub connection_info {
 }
 
 # THESE MUST BE IMPLEMENTED IN THE DERIVED CLASSES
-sub create_database { die "$_[0] doesn't have a create_database() method\n" }
-sub drop_database   { die "$_[0] doesn't have a drop_database() method\n" }
-sub _version        { die "$_[0] doesn't have a _version() method\n" }
-sub dsn             { die "$_[0] doesn't have a dsn() method\n" }
+sub drop_database { die "$_[0] doesn't have a drop_database() method\n" }
+sub _version      { die "$_[0] doesn't have a _version() method\n" }
+sub dsn           { die "$_[0] doesn't have a dsn() method\n" }
+
+sub create_database {
+    goto &_filebased_create_database if $_[0]->is_filebased();
+    die "$_[0] doesn't have a create_database() method\n";
+}
 
 sub databases {
     goto &_filebased_databases if $_[0]->is_filebased();
@@ -178,6 +182,18 @@ sub _filebased_databases {
     closedir $dh;
 
     return @databases;
+}
+
+sub _filebased_create_database {
+    my ( $self, $dbname, $keep ) = @_;
+    $dbname = $self->available_dbname() if !$dbname;
+    $self->register_drop($dbname) if !$keep;
+
+    return Test::Database::Handle->new(
+        dsn    => $self->dsn($dbname),
+        name   => $dbname,
+        driver => $self,
+    );
 }
 
 sub _handle {

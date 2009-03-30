@@ -12,18 +12,10 @@ sub is_filebased {1}
 
 sub _version { return DBI->connect( $_[0]->bare_dsn() )->{sqlite_version}; }
 
-sub create_database {
-    my ( $self, $dbname, $keep ) = @_;
-    $dbname = $self->available_dbname() if !$dbname;
-
-    my $dbfile = File::Spec->catfile( $self->base_dir(), $dbname );
-    $self->register_drop($dbname) if !$keep;
-
-    return Test::Database::Handle->new(
-        dsn    => "dbi:SQLite2:dbname=$dbfile",
-        name   => $dbname,
-        driver => $self,
-    );
+sub dsn {
+    my ( $self, $dbname ) = @_;
+    return 'dbi:SQLite2:dbname='
+        . File::Spec->catdir( $self->base_dir(), $dbname );
 }
 
 sub drop_database {

@@ -12,19 +12,11 @@ sub is_filebased {1}
 
 sub _version { return Text::CSV_XS->VERSION; }
 
-sub create_database {
-    my ( $self, $dbname, $keep ) = @_;
-    $dbname = $self->available_dbname() if !$dbname;
-
+sub dsn {
+    my ( $self, $dbname ) = @_;
     my $dbdir = File::Spec->catdir( $self->base_dir(), $dbname );
     mkpath( [$dbdir] );
-    $self->register_drop($dbname) if !$keep;
-
-    return Test::Database::Handle->new(
-        dsn    => "dbi:CSV:f_dir=$dbdir",
-        name   => $dbname,
-        driver => $self,
-    );
+    return "dbi:CSV:f_dir=$dbdir";
 }
 
 sub drop_database {

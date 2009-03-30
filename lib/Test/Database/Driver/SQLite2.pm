@@ -14,7 +14,7 @@ sub _version { return DBI->connect( $_[0]->bare_dsn() )->{sqlite_version}; }
 
 sub create_database {
     my ( $self, $dbname, $keep ) = @_;
-    $dbname = $self->available_dbname() if !defined $dbname;
+    $dbname = $self->available_dbname() if !$dbname;
 
     my $dbfile = File::Spec->catfile( $self->base_dir(), $dbname );
     $self->register_drop($dbname) if !$keep;

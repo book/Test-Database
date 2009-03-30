@@ -9,25 +9,31 @@ my %drops;
 END {
     diag 'Testing autodrop and cleanup';
     for my $driver (@drivers) {
+        my $drname = $driver->name();
         my %databases = map { $_ => 1 } $driver->databases();
 
         # check the 'keep' databases are still here
         is_deeply(
             [ sort grep { $databases{$_} } keys %{ $keeps{$driver} } ],
             [ sort keys %{ $keeps{$driver} } ],
-            "Kept databases are there for " . $driver->name()
+            "Kept databases are there for $drname"
         );
 
         # check the others have been dropped
         is_deeply( [ grep { $databases{$_} } keys %{ $drops{$driver} } ],
-            [], "Drop databases have gone for " . $driver->name() );
+            [], "Drop databases have gone for $drname" );
 
         # cleanup
         $driver->cleanup();
         %databases = map { $_ => 1 } $driver->databases();
         is_deeply( [ grep { $databases{$_} } keys %{ $keeps{$driver} } ],
-            [],
-            "Kept databases have been cleaned up for " . $driver->name() );
+            [], "Kept databases have been cleaned up for $drname" );
+
+        # try dropping a non-existing database: shouldn't die
+        ok( eval { $driver->drop_database('Test_Database_INEXISTENT'); 1 },
+            "dropping an inexistent database doesn't die for $drname"
+        );
+        diag $@ if $@;
     }
 
     Test::Database->cleanup();
@@ -48,7 +54,7 @@ my @sql = (
 my $select = "SELECT id, name FROM users";
 my $drop   = 'DROP TABLE users';
 
-plan tests => ( 1 + ( 2 + @sql + 2 ) * 3 + 3 ) * @drivers;
+plan tests => ( 1 + ( 2 + @sql + 2 ) * 3 + 4 ) * @drivers;
 
 for my $driver (@drivers) {
     diag "Testing driver " . $driver->name();

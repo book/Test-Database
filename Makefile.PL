@@ -11,6 +11,8 @@ WriteMakefile(
     PREREQ_PM => {
         'Test::More' => 0,
         'DBI'        => 1,
+        'version'    => 0,
+        'File::HomeDir' => 0.50,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Test-Database-*' },

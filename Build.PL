@@ -10,6 +10,8 @@ my $builder = Module::Build->new(
     build_requires => {
         'Test::More' => 0,
         'DBI'        => 1,
+        'version'    => 0,
+        'File::HomeDir' => 0.50,
     },
     add_to_cleanup      => [ 'Test-Database-*' ],
 );

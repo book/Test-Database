@@ -44,14 +44,14 @@ for my $name ( Test::Database->all_drivers() ) {
         isa_ok( $version, 'version', "$desc version()" );
         diag $@ if $@;
 
-        # drh, dsn, username, password, connection_info
+        # drh, bare_dsn, username, password, connection_info
         isa_ok( $driver->drh(), 'DBI::dr', "$desc drh()" );
-        ok( $driver->dsn(), "$desc has a dsn()" );
+        ok( $driver->bare_dsn(), "$desc has are_ dsn()" );
         ok( defined $driver->username(), "$desc has a username()" );
         ok( defined $driver->password(), "$desc has a password()" );
         is_deeply(
             [ $driver->connection_info() ],
-            [ map { $driver->$_ } qw< dsn username password > ],
+            [ map { $driver->$_ } qw< bare_dsn username password > ],
             "$desc has aconnection_info()"
         );
 

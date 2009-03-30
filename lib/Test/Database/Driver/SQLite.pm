@@ -10,7 +10,7 @@ use File::Spec;
 
 sub is_filebased {1}
 
-sub _version { return DBI->connect( $_[0]->dsn() )->{sqlite_version}; }
+sub _version { return DBI->connect( $_[0]->bare_dsn() )->{sqlite_version}; }
 
 sub create_database {
     my ( $self, $dbname ) = @_;

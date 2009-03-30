@@ -12,7 +12,7 @@ sub _version {
         ->selectcol_arrayref('SELECT VERSION()')->[0];
 }
 
-sub _dsn {
+sub _bare_dsn {
     return 'dbi:mysql:' . join ';',
         map {"$_=$_[0]->{$_}"} grep { exists $_[0]->{$_} } qw( host port );
 }

@@ -71,12 +71,12 @@ sub version {
 }
 
 sub drh      { return $drh{ $_[0]->name() } }
-sub dsn      { return $_[0]{dsn} ||= $_[0]->_dsn() }
+sub bare_dsn { return $_[0]{dsn} ||= $_[0]->_bare_dsn() }
 sub username { return $_[0]{username} }
 sub password { return $_[0]{password} }
 
 sub connection_info {
-    return ( $_[0]->dsn(), $_[0]->username(), $_[0]->password() );
+    return ( $_[0]->bare_dsn(), $_[0]->username(), $_[0]->password() );
 }
 
 sub cleanup { rmtree $_[0]->base_dir(); }
@@ -130,6 +130,7 @@ sub as_string {
 sub create_database { die "$_[0] doesn't have a create_database() method\n" }
 sub drop_database   { die "$_[0] doesn't have a drop_database() method\n" }
 sub _version        { die "$_[0] doesn't have a _version() method\n" }
+sub dsn             { die "$_[0] doesn't have a dsn() method\n" }
 
 sub databases {
     goto &_filebased_databases if $_[0]->is_filebased();
@@ -139,7 +140,7 @@ sub databases {
 # THESE MAY BE OVERRIDDEN IN THE DERIVED CLASSES
 sub essentials   { }
 sub is_filebased {0}
-sub _dsn         { join ':', 'dbi', $_[0]->name(), ''; }
+sub _bare_dsn    { join ':', 'dbi', $_[0]->name(), ''; }
 
 'CONNECTION';
 
@@ -217,9 +218,10 @@ This object is build with the return value of C<_version()>.
 
 The DBI driver for this driver.
 
-=item dsn()
+=item bare_dsn()
 
-Return the Data Source Name.
+Return a bare Data Source Name, sufficient to connect to the database
+engine without specifying an actual database.
 
 =item username()
 
@@ -231,7 +233,8 @@ Return the connection password.
 
 =item connection_info()
 
-Return the connection information triplet (C<dsn>, C<username>, C<password>).
+Return the connection information triplet (C<bare_dsn>, C<username>,
+C<password>).
 
 =item is_filebased()
 

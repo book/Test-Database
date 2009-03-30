@@ -7,7 +7,7 @@ use File::Spec;
 use DBI;
 use Carp;
 
-our $VERSION = '0.03';
+our $VERSION = '0.99_01';
 
 use Test::Database::Driver;
 
@@ -261,43 +261,28 @@ C<< Test::Database->all_drivers() >> and C<< DBI->available_drivers() >>.
 
 =item drivers( @requests )
 
-Return the list of supported DBI drivers that have been detected as installed.
+Return the C<Test::Database::Driver> objects corresponding to the
+drivers list returned by C<available_drivers()>.
 
 If C<@requests> is provided, only the drivers that match one of the
 requests are returned.
 
-=item handle( $driver [, $name ] )
+See L<REQUESTS> for details about writing requests.
 
-If C<$name> is not provided, the default C<Test::Database::Handle> object
-for the driver is provided. No garantees are made on its being empty.
+=item handles( @requests )
 
-The default database handle is obtained from the local configuration
-(stored in the C<Test::Database::MyConfig> module), then from the global
-configuration (stored in the C<Test::Database::Config> module). If no
-configuration information is available, C<Test::Database> will then try
-to create a default temporary database, if the driver supports it.
+Return a set of C<Test::Database::Handle> objects that matche the
+given C<@requests>.
 
-The database will be created the first time, and and subsequent calls
-are garanteed to provide connection information to the same database,
-so you can share data between your scripts.
+If C<@requests> is not provided, return a handle for each database
+that exists in each driver.
 
-=item dbh( $driver [, $name ] )
+=item dbh( @requests )
 
-=item connection_info( $driver [, $name ] )
+Return the DBI database handles for the given C<@requests>.
 
-=item dsn( $driver [, $name ] )
-
-=item username( $driver [, $name ] )
-
-=item password( $driver [, $name ] )
-
-Shortcut methods for:
-
-    Test::Database->handle( $driver [, $name ] )->dbh();
-    Test::Database->handle( $driver [, $name ] )->connection_info();
-    Test::Database->handle( $driver [, $name ] )->dsn();
-    Test::Database->handle( $driver [, $name ] )->username();
-    Test::Database->handle( $driver [, $name ] )->password();
+It returns a dbh for each handle that would be returned by
+calling C<handles( @requests )>.
 
 See C<Test::Database::Handle> for details.
 
@@ -404,7 +389,7 @@ which made me want to have a generic way to obtain a test database.
 
 =head1 COPYRIGHT
 
-Copyright 2008 Philippe Bruhat (BooK), all rights reserved.
+Copyright 2008-2009 Philippe Bruhat (BooK), all rights reserved.
 
 =head1 LICENSE
 

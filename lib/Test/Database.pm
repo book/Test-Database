@@ -368,6 +368,19 @@ Thanks to C<< <perl-qa@perl.org> >> for early comments.
 Thanks to Nelson Ferraz for writing C<DBIx::Slice>, the testing of
 which made me want to have a generic way to obtain a test database.
 
+Thanks to Mark Lawrence for discussing this module with me, and
+sending me an alternative implemenation to show me what he needed.
+
+Thanks to Kristian Koehntopp for helping me write a mysql driver,
+and to Greg Sabino Mullane for writing a full Postgres driver,
+none of which made it into the final release because of the complete
+change in goals and implementation between versions 0.02 and 0.03.
+
+The work leading to the new implementation was carried on during
+the Perl QA Hackathon, held in Birmingham in March 2009. Thanks to
+Birmingham.pm for organizing it and to Booking.com for sending me
+there.
+
 =head1 COPYRIGHT
 
 Copyright 2008-2009 Philippe Bruhat (BooK), all rights reserved.

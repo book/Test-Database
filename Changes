@@ -1,5 +1,17 @@
 Revision history for Test-Database
 
+0.99 Mon Mar 30 16:20:23 CEST 2009 - Perl QA Hackathon 2009
+        [FEATURES]
+        - completely redesigned interface: the module never starts a
+          database engine, but simply makes pre-configured ones available
+          to test scripts
+        [DRIVERS]
+        - new driver for DBD::SQlite
+        - new driver for DBD::SQlite2
+        - new driver for DBD::CSV
+        - new driver for DBD::DBM
+        - new driver for DBD::mysql
+
 0.02 Tue Oct 14 03:04:27 CEST 2008
         [FEATURES]
         - improved database engine setup process, using setup_engine(),

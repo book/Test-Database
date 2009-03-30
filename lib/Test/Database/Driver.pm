@@ -118,7 +118,7 @@ sub _unquote {
     return $string if $string !~ /\A(["']).*\1\z/s;
 
     my $quote = chop $string;
-    $string = substr( $string, 1);
+    $string = substr( $string, 1 );
     $string =~ s/\\(.)/$1 eq 'n' ? "\n" : $1/eg;
     return $string;
 }
@@ -207,18 +207,18 @@ Test::Database::Driver - Base class for Test::Database drivers
     }
 
     sub create_database {
-        my ( $class, $name ) = @_;
+        my ( $self, $dbname, $keep ) = @_;
         ...;
         return $handle;
     }
 
     sub drop_database {
-        my ( $class, $name ) = @_;
+        my ( $self, $name ) = @_;
         ...;
     }
 
     sub databases {
-        my ($class) = @_;
+        my ($self) = @_;
         ...;
         return @databases;
     }

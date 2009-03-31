@@ -146,11 +146,6 @@ sub handles {
     return map { $_->handles(@requests) } @drivers;
 }
 
-sub dbh {
-    my ( $class, @requests ) = @_;
-    return map { $_->dbh() } $class->handles(@requests);
-}
-
 sub cleanup {
     $_->cleanup()
         for map { Test::Database::Driver->new( driver => $_ ) } @DRIVERS_OK;
@@ -296,16 +291,6 @@ If C<@requests> is not provided, return a handle for each database
 that exists in each driver.
 
 See L<REQUESTS> for details about writing requests.
-
-=item dbh( @requests )
-
-Return the DBI database handles for the given C<@requests>.
-
-It returns a dbh for each handle that would be returned by
-calling C<handles( @requests )>.
-
-See L<REQUESTS> for details about writing requests.
-See C<Test::Database::Handle> for details about handles.
 
 =item cleanup()
 

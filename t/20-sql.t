@@ -100,11 +100,6 @@ for my $driver (@drivers) {
 
         # remove everything
         ok( $dbh->do($drop), "$desc: $drop" );
-
-        ## check the dbh is cached
-        #is( Test::Database->dbh( $driver => $dbname ),
-        #    $dbh, "$driver($dbname): dbh cached" );
-
     }
 }
 

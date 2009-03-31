@@ -312,6 +312,63 @@ Call the C<cleanup()> method of all available drivers.
 
 =back
 
+=head1 REQUESTS
+
+The C<drivers()>, C<handles()> and C<dbh()> methods tales I<requests>
+as parameters. A request is a simple hash reference, with a number of
+recognized keys.
+
+Some keys have an effect on driver selection:
+
+=over 4
+
+=item *
+
+C<driver>: driver name
+
+If missing, all available drivers will match.
+
+=item *
+
+C<min_version>: minimum database engine version
+
+Only database engines having at least the given minimum version will match.
+
+=item *
+
+C<max_version>: maximum database engine version
+
+Only database engines having at least the given maximum version will match.
+
+=back
+
+Others have an effect on actual database selection:
+
+=over 4
+
+=item *
+
+C<name>: name of the database to select or create.
+
+If a database of the given name exists in the select database engine,
+a handle to it will be returned.
+
+If the field is missing, a new database will be created with an
+automatically generated name.
+
+=item *
+
+C<keep>: boolean
+
+By default, database are dropped at the end of the program's life.
+If this parameter is true, the database will not be dropped, and
+can be selected again using its name.
+
+=back
+
+A request can also consist of a single string, in which case it is
+interpreted as a shortcut for C<{ driver => $string }>.
+
 =head1 AUTHOR
 
 Philippe Bruhat (BooK), C<< <book@cpan.org> >>

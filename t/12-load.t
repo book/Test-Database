@@ -15,7 +15,7 @@ my @good = (
     { driver => 'CSV' },
 );
 
-plan tests => 2 + sum map { 1 + keys %$_ } @good + 2;
+plan tests => 2 + sum( map { 1 + keys %$_ } @good ) + 2;
 
 # unload all drivers
 Test::Database->unload_drivers();

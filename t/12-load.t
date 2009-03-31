@@ -15,7 +15,7 @@ my @good = (
     { driver => 'CSV' },
 );
 
-plan tests => 2 + sum map { 1 + keys %$_ } @good;
+plan tests => 2 + sum map { 1 + keys %$_ } @good + 2;
 
 # unload all drivers
 Test::Database->unload_drivers();
@@ -37,4 +37,16 @@ for my $test (@good) {
         is( $driver->{$k}, $test->{$k}, "$test->{driver} $k" );
     }
 }
+
+# try to load a bad file
+@drivers = Test::Database->drivers();
+$file    = File::Spec->catfile(qw< t database.bad >);
+
+ok( !eval { Test::Database->load_drivers($file); 1 },
+    "load_drivers( $file ) failed" );
+like(
+    $@,
+    qr/^Can't parse line at .*, line \d+:\n  <bad format> at /,
+    'Expected error message'
+);
 

@@ -83,6 +83,7 @@ sub load_drivers {
     open my $fh, '<', $file or croak "Can't open $file for reading: $!";
     while (<$fh>) {
         next if /^\s*(?:#|$)/;    # skip blank lines and comments
+        chomp;
 
         /\s*(\w+)\s*=\s*(.*)\s*/ && do {
             my ( $key, $value ) = ( $1, $2 );
@@ -97,7 +98,7 @@ sub load_drivers {
             };
 
         # unknown line
-        croak "Can't parse line at $file, line $.:\n$_\n ";
+        croak "Can't parse line at $file, line $.:\n  <$_>";
     }
     push @DRIVERS, Test::Database::Driver->new(%args)
         if keys %args;

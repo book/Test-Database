@@ -70,6 +70,7 @@ for my $driver (@drivers) {
         my $drname = $driver->name();
 
         # database handle to a new database
+        # FIXME - testing on the first handle only
         my ($handle) = Test::Database->handles($request);
 
         my $dbname = $handle->name();

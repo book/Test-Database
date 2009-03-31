@@ -121,10 +121,10 @@ sub drivers {
         {
             next
                 if exists $request->{min_version}
-                    && $driver->{version} < $request->{min_version};
+                    && $driver->version() < $request->{min_version};
             next
                 if exists $request->{max_version}
-                    && $driver->{version} > $request->{max_version};
+                    && $driver->version() > $request->{max_version};
             push @drivers, $driver;
         }
     }

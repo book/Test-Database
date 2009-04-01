@@ -67,7 +67,7 @@ sub available_drivers { return @DRIVERS_OK }
 
 sub save_drivers {
     my ( $class, $file ) = @_;
-    $file ||= _rcfile();
+    $file = _rcfile() if !defined $file;
 
     _canonicalize_drivers();
     open my $fh, '>', $file or croak "Can't open $file for writing: $!";
@@ -77,7 +77,7 @@ sub save_drivers {
 
 sub load_drivers {
     my ( $class, $file ) = @_;
-    $file ||= _rcfile();
+    $file = _rcfile() if !defined $file;
 
     my %args;
     open my $fh, '<', $file or croak "Can't open $file for reading: $!";

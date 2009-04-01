@@ -106,7 +106,7 @@ sub handles {
     my %keep;
     for my $request (@requests) {
         my $dbname = exists $request->{name} ? $request->{name} : '';
-        $keep{$dbname} ||= $request->{keep};
+        $keep{$dbname} = $request->{keep} if !$keep{$dbname};
     }
 
     # create all databases if needed

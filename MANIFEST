@@ -26,4 +26,3 @@ t/database.bad
 t/database.rc
 t/pod-coverage.t
 t/pod.t
-test-database.rc

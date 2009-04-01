@@ -1,5 +1,15 @@
 Revision history for Test-Database
 
+0.99_01 Wed Apr  1 10:01:57 CEST 2009
+        [FIXES]
+        - Do not die when automatically trying to load a non-existent
+          ~/.test-database file
+        [DOCUMENTATION]
+        - add some documentation about REQUESTS
+        [TESTS]
+        - add tests for save_driver() and load_drivers()
+        - increase test coverage to over 95%
+
 0.99 Mon Mar 30 16:20:23 CEST 2009 - Perl QA Hackathon 2009
         [FEATURES]
         - completely redesigned interface: the module never starts a

@@ -54,12 +54,13 @@ my @sql = (
 my $select = "SELECT id, name FROM users";
 my $drop   = 'DROP TABLE users';
 
-plan tests => ( 1 + ( 2 + @sql + 2 ) * 3 + 4 ) * @drivers;
+plan tests => ( 1 + ( 3 + @sql + 2 ) * 3 + 4 ) * @drivers;
 
 for my $driver (@drivers) {
     diag "Testing driver " . $driver->name();
     isa_ok( $driver, 'Test::Database::Driver' );
 
+    my $count = 0;
     for my $request (
         $driver->name(),
         { driver => $driver->name(), keep => 1 },
@@ -68,6 +69,14 @@ for my $driver (@drivers) {
     {
 
         my $drname = $driver->name();
+
+        # test handles() with no request
+        my $handles = $driver->handles();
+        cmp_ok(
+            $handles, ( $driver->is_filebased ? '==' : '>=' ),
+            $count, "$drname: $handles available (minimum $count)"
+        );
+        $count++;
 
         # database handle to a new database
         # FIXME - testing on the first handle only

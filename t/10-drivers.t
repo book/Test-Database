@@ -5,6 +5,7 @@ use Test::Database;
 use Test::Database::Driver;
 
 my @drivers = Test::Database->all_drivers();
+Test::Database->cleanup();
 
 plan tests => @drivers * ( 1 + 2 * 13 ) + 2;
 
@@ -32,7 +33,12 @@ for my $name ( Test::Database->all_drivers() ) {
         ok( $dir, "$desc has a base_dir(): $dir" );
         like( $dir, qr/Test-Database-.*\Q$name\E/,
             "$desc\'s base_dir() looks like expected" );
-        ok( -d $dir, "$desc base_dir() is a directory" );
+        if ( $driver->is_filebased() ) {
+            ok( -d $dir, "$desc base_dir() is a directory" );
+        }
+        else {
+            ok( !-e $dir, "$desc base_dir() does not exist" );
+        }
 
         # version
         my $version;
@@ -44,17 +50,17 @@ for my $name ( Test::Database->all_drivers() ) {
 
         # drh, bare_dsn, username, password, connection_info
         isa_ok( $driver->drh(), 'DBI::dr', "$desc drh()" );
-        ok( $driver->bare_dsn(), "$desc has are_ dsn()" );
+        ok( $driver->bare_dsn(),         "$desc has are_ dsn()" );
         ok( defined $driver->username(), "$desc has a username()" );
         ok( defined $driver->password(), "$desc has a password()" );
         is_deeply(
             [ $driver->connection_info() ],
             [ map { $driver->$_ } qw< bare_dsn username password > ],
-            "$desc has aconnection_info()"
+            "$desc has a connection_info()"
         );
 
         # as_string
-        my $re = join '', map { "$_ = .*\n" } driver => $driver->essentials();
+        my $re = join '', map {"$_ = .*\n"} driver => $driver->essentials();
         like( $driver->as_string(), qr/\A$re\z/, "$desc as string" );
     }
 }

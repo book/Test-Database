@@ -19,7 +19,11 @@ t/09-drivers_lists.t
 t/10-drivers.t
 t/11-quote.t
 t/12-load.t
+t/12-save.t
+t/13-version.t
 t/20-sql.t
+t/database.bad
 t/database.rc
 t/pod-coverage.t
 t/pod.t
+test-database.rc

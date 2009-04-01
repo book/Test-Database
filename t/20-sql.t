@@ -41,7 +41,7 @@ END {
 
 require Test::Database;
 
-@drivers = Test::Database->drivers();
+@drivers = Test::Database->drivers(@ARGV);
 
 plan skip_all => 'No drivers available for testing' if !@drivers;
 

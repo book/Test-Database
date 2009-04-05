@@ -4,10 +4,11 @@ use Test::More;
 use Test::Database;
 use Test::Database::Driver;
 
-my @drivers = Test::Database->all_drivers();
+my @all_drivers = Test::Database->all_drivers();
+my @drivers     = Test::Database->drivers();
 Test::Database->cleanup();
 
-plan tests => @drivers * ( 1 + 2 * 13 ) + 2;
+plan tests => @all_drivers * ( 1 + 2 * 11 ) + @drivers * ( 2 * 2 ) + 2;
 
 my $base = 'Test::Database::Driver';
 
@@ -40,14 +41,6 @@ for my $name ( Test::Database->all_drivers() ) {
             ok( !-e $dir, "$desc base_dir() does not exist" );
         }
 
-        # version
-        my $version;
-        ok( eval { $version = $driver->version() },
-            "$desc has a version(): $version"
-        );
-        isa_ok( $version, 'version', "$desc version()" );
-        diag $@ if $@;
-
         # drh, bare_dsn, username, password, connection_info
         isa_ok( $driver->drh(), 'DBI::dr', "$desc drh()" );
         ok( $driver->bare_dsn(),         "$desc has are_ dsn()" );
@@ -62,6 +55,31 @@ for my $name ( Test::Database->all_drivers() ) {
         # as_string
         my $re = join '', map {"$_ = .*\n"} driver => $driver->essentials();
         like( $driver->as_string(), qr/\A$re\z/, "$desc as string" );
+    }
+}
+
+# we may need a working database for these
+for my $name ( map { $_->name() } Test::Database->drivers() ) {
+    my $class = "Test::Database::Driver::$name";
+
+    for my $t (
+        [ $base->new( driver => $name ), $base ],
+        [ $class->new(), $class ],
+        )
+    {
+        my ( $driver, $created_by ) = @$t;
+        diag "$name driver (created by $created_by)";
+
+        # class and name
+        my $desc = "$name driver";
+
+        # version
+        my $version;
+        ok( eval { $version = $driver->version() },
+            "$desc has a version(): $version"
+        );
+        isa_ok( $version, 'version', "$desc version()" );
+        diag $@ if $@;
     }
 }
 

@@ -56,8 +56,10 @@ sub drop_database {
 
 sub databases {
     my ($self) = @_;
-    my $databases = DBI->connect( $self->connection_info() )
-        ->selectall_arrayref('SHOW DATABASES');
+    my $databases = eval {
+        DBI->connect( $self->connection_info() )
+            ->selectall_arrayref('SHOW DATABASES');
+    };
     return
         grep { $_ !~ /^(?:information_schema|mysql)/ } map {@$_} @$databases;
 }

@@ -53,7 +53,7 @@ sub _rcfile {
 
 sub _canonicalize_drivers {
     my %seen;
-    @DRIVERS = grep { !$seen{ $_->as_string() }++ } @DRIVERS;
+    @DRIVERS = grep { !$seen{ $_->as_string() }++ } grep {defined} @DRIVERS;
 }
 
 #
@@ -100,7 +100,7 @@ sub load_drivers {
         # unknown line
         croak "Can't parse line at $file, line $.:\n  <$_>";
     }
-    push @DRIVERS, Test::Database::Driver->new(%args)
+    push @DRIVERS, eval { Test::Database::Driver->new(%args) }
         if keys %args;
     close $fh;
 

@@ -35,7 +35,7 @@ sub __init {
         }
     }
 
-    # load the DBI driver
+    # load the DBI driver (may die)
     $drh{ $class->name() } ||= DBI->install_driver( $class->name() );
 }
 

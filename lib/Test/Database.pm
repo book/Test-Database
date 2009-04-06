@@ -155,8 +155,7 @@ sub handles {
 }
 
 sub cleanup {
-    $_->cleanup()
-        for map { Test::Database::Driver->new( driver => $_ ) } @DRIVERS_OK;
+    $_->cleanup() for @DRIVERS;
 }
 
 'TRUE';

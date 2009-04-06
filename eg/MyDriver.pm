@@ -14,7 +14,7 @@ sub _version {
 
 sub dsn {
     my ($self, $dbname) = @_;
-    # retunr a dsn for $dbname
+    # return a dsn for $dbname
 }
 
 sub essentials {
@@ -22,7 +22,7 @@ sub essentials {
     # return the list of essentials fields for string representation
 }
 
-# this routine has a default implementation for filed-based database engines
+# this routine has a default implementation for file-based database engines
 sub create_database {
     my ( $self, $dbname, $keep ) = @_;
     $dbname = $self->available_dbname() if !$dbname;
@@ -45,13 +45,13 @@ sub drop_database {
     # drop the database
 }
 
-# this routine has a default implementation for filed-based database engines
+# this routine has a default implementation for file-based database engines
 sub databases {
     my ($self) = @_;
     # return the names of all databases existing in this driver
 }
 
-# this routine has a default implementation for filed-based database engines
+# this routine has a default implementation for file-based database engines
 sub cleanup {
     my ($self) = @_;
     # remove all databases created using available_dbname()

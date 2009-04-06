@@ -128,11 +128,14 @@ sub drivers {
             @DRIVERS )
         {
             next
+                if exists $request->{version}
+                    && $driver->version() != $request->{version};
+            next
                 if exists $request->{min_version}
                     && $driver->version() < $request->{min_version};
             next
                 if exists $request->{max_version}
-                    && $driver->version() > $request->{max_version};
+                    && $driver->version() >= $request->{max_version};
             push @drivers, $driver;
         }
     }
@@ -323,15 +326,24 @@ If missing, all available drivers will match.
 
 =item *
 
+C<version>: exact database engine version
+
+Only database engines having a version number identical to the
+given version will match.
+
+=item *
+
 C<min_version>: minimum database engine version
 
-Only database engines having at least the given minimum version will match.
+Only database engines having a version number greater or equal to the
+given minimum version will match.
 
 =item *
 
 C<max_version>: maximum database engine version
 
-Only database engines having at least the given maximum version will match.
+Only database engines having a version number lower (and not equal) to the
+given maximum version will match.
 
 =back
 

@@ -1,5 +1,11 @@
 Revision history for Test-Database
 
+0.99_02 Mon Apr  6 03:21:51 CEST 2009
+        [IMPROVEMENTS]
+        - try to connect to non file-based databases to ensure we can,
+          before adding a driver to our collection
+        - cleanup() will only clean loaded drivers
+
 0.99_01 Wed Apr  1 10:01:57 CEST 2009
         [FIXES]
         - Do not die when automatically trying to load a non-existent

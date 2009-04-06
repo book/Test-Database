@@ -57,7 +57,7 @@ sub drop_database {
 sub databases {
     my ($self) = @_;
     my $databases = eval {
-        DBI->connect( $self->connection_info() )
+        DBI->connect_cached( $self->connection_info() )
             ->selectall_arrayref('SHOW DATABASES');
     };
     return

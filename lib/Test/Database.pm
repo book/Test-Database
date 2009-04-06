@@ -38,8 +38,11 @@ my @DRIVERS_OK;
 eval "require Test::Database::Driver::$_" for @DRIVERS_OK;
 
 # load all file-based drivers
-push @DRIVERS, map { Test::Database::Driver->new( driver => $_ ) }
+push @DRIVERS, map {
+    eval { Test::Database::Driver->new( driver => $_ ) }
+    }
     grep { "Test::Database::Driver::$_"->is_filebased() } @DRIVERS_OK;
+_canonicalize_drivers();
 
 # load drivers from configuration
 __PACKAGE__->load_drivers() if -e _rcfile();

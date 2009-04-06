@@ -16,8 +16,8 @@ for my $name ( Test::Database->all_drivers() ) {
     use_ok($class);
 
     for my $t (
-        [ $base->new( driver => $name ), $base ],
-        [ $class->new(), $class ],
+        [ eval { $base->new( driver => $name ) }, $base ],
+        [ eval { $class->new() }, $class ],
         )
     {
         my ( $driver, $created_by ) = @$t;

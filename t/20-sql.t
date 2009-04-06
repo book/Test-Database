@@ -64,7 +64,7 @@ for my $driver (@drivers) {
     for my $request (
         $driver->name(),
         { driver => $driver->name(), keep => 1 },
-        { driver => $driver->name(), name => 'Test_Database_NAME' },
+        { driver => $driver->name(), name => 'test_database_name' },
         )
     {
 

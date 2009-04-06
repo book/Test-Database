@@ -52,7 +52,7 @@ sub new {
         $class = "Test::Database::Driver::$args{driver}";
         $class->__init();    # survive a cleanup()
     }
-    bless {
+    my $self = bless {
         username => '',
         password => '',
         map ( { $_ => '' } $class->essentials() ),
@@ -60,6 +60,13 @@ sub new {
         driver => $class->name()
         },
         $class;
+
+    # try to connect before returning the object
+    if ( !$class->is_filebased() ) {
+        eval { DBI->connect_cached( $self->connection_info() ) }
+            or return undef;
+    }
+    return $self;
 }
 
 sub cleanup {

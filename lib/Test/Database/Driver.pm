@@ -161,7 +161,12 @@ sub _version      { die "$_[0] doesn't have a _version() method\n" }
 sub dsn           { die "$_[0] doesn't have a dsn() method\n" }
 
 sub create_database {
-    goto &_filebased_create_database if $_[0]->is_filebased();
+    my ( $self, $dbname ) = @_;
+    if ( $self->is_filebased() ) {
+        croak "Invalid database name: $dbname"
+            if $dbname && $dbname !~ /^\w+$/;
+        goto &_filebased_create_database;
+    }
     die "$_[0] doesn't have a create_database() method\n";
 }
 

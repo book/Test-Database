@@ -56,6 +56,38 @@ sub _canonicalize_drivers {
     @DRIVERS = grep { !$seen{ $_->as_string() }++ } grep {defined} @DRIVERS;
 }
 
+sub _read_file {
+    my ($file) = @_;
+    my @config;
+
+    open my $fh, '<', $file or croak "Can't open $file for reading: $!";
+    my %args;
+    while (<$fh>) {
+        next if /^\s*(?:#|$)/;    # skip blank lines and comments
+        chomp;
+
+        /\s*(\w+)\s*=\s*(.*)\s*/ && do {
+            my ( $key, $value ) = ( $1, $2 );
+            $value = Test::Database::Driver::_unquote($value)
+                if $value =~ /\A["']/;
+            if ( $key eq 'driver' && keys %args ) {
+                push @config, {%args};
+                %args = ();
+            }
+            $args{$key} = $value;
+            next;
+        };
+
+        # unknown line
+        croak "Can't parse line at $file, line $.:\n  <$_>";
+    }
+    push @config, {%args}
+        if keys %args;
+    close $fh;
+
+    return @config;
+}
+
 #
 # methods
 #
@@ -79,31 +111,7 @@ sub load_drivers {
     my ( $class, $file ) = @_;
     $file = _rcfile() if !defined $file;
 
-    my %args;
-    open my $fh, '<', $file or croak "Can't open $file for reading: $!";
-    while (<$fh>) {
-        next if /^\s*(?:#|$)/;    # skip blank lines and comments
-        chomp;
-
-        /\s*(\w+)\s*=\s*(.*)\s*/ && do {
-            my ( $key, $value ) = ( $1, $2 );
-            $value = Test::Database::Driver::_unquote( $value )
-                 if $value =~ /\A["']/;
-            if ( $key eq 'driver' && keys %args ) {
-                push @DRIVERS, Test::Database::Driver->new(%args);
-                %args = ();
-            }
-            $args{$key} = $value;
-            next;
-            };
-
-        # unknown line
-        croak "Can't parse line at $file, line $.:\n  <$_>";
-    }
-    push @DRIVERS, eval { Test::Database::Driver->new(%args) }
-        if keys %args;
-    close $fh;
-
+    push @DRIVERS, map { Test::Database::Driver->new(%$_) } _read_file($file);
     _canonicalize_drivers();
 }
 

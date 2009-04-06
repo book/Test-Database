@@ -47,7 +47,7 @@ plan skip_all => 'No drivers available for testing' if !@drivers;
 
 # some SQL statements to try out
 my @sql = (
-    q{CREATE TABLE users (id INTEGER, name CHAR(64))},
+    q{CREATE TABLE users (id INTEGER, name VARCHAR(64))},
     q{INSERT INTO users (id, name) VALUES (1, 'book')},
     q{INSERT INTO users (id, name) VALUES (2, 'echo')},
 );

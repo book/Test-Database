@@ -16,11 +16,11 @@ for my $name ( Test::Database->all_drivers() ) {
     use_ok($class);
 
     for my $t (
-        [ eval { $base->new( driver => $name ) }, $base ],
-        [ eval { $class->new() }, $class ],
+        [ $base  => eval { $base->new( driver => $name ) } ],
+        [ $class => eval { $class->new() } ],
         )
     {
-        my ( $driver, $created_by ) = @$t;
+        my ( $created_by, $driver ) = @$t;
     SKIP: {
             skip "Failed to create $name driver with $created_by", 13
                 if !$driver;

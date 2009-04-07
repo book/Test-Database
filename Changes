@@ -1,5 +1,9 @@
 Revision history for Test-Database
 
+0.99_03 Tue Apr  6 22:16:05 CEST 2009
+        [DRIVERS]
+        - new driver for DBD::Pg
+
 0.99_02 Mon Apr  6 03:21:51 CEST 2009
         [IMPROVEMENTS]
         - try to connect to non file-based databases to ensure we can,

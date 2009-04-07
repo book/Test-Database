@@ -7,7 +7,7 @@ use File::Spec;
 use DBI;
 use Carp;
 
-our $VERSION = '0.99_02';
+our $VERSION = '0.99_03';
 
 use Test::Database::Driver;
 

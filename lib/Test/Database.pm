@@ -174,37 +174,61 @@ Test::Database - Database handles ready for testing
 
 =head1 SYNOPSIS
 
-Maybe you need a test database for a specific database driver:
-
-    use Test::Database;
-
-    # connection information
-    my ( $dsn, $username, $password )
-        = Test::Database->connection_info('SQLite');
-
-    # database handle
-    my $dbh = Test::Database->dbh('SQLite');
-
-Maybe you want to use the same test database over several test scripts:
-
-    use Test::Database;
-
-    # connection information
-    my ( $dsn, $username, $password )
-        = Test::Database->connection_info( SQLite => 'mydb' );
-
-    # database handle
-    my $dbh = Test::Database->dbh( SQLite => 'mydb' );
-
 Maybe you wrote generic code you want to test on all available databases:
 
+    use Test::More;
     use Test::Database;
 
-    my @drivers = Test::Database->drivers();
+    # get all available handles
+    my @handles = Test::Database->handles();
 
-    for my $driver (@drivers) {
-        my $handle = Test::Database->handle( $driver );
+    # plan the tests
+    plan tests => 3 + 4 * @handles;
+
+    # run the tests
+    for my $handle (@handles) {
+        diag "Testing with " . $handle->dbd(); # mysql, SQLite, etc.
+
+        # there are several ways to access the dbh:
+
+        # let $handle do the connect()
+        my $dbh = $handle->dbh();
+
+        # do the connect() yourself
+        my $dbh = DBI->connect( $handle->connection_info() );
+        my $dbh = DBI->connect( $handle->dsn(), $handle->username(),
+            $handle->password() );
     }
+
+It's possible to limit the results, based on the databases your code
+supports:
+
+    my @handles = Test::Database->handles(
+        'SQLite',    # a SQLite database
+        {   driver      => 'mysql',     # mysql database
+            version_min => '5',         # at least 5.0.0
+            version_max => '5.0.67',    # up to 5.0.67 (excluded)
+        },
+        {   driver  => 'Pg',            # Postgres database
+            version => '8.3.7',         # exact version
+        }
+    );
+
+    # use it as above
+
+If you only need a single database handle, all the following return
+the same one:
+
+    my $handle   = ( Test::Database->handles(@requests) )[0];
+    my ($handle) = Test::Database->handles(@requests);
+    my $handle   = Test::Database->handles(@requests);    # scalar context
+    my $handle   = Test::Database->handle(@requests);     # singular!
+    my @handles  = Test::Database->handle(@requests);     # one item only
+
+You can use the same requests again if you need to use the same
+test databases over several test scripts.
+
+The C<cleanup()> method will drop all tables from C<supported> databases.
 
 =head1 DESCRIPTION
 
@@ -226,30 +250,9 @@ C<Test::Database> provides a simple way for test authors to request
 a test database, without worrying about environment variables or the
 test host configuration.
 
-Typical usage if the module require a specific database:
-
-   use Test::More;
-   use Test::Database;
-
-   my $dbh = Test::Database->dbh( SQLite => 'test' );
-   plan skip_all => 'No test SQLite database available' if !$dbh;
-
-   # rest of the test script
-
-Typical usage if the module wants to run the test on as many databases
-as possible:
-
-    use Test::More;
-    use Test::Database;
-
-    for my $handle ( map { Test::Database->handle( $_ => 'test' ) }
-        Test::Database->drivers() )
-    {
-        diag 'Testing on ' . $handle->driver();
-        my $dbh = $handle->dbh();
-
-        # rest of the test script
-    }
+See L<SYNOPSIS> for typical usage, and L<Test::Database::Tutorial>
+for a more detailed introduction (both for test authors and CPAN
+testers).
 
 =head1 METHODS
 

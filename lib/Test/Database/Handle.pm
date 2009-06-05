@@ -13,12 +13,16 @@ sub new {
     my ( $class, %args ) = @_;
 
     exists $args{$_} or croak "$_ argument required"
-       for qw< driver dsn name >;
+       for qw( dsn );
+
+    my ( $scheme, $driver, $attr_string, $attr_hash, $driver_dsn )
+        = DBI->parse_dsn($args{dsn})
 
     return bless {
         username => '',
         password => '',
         %args,
+        driver => $driver,
     }, $class;
 }
 

@@ -26,7 +26,7 @@ sub new {
     }, $class;
 }
 
-sub connection_info { return @{ $_[0] }{qw< dsn username password >} }
+sub connection_info { return @{ $_[0] }{qw( dsn username password )} }
 
 sub dbh {
     my ($self) = @_;
@@ -45,12 +45,18 @@ Test::Database::Handle - A class for Test::Database handles
 
     use Test::Database;
 
-    my $handle = Test::Database->handle( SQLite => 'test' );
+    my $handle = Test::Database->handle(@requests);
+    my $dbh    = $handle->dbh();
 
 =head1 DESCRIPTION
 
 C<Test::Database::Handle> is a very simple class for encapsulating the
 information about a test database handle.
+
+C<Test::Database::Handle> objects are used within a test script to
+obtain the necessary information about a test database handle.
+Handles are obtained through the C<< Test::Database->handles() >>
+or C<< Test::Database->handle() >> methods.
 
 =head1 METHODS
 
@@ -60,7 +66,7 @@ C<Test::Database::Handle> provides the following methods:
 
 =item new( %args )
 
-Return a new C<Test::Database::Handle> with the given arguments
+Return a new C<Test::Database::Handle> with the given parameters
 (C<dsn>, C<username>, C<password>).
 
 The only mandatory argument is C<dsn>.

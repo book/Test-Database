@@ -1,16 +1,15 @@
-#!perl -T
-
+use strict;
+use warnings;
 use Test::More;
+use File::Find;
 
-my @modules = qw(
-	Test::Database
-	Test::Database::Handle
-	Test::Database::Driver
-);
+my @modules;
+find( sub { push @modules, $File::Find::name if /\.pm$/ }, 'blib/lib' );
 
 plan tests => scalar @modules;
 
-use_ok( $_ ) for @modules;
+diag("Testing Test::Database $Test::Database::VERSION, Perl $], $^X");
 
-diag( "Testing Test::Database $Test::Database::VERSION, Perl $], $^X" );
+use_ok($_)
+    for sort map { s!/!::!g; s/\.pm$//; s/^blib::lib:://; $_ } @modules;
 

@@ -2,9 +2,10 @@ package Test::Database::Handle;
 use strict;
 use warnings;
 use Carp;
+use DBI;
 
 # basic accessors
-for my $attr (qw( driver dsn username password name )) {
+for my $attr (qw( dbd dsn username password )) {
     no strict 'refs';
     *{$attr} = sub { return $_[0]{$attr} };
 }
@@ -16,13 +17,13 @@ sub new {
        for qw( dsn );
 
     my ( $scheme, $driver, $attr_string, $attr_hash, $driver_dsn )
-        = DBI->parse_dsn($args{dsn});
+        = DBI->parse_dsn( $args{dsn} );
 
     return bless {
         username => '',
         password => '',
         %args,
-        driver => $driver,
+        dbd => $driver,
     }, $class;
 }
 
@@ -101,13 +102,9 @@ connection triplet returned by C<connection_info()>.
 The optional parameter C<$attr> is a reference to a hash of connection
 attributes, passed directly to DBI's C<connect()> method.
 
-=item driver()
+=item dbd()
 
 Return the DBI driver name, as computed from the C<dsn>.
-
-=item name()
-
-Name of the database in the corresponding driver.
 
 =back
 

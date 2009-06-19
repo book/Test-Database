@@ -4,29 +4,32 @@ use Test::More;
 use Test::Database::Handle;
 use List::Util qw( sum );
 
-my $driver = bless {}, 'Test::Database::Driver::Zlonk';
-
 my @tests = (
 
     # args, expected result, error regex
-    [ [], undef, qr/^driver argument required/ ],
-    [ [ driver => $driver ], undef, qr/^dsn argument required/ ],
-    [   [ driver => $driver, dsn => 'dbi:SQLite:dbname=zlonk' ],
-        undef, qr/^name argument required/
+    [ [], undef, qr/^dsn argument required/ ],
+    [ [ dbd => 'Zlonk' ], undef, qr/^dsn argument required/ ],
+    [   [ driver => 'Foo', dsn => 'dbi:SQLite:dbname=zlonk' ],
+        {   dsn      => 'dbi:SQLite:dbname=zlonk',
+            username => '',
+            password => '',
+            dbd      => 'SQLite',
+            driver   => 'Foo',
+        }
     ],
-    [   [   driver => $driver,
-            dsn    => 'dbi:SQLite:dbname=zlonk',
-            name   => 'zlonk'
+    [   [   dbd  => 'SQLite',
+            dsn  => 'dbi:SQLite:dbname=zlonk',
+            name => 'zlonk'
         ],
         {   dsn      => 'dbi:SQLite:dbname=zlonk',
             username => '',
             password => '',
-            driver   => $driver,
+            dbd      => 'SQLite',
             name     => 'zlonk',
         }
     ],
 );
-my @attr = qw( dsn username password driver );
+my @attr = qw( dsn username password dbd );
 
 plan tests => sum map { $_->[2] ? 1 : 1 + @attr } @tests;
 

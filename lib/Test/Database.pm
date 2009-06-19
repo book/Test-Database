@@ -7,58 +7,25 @@ use File::Spec;
 use DBI;
 use Carp;
 
-our $VERSION = '0.99_03';
+use Test::Database::Handle;
 
-use Test::Database::Driver;
+our $VERSION = '0.99_04';
 
-#
-# driver information
-#
-my @DRIVERS;
-my @DRIVERS_OUR;
-my %DRIVERS_DBI = map { $_ => 1 } DBI->available_drivers();
-my @DRIVERS_OK;
+# internal data structure
+my @HANDLES;
 
-# find the list of all drivers we support
-{
-    my %seen;
-    for my $dir (@INC) {
-        opendir my $dh, File::Spec->catdir( $dir, qw< Test Database Driver > )
-            or next;
-        $seen{$_}++ for map { s/\.pm$//; $_ } grep {/\.pm$/} readdir $dh;
-        closedir $dh;
-    }
-    @DRIVERS_OUR = sort keys %seen;
-}
-
-@DRIVERS_OK = grep { exists $DRIVERS_DBI{$_} } @DRIVERS_OUR;
-
-# automatically load all drivers in @DRIVERS_OK
-# (but ignore compilation errors)
-eval "require Test::Database::Driver::$_" for @DRIVERS_OK;
-
-# load all file-based drivers
-push @DRIVERS, map {
-    eval { Test::Database::Driver->new( driver => $_ ) }
-    }
-    grep { "Test::Database::Driver::$_"->is_filebased() } @DRIVERS_OK;
-_canonicalize_drivers();
-
-# load drivers from configuration
-__PACKAGE__->load_drivers() if -e _rcfile();
+# startup configuration
+__PACKAGE__->load_config() if -e _rcfile();
 
 #
 # private functions
 #
+# location of our resource file
 sub _rcfile {
     File::Spec->catfile( File::HomeDir->my_data(), '.test-database' );
 }
 
-sub _canonicalize_drivers {
-    my %seen;
-    @DRIVERS = grep { !$seen{ $_->as_string() }++ } grep {defined} @DRIVERS;
-}
-
+# return a list of hashrefs representing each configuration section
 sub _read_file {
     my ($file) = @_;
     my @config;
@@ -71,11 +38,9 @@ sub _read_file {
 
         /\s*(\w+)\s*=\s*(.*)\s*/ && do {
             my ( $key, $value ) = ( $1, $2 );
-            $value = Test::Database::Driver::_unquote($value)
-                if $value =~ /\A["']/;
-            if ( $key eq 'driver' && keys %args ) {
+            if ( $key eq 'dsn' && keys %args ) {
                 push @config, {%args};
-                %args = ();
+                %args = ( type => $key );
             }
             $args{$key} = $value;
             next;
@@ -84,8 +49,7 @@ sub _read_file {
         # unknown line
         croak "Can't parse line at $file, line $.:\n  <$_>";
     }
-    push @config, {%args}
-        if keys %args;
+    push @config, {%args} if keys %args;
     close $fh;
 
     return @config;
@@ -94,75 +58,35 @@ sub _read_file {
 #
 # methods
 #
-sub unload_drivers { @DRIVERS = (); }
-
-sub all_drivers { return @DRIVERS_OUR }
-
-sub available_drivers { return @DRIVERS_OK }
-
-sub save_drivers {
+sub load_config {
     my ( $class, $file ) = @_;
     $file = _rcfile() if !defined $file;
 
-    _canonicalize_drivers();
-    open my $fh, '>', $file or croak "Can't open $file for writing: $!";
-    print $fh map { $_->as_string, "\n" } @DRIVERS;
-    close $fh;
+    push @HANDLES, map { Test::Database::Handle->new(%$_) } _read_file($file);
 }
 
-sub load_drivers {
-    my ( $class, $file ) = @_;
-    $file = _rcfile() if !defined $file;
-
-    push @DRIVERS, map { Test::Database::Driver->new(%$_) } _read_file($file);
-    _canonicalize_drivers();
-}
-
-sub drivers {
-    my ( $class, @requests ) = @_;
-    return @DRIVERS if !@requests;
-
-    # turn strings (driver name) into actual requests
-    @requests = map { (ref) ? $_ : { driver => $_ } } @requests;
-
-    my @drivers;
-    for my $request (@requests) {
-        for my $driver ( grep { $_->{driver} eq $request->{driver} }
-            @DRIVERS )
-        {
-            next
-                if exists $request->{version}
-                    && $driver->version() != $request->{version};
-            next
-                if exists $request->{min_version}
-                    && $driver->version() < $request->{min_version};
-            next
-                if exists $request->{max_version}
-                    && $driver->version() >= $request->{max_version};
-            push @drivers, $driver;
-        }
-    }
-
-    my %seen;
-    return grep { !$seen{$_}++ } @drivers;
-}
-
+# requests for handles
 sub handles {
     my ( $class, @requests ) = @_;
 
+    # empty request means "everything"
+    return @HANDLES if !@requests;
+
     # turn strings (driver name) into actual requests
     @requests = map { (ref) ? $_ : { driver => $_ } } @requests;
 
-    # first filter on the drivers
-    my @drivers = $class->drivers(@requests);
+    # get the matching handles
+    my @handles;
+    for my $handle (@HANDLES) {
+        push @handles, $handle
+            if grep { $_->{driver} eq $handle->{driver} } @requests;
+    }
 
     # then on the handles
-    return map { $_->handles(@requests) } @drivers;
+    return @handles;
 }
 
-sub cleanup {
-    $_->cleanup() for @DRIVERS;
-}
+sub handle { return ( handles(@_) )[0]; }
 
 'TRUE';
 
@@ -187,7 +111,7 @@ Maybe you wrote generic code you want to test on all available databases:
 
     # run the tests
     for my $handle (@handles) {
-        diag "Testing with " . $handle->dbd(); # mysql, SQLite, etc.
+        diag "Testing with " . $handle->driver(); # mysql, SQLite, etc.
 
         # there are several ways to access the dbh:
 
@@ -204,17 +128,12 @@ It's possible to limit the results, based on the databases your code
 supports:
 
     my @handles = Test::Database->handles(
-        'SQLite',    # a SQLite database
-        {   driver      => 'mysql',     # mysql database
-            version_min => '5',         # at least 5.0.0
-            version_max => '5.0.67',    # up to 5.0.67 (excluded)
-        },
-        {   driver  => 'Pg',            # Postgres database
-            version => '8.3.7',         # exact version
-        }
+        'SQLite',    # SQLite database
+        { driver => 'mysql' },    # mysql database
+        { driver => 'Pg' },       # Postgres database
     );
 
-    # use it as above
+    # use them as above
 
 If you only need a single database handle, all the following return
 the same one:
@@ -250,9 +169,7 @@ C<Test::Database> provides a simple way for test authors to request
 a test database, without worrying about environment variables or the
 test host configuration.
 
-See L<SYNOPSIS> for typical usage, and L<Test::Database::Tutorial>
-for a more detailed introduction (both for test authors and CPAN
-testers).
+See L<SYNOPSIS> for typical usage.
 
 =head1 METHODS
 
@@ -260,120 +177,33 @@ C<Test::Database> provides the following methods:
 
 =over 4
 
-=item all_drivers()
+=item load_config( [ $file ] )
 
-Return the list of supported drivers.
-
-=item available_drivers()
-
-Return the list of supported DBI drivers that are installed.
-
-This is the intersection of the results of
-C<< Test::Database->all_drivers() >> and C<< DBI->available_drivers() >>.
-
-=item load_drivers( [ $file ] )
-
-Read the database drivers configuration from the given C<$file> and
-load them.
+Read configuration from the given C<$file>.
 
 If C<$file> is not given, the local equivalent of F<~/.test-database> is used.
-
-=item save_drivers( [ $file ] )
-
-Saver the available database drivers configuration to the given C<$file>.
-
-If C<$file> is not given, the local equivalent of F<~/.test-database> is used.
-
-=item unload_drivers()
-
-Unload all drivers.
-
-=item drivers( @requests )
-
-Return the C<Test::Database::Driver> objects corresponding to
-all the available drivers.
-
-If C<@requests> is provided, only the drivers that match one of the
-requests are returned.
-
-See L<REQUESTS> for details about writing requests.
 
 =item handles( @requests )
 
-Return a set of C<Test::Database::Handle> objects that matche the
+Return a set of C<Test::Database::Handle> objects that match the
 given C<@requests>.
 
-If C<@requests> is not provided, return a handle for each database
-that exists in each driver.
+If C<@requests> is not provided, return all the available handles.
 
 See L<REQUESTS> for details about writing requests.
-
-=item cleanup()
-
-Call the C<cleanup()> method of all available drivers.
 
 =back
 
 =head1 REQUESTS
 
-The C<drivers()>, C<handles()> and C<dbh()> methods tales I<requests>
-as parameters. A request is a simple hash reference, with a number of
-recognized keys.
-
-Some keys have an effect on driver selection:
+The C<handles()> method takes I<requests> as parameters. A request is
+a simple hash reference, with a number of recognized keys.
 
 =over 4
 
 =item *
 
-C<driver>: driver name
-
-If missing, all available drivers will match.
-
-=item *
-
-C<version>: exact database engine version
-
-Only database engines having a version number identical to the
-given version will match.
-
-=item *
-
-C<min_version>: minimum database engine version
-
-Only database engines having a version number greater or equal to the
-given minimum version will match.
-
-=item *
-
-C<max_version>: maximum database engine version
-
-Only database engines having a version number lower (and not equal) to the
-given maximum version will match.
-
-=back
-
-Others have an effect on actual database selection:
-
-=over 4
-
-=item *
-
-C<name>: name of the database to select or create.
-
-If a database of the given name exists in the select database engine,
-a handle to it will be returned.
-
-If the field is missing, a new database will be created with an
-automatically generated name.
-
-=item *
-
-C<keep>: boolean
-
-By default, database are dropped at the end of the program's life.
-If this parameter is true, the database will not be dropped, and
-can be selected again using its name.
+C<driver>: driver name (based on the C<DBD::> name).
 
 =back
 
@@ -446,10 +276,10 @@ and to Greg Sabino Mullane for writing a full Postgres driver,
 none of which made it into the final release because of the complete
 change in goals and implementation between versions 0.02 and 0.03.
 
-The work leading to the new implementation was carried on during
-the Perl QA Hackathon, held in Birmingham in March 2009. Thanks to
-Birmingham.pm for organizing it and to Booking.com for sending me
-there.
+The work leading to the new implementation (version 0.99 and later)
+was carried on during the Perl QA Hackathon, held in Birmingham in March
+2009. Thanks to Birmingham.pm for organizing it and to Booking.com for
+sending me there.
 
 =head1 COPYRIGHT
 

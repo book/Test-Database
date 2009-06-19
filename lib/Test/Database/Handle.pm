@@ -16,7 +16,7 @@ sub new {
        for qw( dsn );
 
     my ( $scheme, $driver, $attr_string, $attr_hash, $driver_dsn )
-        = DBI->parse_dsn($args{dsn})
+        = DBI->parse_dsn($args{dsn});
 
     return bless {
         username => '',
@@ -29,8 +29,8 @@ sub new {
 sub connection_info { return @{ $_[0] }{qw( dsn username password )} }
 
 sub dbh {
-    my ($self) = @_;
-    return $self->{dbh} ||= DBI->connect( $self->connection_info() );
+    my ( $self, $attr ) = @_;
+    return $self->{dbh} ||= DBI->connect( $self->connection_info(), $attr );
 }
 
 'IDENTITY';
@@ -93,10 +93,13 @@ Return the connection password.
 
 Return the connection information tripler (C<dsn>, C<username>, C<password>).
 
-=item dbh()
+=item dbh( [ $attr ] )
 
 Return the DBI database handle obtained when connecting with the
 connection triplet returned by C<connection_info()>.
+
+The optional parameter C<$attr> is a reference to a hash of connection
+attributes, passed directly to DBI's C<connect()> method.
 
 =item driver()
 

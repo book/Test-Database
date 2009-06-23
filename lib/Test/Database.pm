@@ -73,13 +73,16 @@ sub handles {
     return @HANDLES if !@requests;
 
     # turn strings (driver name) into actual requests
-    @requests = map { (ref) ? $_ : { driver => $_ } } @requests;
+    @requests = map { (ref) ? $_ : { dbd => $_ } } @requests;
+
+    # process parameter aliases
+    $_->{dbd} ||= delete $_->{driver} for @requests;
 
     # get the matching handles
     my @handles;
     for my $handle (@HANDLES) {
         push @handles, $handle
-            if grep { $_->{driver} eq $handle->{driver} } @requests;
+            if grep { $_->{dbd} eq $handle->{dbd} } @requests;
     }
 
     # then on the handles
@@ -128,9 +131,9 @@ It's possible to limit the results, based on the databases your code
 supports:
 
     my @handles = Test::Database->handles(
-        'SQLite',    # SQLite database
-        { driver => 'mysql' },    # mysql database
-        { driver => 'Pg' },       # Postgres database
+        'SQLite',                 # SQLite database
+        { dbd    => 'mysql' },    # or mysql database
+        { driver => 'Pg' },       # or Postgres database
     );
 
     # use them as above
@@ -203,12 +206,14 @@ a simple hash reference, with a number of recognized keys.
 
 =item *
 
-C<driver>: driver name (based on the C<DBD::> name).
+C<dbd>: driver name (based on the C<DBD::> name).
+
+C<driver> is an alias for C<dbd>.
 
 =back
 
 A request can also consist of a single string, in which case it is
-interpreted as a shortcut for C<{ driver => $string }>.
+interpreted as a shortcut for C<{ dbd => $string }>.
 
 =head1 AUTHOR
 

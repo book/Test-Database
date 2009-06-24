@@ -7,11 +7,14 @@ use File::Spec;
 my @good = (
     {   dsn      => 'dbi:mysql:database=mydb;host=localhost;port=1234',
         username => 'user',
-        password => 's3kr3t',
+        password => 's3k r3t',
+    },
+    {   dsn      => 'dbi:mysql:database=mydb;host=remotehost;port=5678',
+        username => 'otheruser',
     }
 );
 
-plan tests => 1 + @good + 2;
+plan tests => 1 + @good + 3;
 
 # load a correct file
 my $file   = File::Spec->catfile(qw< t database.rc >);
@@ -34,4 +37,8 @@ like(
     qr/^Can't parse line at .*, line \d+:\n  <bad format> at /,
     'Expected error message'
 );
+
+# load an empty file
+$file = File::Spec->catfile(qw< t database.empty >);
+is( scalar Test::Database::_read_file($file), 0, 'Empty file' );
 

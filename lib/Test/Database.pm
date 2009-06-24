@@ -195,6 +195,11 @@ If C<@requests> is not provided, return all the available handles.
 
 See L<REQUESTS> for details about writing requests.
 
+=item handle( @request )
+
+I<Singular> version of C<handles()>, that returns the first matching
+handle.
+
 =back
 
 =head1 REQUESTS

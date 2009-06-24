@@ -38,9 +38,9 @@ sub _read_file {
 
         /\s*(\w+)\s*=\s*(.*)\s*/ && do {
             my ( $key, $value ) = ( $1, $2 );
-            if ( $key eq 'dsn' && keys %args ) {
-                push @config, {%args};
-                %args = ( type => $key );
+            if ( $key eq 'dsn' ) {
+                push @config, {%args} if keys %args;
+                %args = ();
             }
             $args{$key} = $value;
             next;

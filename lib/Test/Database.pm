@@ -146,7 +146,7 @@ the same one:
     my ($handle) = Test::Database->handles(@requests);
     my $handle   = Test::Database->handles(@requests);    # scalar context
     my $handle   = Test::Database->handle(@requests);     # singular!
-    my @handles  = Test::Database->handle(@requests);     # one item only
+    my @handles  = Test::Database->handle(@requests);     # one or zero item
 
 You can use the same requests again if you need to use the same
 test databases over several test scripts.

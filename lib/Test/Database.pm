@@ -59,8 +59,9 @@ sub _read_file {
 # methods
 #
 sub load_config {
-    my ( $class, $file ) = @_;
-    $file = _rcfile() if !defined $file;
+    my ( $class, $file, $reset ) = @_;
+    $file    = _rcfile() if !defined $file;
+    @HANDLES = ()        if $reset;
 
     push @HANDLES, map { Test::Database::Handle->new(%$_) } _read_file($file);
 }

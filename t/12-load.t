@@ -11,7 +11,8 @@ my @good = (
     },
     {   dsn      => 'dbi:mysql:database=mydb;host=remotehost;port=5678',
         username => 'otheruser',
-    }
+    },
+    { dsn => 'dbi:SQLite:db.sqlite' },
 );
 
 plan tests => 1 + @good + 3;

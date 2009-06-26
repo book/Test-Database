@@ -9,3 +9,6 @@ password = s3k r3t
 dsn      = dbi:mysql:database=mydb;host=remotehost;port=5678
 username = otheruser
 
+# sqlite
+dsn      = dbi:SQLite:db.sqlite
+

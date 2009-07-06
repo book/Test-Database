@@ -17,6 +17,23 @@ my %handle = (
     sqlite => Test::Database::Handle->new( dsn => 'dbi:SQLite:db.sqlite', ),
 );
 
+# test description:
+# 1st char is variable to look at: array (@) or scalar ($)
+# 2nd char is expected result: list (@), single item ($) or number (1)
+my @code;
+my %tests = map {
+    my ( $fmt, $code ) = split / /, $_, 2;
+    push @code, $code;
+    ( $code => $fmt )
+} split /\n/, << 'CODE';
+@@ @handles = Test::Database->handles(@requests);
+$1 $handle  = Test::Database->handles(@requests);
+$$ $handle  = ( Test::Database->handles(@requests) )[0];
+$$ ($handle) = Test::Database->handles(@requests);
+$$ $handle  = Test::Database->handle(@requests);
+@$ @handles = Test::Database->handle(@requests);
+CODE
+
 my @tests = (
 
     # request, expected response
@@ -44,16 +61,38 @@ my @tests = (
 my $config = File::Spec->catfile( 't', 'database.rc' );
 Test::Database->load_config( $config, 1 );
 
-plan tests => 2 * @tests;
+plan tests => @tests * keys %tests;
 
 for my $test (@tests) {
     my ( $requests, $responses, $desc ) = @$test;
+    my %expected = (
+        '1' => [ scalar @$responses ],
+        '$' => [ $responses->[0] ],
+        '@' => $responses,
+        '0' => [],
+    );
 
-    # plural form
-    my @handles = Test::Database->handles(@$requests);
-    is_deeply( \@handles, $responses, "Test::Database->handles( $desc )" );
+    # try out each piece of code
+    my @requests = @$requests;
+    for my $code (@code) {
+        my ( $handle, @handles );
+        my ( $got, $expected ) = split //, $tests{$code};
 
-    # singular form
-    my $handle = Test::Database->handle(@$requests);
-    is_deeply( $handle, $responses->[0], "Test::Database->handle( $desc )" );
+        # special case
+        $expected = '0' if $tests{$code} eq '@$' && !@$responses;
+
+        # run the code
+        eval "$code; 1;" or do {
+            ok( 0, $code );
+            diag $@;
+            next;
+        };
+        ( my $mesg = $code ) =~ s/\@requests/$desc/;
+        $got
+            = $got eq '$' ? [$handle]
+            : $got eq '@' ? \@handles
+            :               die "Unknown variable symbol $got";
+        is_deeply( $got, $expected{$expected}, $mesg );
+    }
 }
+

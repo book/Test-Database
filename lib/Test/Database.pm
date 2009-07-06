@@ -90,7 +90,10 @@ sub handles {
     return @handles;
 }
 
-sub handle { return ( handles(@_) )[0]; }
+sub handle {
+    my @h = shift->handles(@_);
+    return @h ? $h[0] : ();
+}
 
 'TRUE';
 

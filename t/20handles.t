@@ -54,6 +54,11 @@ my @tests = (
         [ @handle{qw( mysql1 mysql2 sqlite )} ],
         q{'Oracle', 'mysql', 'SQLite'}
     ],
+    [ [ { dbd => 'mysql' } ], [ @handle{qw( mysql1 mysql2 )} ], q{'mysql'} ],
+    [   [ { driver => 'mysql' } ],
+        [ @handle{qw( mysql1 mysql2 )} ],
+        q{'mysql'}
+    ],
 
 );
 

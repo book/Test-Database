@@ -123,7 +123,7 @@ Maybe you wrote generic code you want to test on all available databases:
 
     # run the tests
     for my $handle (@handles) {
-        diag "Testing with " . $handle->driver(); # mysql, SQLite, etc.
+        diag "Testing with " . $handle->dbd();    # mysql, SQLite, etc.
 
         # there are several ways to access the dbh:
 

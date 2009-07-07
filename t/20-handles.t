@@ -63,8 +63,9 @@ my @tests = (
 );
 
 # reset the internal structures and force loading our test config
+Test::Database->clean_config();
 my $config = File::Spec->catfile( 't', 'database.rc' );
-Test::Database->load_config( $config, 1 );
+Test::Database->load_config( $config );
 
 plan tests => @tests * keys %tests;
 

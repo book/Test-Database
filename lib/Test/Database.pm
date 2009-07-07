@@ -58,6 +58,10 @@ sub _read_file {
 #
 # methods
 #
+sub clean_config {
+    @HANDLES = ();
+}
+
 sub load_config {
     my ( $class, @files ) = @_;
     @files = ( _rcfile() ) if !@files;
@@ -191,9 +195,9 @@ Read configuration from the files in C<@files>.
 
 If no file is provided, the local equivalent of F<~/.test-database> is used.
 
-Read configuration from the given C<$file>.
+=item clean_config()
 
-If C<$file> is not given, the local equivalent of F<~/.test-database> is used.
+Empties whatever configuration has already been loaded.
 
 =item handles( @requests )
 

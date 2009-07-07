@@ -59,11 +59,12 @@ sub _read_file {
 # methods
 #
 sub load_config {
-    my ( $class, $file, $reset ) = @_;
-    $file    = _rcfile() if !defined $file;
-    @HANDLES = ()        if $reset;
+    my ( $class, @files ) = @_;
+    @files = ( _rcfile() ) if !@files;
 
-    push @HANDLES, map { Test::Database::Handle->new(%$_) } _read_file($file);
+    push @HANDLES,
+        map { Test::Database::Handle->new(%$_) }
+        map { _read_file($_) } @files;
 }
 
 # requests for handles
@@ -184,7 +185,11 @@ C<Test::Database> provides the following methods:
 
 =over 4
 
-=item load_config( [ $file ] )
+=item load_config( @files )
+
+Read configuration from the files in C<@files>.
+
+If no file is provided, the local equivalent of F<~/.test-database> is used.
 
 Read configuration from the given C<$file>.
 

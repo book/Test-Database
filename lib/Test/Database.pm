@@ -234,6 +234,28 @@ If the two keys are present, the C<driver> key will be ignored.
 A request can also consist of a single string, in which case it is
 interpreted as a shortcut for C<{ dbd => $string }>.
 
+=head1 FILES
+
+The list of available, authorized DSN is stored in the local equivalent
+of F<~/.test-database>. It's a simple list of key/value pairs, with the
+C<dsn> key being used to split successive entries:
+
+    # mysql
+    dsn      = dbi:mysql:database=mydb;host=localhost;port=1234
+    username = user
+    password = s3k r3t
+    
+    # DBD::CSV
+    dsn      = dbi:CSV:f_dir=test-db
+    
+    # sqlite
+    dsn      = dbi:SQLite:db.sqlite
+
+The C<username> and C<password> keys are optional and empty strings will be
+used if they are not provided.
+
+Empty lines and comments are ignored.
+
 =head1 AUTHOR
 
 Philippe Bruhat (BooK), C<< <book@cpan.org> >>

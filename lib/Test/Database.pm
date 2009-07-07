@@ -218,6 +218,7 @@ a simple hash reference, with a number of recognized keys.
 C<dbd>: driver name (based on the C<DBD::> name).
 
 C<driver> is an alias for C<dbd>.
+If the two keys are present, the C<driver> key will be ignored.
 
 =back
 
@@ -270,6 +271,27 @@ Some of the items on the TODO list:
 
 =item *
 
+Bring back the C<Test::Database::Driver> modules from the limbo
+they were put after version 0.99_04. First, for file-based drivers,
+eventually for other database engines.
+
+=item *
+
+Simple support for always getting the same database between test scriptS.
+
+=item *
+
+Ensure each test suite gets a different database, if possible.
+(It's impossible with fixed DSN gotten from the configuration file,
+but rather trivial with file-based drivers.)
+
+=item *
+
+Write a Cookbook/Tutorial to make adoption easier for testers and module
+authors.
+
+=item *
+
 Add a database engine autodetection script/module, to automatically
 write the F<.test-database> configuration file.
 
@@ -283,7 +305,7 @@ Thanks to Nelson Ferraz for writing C<DBIx::Slice>, the testing of
 which made me want to have a generic way to obtain a test database.
 
 Thanks to Mark Lawrence for discussing this module with me, and
-sending me an alternative implemenation to show me what he needed.
+sending me an alternative implementation to show me what he needed.
 
 Thanks to Kristian Koehntopp for helping me write a mysql driver,
 and to Greg Sabino Mullane for writing a full Postgres driver,

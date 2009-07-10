@@ -1,5 +1,15 @@
 Revision history for Test-Database
 
+1.00 Sat Jul 11 00:39:04 CEST 2009
+        [IMPROVEMENTS]
+        - rewrite/cleanup: the module now only supports a list of DSN
+          provided in the ~/.test-database configuration file
+        - the only two modules lefts for now are Test::Database and
+          Test::Database::Handle
+        [TODO]
+        - future versions will appear shortly and bring back some
+          of the features that appeared in 0.99 and later
+
 0.99_03 Tue Apr  6 22:16:05 CEST 2009
         [DRIVERS]
         - new driver for DBD::Pg

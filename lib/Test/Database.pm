@@ -9,7 +9,7 @@ use Carp;
 
 use Test::Database::Handle;
 
-our $VERSION = '0.99_04';
+our $VERSION = '1.00';
 
 # internal data structure
 my @HANDLES;

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Database;
+use Test::Database::Util;
 use File::Spec;
 
 my @good = (
@@ -19,7 +19,7 @@ plan tests => 1 + @good + 3;
 
 # load a correct file
 my $file   = File::Spec->catfile(qw< t database.rc >);
-my @config = Test::Database::_read_file($file);
+my @config = _read_file($file);
 
 is( scalar @config, scalar @good,
     "Got @{[scalar @good]} drivers from $file" );
@@ -31,7 +31,7 @@ for my $test (@good) {
 
 # try to load a bad file
 $file = File::Spec->catfile(qw< t database.bad >);
-ok( !eval { Test::Database::_read_file($file); 1 },
+ok( !eval { _read_file($file); 1 },
     "_read_file( $file ) failed" );
 like(
     $@,
@@ -41,5 +41,5 @@ like(
 
 # load an empty file
 $file = File::Spec->catfile(qw< t database.empty >);
-is( scalar Test::Database::_read_file($file), 0, 'Empty file' );
+is( scalar _read_file($file), 0, 'Empty file' );
 

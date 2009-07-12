@@ -7,6 +7,7 @@ use File::Spec;
 use DBI;
 use Carp;
 
+use Test::Database::Util;
 use Test::Database::Handle;
 
 our $VERSION = '1.00';
@@ -23,36 +24,6 @@ __PACKAGE__->load_config() if -e _rcfile();
 # location of our resource file
 sub _rcfile {
     File::Spec->catfile( File::HomeDir->my_data(), '.test-database' );
-}
-
-# return a list of hashrefs representing each configuration section
-sub _read_file {
-    my ($file) = @_;
-    my @config;
-
-    open my $fh, '<', $file or croak "Can't open $file for reading: $!";
-    my %args;
-    while (<$fh>) {
-        next if /^\s*(?:#|$)/;    # skip blank lines and comments
-        chomp;
-
-        /\s*(\w+)\s*=\s*(.*)\s*/ && do {
-            my ( $key, $value ) = ( $1, $2 );
-            if ( $key eq 'dsn' ) {
-                push @config, {%args} if keys %args;
-                %args = ();
-            }
-            $args{$key} = $value;
-            next;
-        };
-
-        # unknown line
-        croak "Can't parse line at $file, line $.:\n  <$_>";
-    }
-    push @config, {%args} if keys %args;
-    close $fh;
-
-    return @config;
 }
 
 #

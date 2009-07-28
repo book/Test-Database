@@ -45,11 +45,12 @@ my @DRIVERS_OK;
     @DRIVERS_OK = grep { exists $DRIVERS_DBI{$_} } @DRIVERS_OUR;
 
     # actual driver objects
-    @DRIVERS = grep {defined}
-        map {
-        eval { Test::Database::Driver->new( dbd => $_ ); }
+    @DRIVERS = map {
+        my $driver;
+        eval { $driver = Test::Database::Driver->new( dbd => $_ ); 1; }
             or warn "$@\n";
-        } @DRIVERS_OK;
+        $driver || ();
+    } @DRIVERS_OK;
 }
 
 # startup configuration

@@ -107,13 +107,9 @@ sub _version      { die "$_[0] doesn't have a _version() method\n" }
 sub dsn           { die "$_[0] doesn't have a dsn() method\n" }
 
 sub create_database {
-    my ( $self, $dbname ) = @_;
-    if ( $self->is_filebased() ) {
-        croak "Invalid database name: $dbname"
-            if $dbname && $dbname !~ /^\w+$/;
-        goto &_filebased_create_database;
-    }
-    die "$_[0] doesn't have a create_database() method\n";
+    my $class = ref $_[0] || $_[0];
+    goto &_filebased_databases if $class->is_filebased();
+    die "$class doesn't have a create_database() method\n";
 }
 
 sub databases {
@@ -142,9 +138,8 @@ sub _filebased_databases {
 }
 
 sub _filebased_create_database {
-    my ( $self, $dbname, $keep ) = @_;
-    $dbname = $self->available_dbname() if !$dbname;
-    $self->register_drop($dbname) if !$keep;
+    my ( $self ) = @_;
+    my $dbname = $self->available_dbname();
 
     return Test::Database::Handle->new(
         dsn    => $self->dsn($dbname),
@@ -177,7 +172,7 @@ Test::Database::Driver - Base class for Test::Database drivers
     }
 
     sub create_database {
-        my ( $self, $dbname, $keep ) = @_;
+        my ( $self ) = @_;
         ...;
         return $handle;
     }

@@ -8,12 +8,49 @@ use DBI;
 use Carp;
 
 use Test::Database::Util;
+use Test::Database::Driver;
 use Test::Database::Handle;
 
 our $VERSION = '1.00';
 
-# internal data structure
+#
+# global configuration
+#
+
+# internal data structures
 my @HANDLES;
+my @DRIVERS;
+
+# driver information
+my @DRIVERS_OUR;
+my @DRIVERS_OK;
+
+# find the list of all drivers we support
+{
+    my %seen;
+    for my $dir (@INC) {
+        opendir my $dh, File::Spec->catdir( $dir, qw( Test Database Driver ) )
+            or next;
+        $seen{$_}++ for map { s/\.pm$//; $_ } grep {/\.pm$/} readdir $dh;
+        closedir $dh;
+    }
+
+    # drivers we support
+    @DRIVERS_OUR = sort keys %seen;
+
+    # available DBI drivers
+    my %DRIVERS_DBI = map { $_ => 1 } DBI->available_drivers();
+
+    # supported
+    @DRIVERS_OK = grep { exists $DRIVERS_DBI{$_} } @DRIVERS_OUR;
+
+    # actual driver objects
+    @DRIVERS = grep {defined}
+        map {
+        eval { Test::Database::Driver->new( dbd => $_ ); }
+            or warn "$@\n";
+        } @DRIVERS_OK;
+}
 
 # startup configuration
 __PACKAGE__->load_config() if -e _rcfile();
@@ -31,6 +68,7 @@ sub _rcfile {
 #
 sub clean_config {
     @HANDLES = ();
+    @DRIVERS = ();
 }
 
 sub load_config {
@@ -40,6 +78,15 @@ sub load_config {
     push @HANDLES,
         map { Test::Database::Handle->new(%$_) }
         map { _read_file($_) } @files;
+}
+
+sub list_drivers {
+    my ( $class, $type ) = @_;
+    $type ||= '';
+    return
+          $type eq 'all'       ? @DRIVERS_OUR
+        : $type eq 'available' ? @DRIVERS_OK
+        :                        map { $_->name() } @DRIVERS;
 }
 
 # requests for handles

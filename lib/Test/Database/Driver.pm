@@ -42,17 +42,17 @@ sub new {
     my ( $class, %args ) = @_;
 
     if ( $class eq __PACKAGE__ ) {
-        croak "No driver defined" if !exists $args{driver};
-        eval "require Test::Database::Driver::$args{driver}"
-            or croak $@;
-        $class = "Test::Database::Driver::$args{driver}";
-        $class->__init();    # survive a cleanup()
+        croak "dbd parameter required" if !exists $args{dbd};
+        eval "require Test::Database::Driver::$args{dbd}"
+            or do { $@ =~ s/ at .*?\z//s; croak $@; };
+        $class = "Test::Database::Driver::$args{dbd}";
+        $class->__init();
     }
     my $self = bless {
         username => '',
         password => '',
         %args,
-        driver => $class->name()
+        dbd => $class->name() || $args{dbd},
         },
         $class;
 

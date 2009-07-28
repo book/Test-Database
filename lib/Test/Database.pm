@@ -207,6 +207,18 @@ C<Test::Database> provides the following methods:
 
 =over 4
 
+=item list_drivers( [$type] )
+
+Return a list of driver names of the given "type".
+
+C<all> returns the list of all existing C<Test::Database::Driver> subclasses.
+
+C<available> returns the list of C<Test::Database::Driver> subclasses for which the matching
+C<DBD> class is available.
+
+Called with no parameter (or anything not matching C<all> or C<available>), it will return
+the list of currently loaded drivers.
+
 =item load_config( @files )
 
 Read configuration from the files in C<@files>.

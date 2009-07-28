@@ -80,9 +80,12 @@ sub available_dbname {
 sub name { return ( $_[0] =~ /^Test::Database::Driver::([:\w]*)/g )[0]; }
 
 sub base_dir {
-    return $_[0] eq __PACKAGE__
-        ? $root
-        : File::Spec->catdir( $root, $_[0]->name() );
+    my ($self) = @_;
+    my $class = ref $self || $self;
+    return $root if $class eq __PACKAGE__;
+    my $dir = File::Spec->catdir( $root, $class->name() );
+    return $dir if !ref $self;    # class method
+    return $self->{base_dir} ||= $dir;    # may be overriden in new()
 }
 
 sub version {

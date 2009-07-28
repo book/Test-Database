@@ -17,9 +17,6 @@ my $root
     File::Spec->catdir( File::Spec->tmpdir(), 'Test-Database-' . getlogin() )
     );
 
-# some information stores, indexed by driver class name
-my %drh;
-
 # generic driver class initialisation
 sub __init {
     my ($class) = @_;
@@ -36,7 +33,7 @@ sub __init {
     }
 
     # load the DBI driver (may die)
-    $drh{ $class->name() } ||= DBI->install_driver( $class->name() );
+    DBI->install_driver( $class->name() );
 }
 
 #
@@ -55,7 +52,6 @@ sub new {
     my $self = bless {
         username => '',
         password => '',
-        map ( { $_ => '' } $class->essentials() ),
         %args,
         driver => $class->name()
         },
@@ -69,23 +65,6 @@ sub new {
     return $self;
 }
 
-sub cleanup {
-    my ($self) = @_;
-    if ( $self->is_filebased() ) {
-        my $dir = $self->base_dir();
-        for my $entry ( map { File::Spec->catfile( $dir, $_ ) }
-            $self->_filebased_databases() )
-        {
-            if ( -d $entry ) {
-                rmtree( [$entry] );
-            }
-            else {
-                unlink $entry;
-            }
-        }
-    }
-}
-
 sub available_dbname {
     my ($self) = @_;
     my $name = $self->_basename();
@@ -95,40 +74,6 @@ sub available_dbname {
     return "$name$n";
 }
 
-sub as_string {
-    return join '',
-        map { "$_ = " . _quote( $_[0]{$_} || '' ) . "\n" }
-        driver => $_[0]->essentials();
-}
-
-sub handles {
-    my ( $self, @requests ) = @_;
-
-    # return all available handles if no request
-    my @databases = $self->databases();
-    return map { $self->_handle($_) } @databases if !@requests;
-
-    # get unique names, with higher priority on keep
-    # '' will get a random name
-    my %keep;
-    for my $request (@requests) {
-        my $dbname = exists $request->{name} ? $request->{name} : '';
-        $keep{$dbname} = $request->{keep} if !$keep{$dbname};
-    }
-
-    # create all databases if needed
-    return map { $self->create_database( $_, $keep{$_} ) } keys %keep;
-}
-
-my @DROP;
-sub register_drop { push @DROP, [@_]; }
-
-END {
-    for my $drop (@DROP) {
-        my ( $driver, $dbname ) = @$drop;
-        $driver->drop_database($dbname);
-    }
-}
 
 #
 # ACCESSORS
@@ -146,7 +91,6 @@ sub version {
     return $_[0]{version} ||= version->new( $_[0]->_version() );
 }
 
-sub drh      { return $drh{ $_[0]->name() } }
 sub bare_dsn { return $_[0]{dsn} ||= $_[0]->_bare_dsn() }
 sub username { return $_[0]{username} }
 sub password { return $_[0]{password} }
@@ -176,7 +120,6 @@ sub databases {
 }
 
 # THESE MAY BE OVERRIDDEN IN THE DERIVED CLASSES
-sub essentials   { }
 sub is_filebased {0}
 sub _bare_dsn    { join ':', 'dbi', $_[0]->name(), ''; }
 
@@ -206,38 +149,6 @@ sub _filebased_create_database {
         name   => $dbname,
         driver => $self,
     );
-}
-
-sub _handle {
-    my ( $self, $name ) = @_;
-    return Test::Database::Handle->new(
-        dsn    => $self->dsn($name),
-        name   => $name,
-        driver => $self,
-    );
-}
-
-#
-# PRIVATE FUNCTIONS
-#
-sub _quote {
-    my ($string) = @_;
-    return $string if $string =~ /^\w+$/;
-
-    $string =~ s/\\/\\\\/g;
-    $string =~ s/"/\\"/g;
-    $string =~ s/\n/\\n/g;
-    return qq<"$string">;
-}
-
-sub _unquote {
-    my ($string) = @_;
-    return $string if $string !~ /\A(["']).*\1\z/s;
-
-    my $quote = chop $string;
-    $string = substr( $string, 1 );
-    $string =~ s/\\(.)/$1 eq 'n' ? "\n" : $1/eg;
-    return $string;
 }
 
 'CONNECTION';

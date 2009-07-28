@@ -4,25 +4,25 @@ use Test::More;
 use Test::Database;
 use Test::Database::Driver;
 
-my @drivers = Test::Database->all_drivers();
-Test::Database->cleanup();
+my @drivers = Test::Database->list_drivers('available');
 
-plan tests => @drivers * ( 1 + 2 * 13 ) + 2;
+plan tests => @drivers * ( 1 + 2 * 11 ) + 2;
 
 my $base = 'Test::Database::Driver';
 
-for my $name ( Test::Database->all_drivers() ) {
+for my $name ( Test::Database->list_drivers('available') ) {
     my $class = "Test::Database::Driver::$name";
     use_ok($class);
 
     for my $t (
-        [ $base  => eval { $base->new( driver => $name ) } ],
-        [ $class => eval { $class->new() } ],
+        [ $base => eval { $base->new( dbd => $name ) } || ( '', $@ ) ],
+        [ $class => eval { $class->new() } || ( '', $@ ) ],
         )
     {
-        my ( $created_by, $driver ) = @$t;
+        my ( $created_by, $driver, $at ) = @$t;
+        $at =~ s/ at .*\n// if $at;
     SKIP: {
-            skip "Failed to create $name driver with $created_by", 13
+            skip "Failed to create $name driver with $created_by ($at)", 11
                 if !$driver;
             diag "$name driver (created by $created_by)";
 
@@ -51,9 +51,8 @@ for my $name ( Test::Database->all_drivers() ) {
             isa_ok( $version, 'version', "$desc version()" );
             diag $@ if $@;
 
-            # drh, bare_dsn, username, password, connection_info
-            isa_ok( $driver->drh(), 'DBI::dr', "$desc drh()" );
-            ok( $driver->bare_dsn(),         "$desc has are_ dsn()" );
+            # bare_dsn, username, password, connection_info
+            ok( $driver->bare_dsn(),         "$desc has a bare_dsn()" );
             ok( defined $driver->username(), "$desc has a username()" );
             ok( defined $driver->password(), "$desc has a password()" );
             is_deeply(
@@ -61,21 +60,16 @@ for my $name ( Test::Database->all_drivers() ) {
                 [ map { $driver->$_ } qw< bare_dsn username password > ],
                 "$desc has a connection_info()"
             );
-
-            # as_string
-            my $re = join '',
-                map {"$_ = .*\n"} driver => $driver->essentials();
-            like( $driver->as_string(), qr/\A$re\z/, "$desc as string" );
         }
     }
 }
 
 # get all loaded drivers
-@drivers = Test::Database->drivers();
-cmp_ok( scalar @drivers, '>=', 1, 'At least on driver loaded' );
+@drivers = Test::Database->list_drivers();
+cmp_ok( scalar @drivers, '>=', 1, 'At least one driver loaded' );
 
 # unload them
-Test::Database->unload_drivers();
-@drivers = Test::Database->drivers();
+Test::Database->clean_config();
+@drivers = Test::Database->list_drivers();
 is( scalar @drivers, 0, 'All drivers were unloaded' );
 

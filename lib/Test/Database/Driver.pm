@@ -244,21 +244,6 @@ Return the connection password.
 Return the connection information triplet (C<bare_dsn>, C<username>,
 C<password>).
 
-=item as_string()
-
-Return a string representation of the C<Test::Database::Driver>,
-suitable to be saved in a configuration file.
-
-=item handles( @requests )
-
-Return C<Test::Database::Handler> objects matching the given requests.
-
-If no request is given, return a handler for each of the existing databases.
-
-=item cleanup()
-
-Remove the directory used by C<Test::Database> drivers.
-
 =back
 
 The class also provides a few helpful commands that may be useful for driver
@@ -274,11 +259,6 @@ for the driver.
 =item dsn( $dbname )
 
 Return a bare Data Source Name, for the database with the given C<$dbname>.
-
-=item register_drop( $dbname )
-
-Register the database with the given C<$dbname> to be dropped automatically
-when the current program ends.
 
 =back
 
@@ -319,21 +299,13 @@ Return a boolean value indicating if the database engine is file-based
 or not, i.e. if all the database information is stored in a file or a
 directory, and no external database server is needed.
 
-=item essentials()
-
-Return the I<essential> fields needed to serialize the driver.
-
 =item databases()
 
 Return the names of all existing databases for this driver as a list
 (the default implementation is only valid for file-based drivers).
 
-=item cleanup()
 
-Clean all databases created with names generated with C<available_dbname()>.
 
-For file-based databases, the directory used by the C<Test::Database::Driver>
-subclass will be deleted.
 
 =back
 

@@ -9,8 +9,9 @@ use version;
 use Test::Database::Handle;
 
 #
-# global configuration
+# GLOBAL CONFIGURATION
 #
+
 # the location where all drivers-related files will be stored
 my $root
     = File::Spec->rel2abs(
@@ -22,14 +23,12 @@ sub __init {
     my ($class) = @_;
 
     # create directory if needed
-    if ( $class->is_filebased() ) {
-        my $dir = $class->base_dir();
-        if ( !-e $dir ) {
-            mkpath( [$dir] );
-        }
-        elsif ( !-d $dir ) {
-            croak "$dir is not a directory. Initializing $class failed";
-        }
+    my $dir = $class->base_dir();
+    if ( !-e $dir ) {
+        mkpath( [$dir] );
+    }
+    elsif ( !-d $dir ) {
+        croak "$dir is not a directory. Initializing $class failed";
     }
 
     # load the DBI driver (may die)

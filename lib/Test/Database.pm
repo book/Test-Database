@@ -93,9 +93,11 @@ sub list_drivers {
 # requests for handles
 sub handles {
     my ( $class, @requests ) = @_;
+    my @handles;
 
     # empty request means "everything"
-    return @HANDLES if !@requests;
+    return @handles = ( @HANDLES, map { $_->make_handle() } @DRIVERS )
+        if !@requests;
 
     # turn strings (driver name) into actual requests
     @requests = map { (ref) ? $_ : { dbd => $_ } } @requests;
@@ -104,11 +106,20 @@ sub handles {
     $_->{dbd} ||= delete $_->{driver} for @requests;
 
     # get the matching handles
-    my @handles;
     for my $handle (@HANDLES) {
         push @handles, $handle
             if grep { $_->{dbd} eq $handle->dbd() } @requests;
     }
+
+    # get the matching drivers
+    my @drivers;
+    for my $driver (@DRIVERS) {
+        push @drivers, $driver
+            if grep { $_->{dbd} eq $driver->dbd() } @requests;
+    }
+
+    # get a new database handle from the drivers
+    push @handles, map { $_->make_handle() } @drivers;
 
     # then on the handles
     return @handles;

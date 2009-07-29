@@ -107,7 +107,7 @@ sub handles {
     my @handles;
     for my $handle (@HANDLES) {
         push @handles, $handle
-            if grep { $_->{dbd} eq $handle->{dbd} } @requests;
+            if grep { $_->{dbd} eq $handle->dbd() } @requests;
     }
 
     # then on the handles

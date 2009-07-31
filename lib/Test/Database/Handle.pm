@@ -92,7 +92,7 @@ Return the connection password.
 
 =item connection_info()
 
-Return the connection information tripler (C<dsn>, C<username>, C<password>).
+Return the connection information triplet (C<dsn>, C<username>, C<password>).
 
 =item dbh( [ $attr ] )
 

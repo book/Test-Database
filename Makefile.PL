@@ -12,6 +12,8 @@ WriteMakefile(
         'Test::More' => 0,
         'DBI'        => 1,
         'File::HomeDir' => 0.50,
+        'version'       => 0,
+        'YAML::Tiny'    => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Test-Database-*' },

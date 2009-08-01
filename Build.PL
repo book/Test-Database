@@ -11,6 +11,8 @@ my $builder = Module::Build->new(
         'Test::More' => 0,
         'DBI'        => 1,
         'File::HomeDir' => 0.50,
+        'version'    => 0,
+        'YAML::Tiny' => 0,
     },
     add_to_cleanup      => [ 'Test-Database-*' ],
 );

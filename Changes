@@ -1,5 +1,12 @@
 Revision history for Test-Database
 
+1.01 Sun Aug  2 01:03:22 CEST 2009
+        [IMPROVEMENTS]
+        - re-introduced Test::Database::Driver
+        - Test::Database::Driver supports file-based DBD
+        - Test::Database::Driver maps existing databases to cwd()
+        - Drivers for SQLite, SQLite2, CSV, DBM
+
 1.00 Sat Jul 11 00:39:04 CEST 2009
         [IMPROVEMENTS]
         - rewrite/cleanup: the module now only supports a list of DSN

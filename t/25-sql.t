@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use File::Spec;
 
 my @drivers;
 
@@ -24,7 +25,7 @@ my $drop   = 'DROP TABLE users';
 Test::Database->clean_config();
 Test::Database->load_drivers();
 
-plan tests => ( 1 + ( 3 + @sql + 1 ) * 2 + 1 ) * @drivers;
+plan tests => ( 1 + ( 3 + @sql + 1 ) * 2 + 1 + 2) * @drivers;
 
 for my $drname (@drivers) {
     diag "Testing driver $drname";
@@ -68,5 +69,11 @@ for my $drname (@drivers) {
         # remove everything
         ok( $dbh->do($drop), "$desc: $drop" );
     }
+
+    ok( grep ( { $_ eq $old } $driver->databases() ),
+        "Database $old still there" );
+    $driver->drop_database($old);
+    ok( !grep ( { $_ eq $old } $driver->databases() ),
+        "Database $old was dropped" );
 }
 

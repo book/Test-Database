@@ -51,13 +51,13 @@ for my $name ( Test::Database->list_drivers('available') ) {
             isa_ok( $version, 'version', "$desc version()" );
             diag $@ if $@;
 
-            # bare_dsn, username, password, connection_info
-            ok( $driver->bare_dsn(),         "$desc has a bare_dsn()" );
+            # driver_dsn, username, password, connection_info
+            ok( $driver->driver_dsn(),       "$desc has a driver_dsn()" );
             ok( defined $driver->username(), "$desc has a username()" );
             ok( defined $driver->password(), "$desc has a password()" );
             is_deeply(
                 [ $driver->connection_info() ],
-                [ map { $driver->$_ } qw< bare_dsn username password > ],
+                [ map { $driver->$_ } qw< driver_dsn username password > ],
                 "$desc has a connection_info()"
             );
         }

@@ -26,7 +26,7 @@ my @DRIVERS_OUR;
 my @DRIVERS_OK;
 
 # find the list of all drivers we support
-{
+sub load_drivers {
     my %seen;
     for my $dir (@INC) {
         opendir my $dh, File::Spec->catdir( $dir, qw( Test Database Driver ) )
@@ -55,6 +55,7 @@ my @DRIVERS_OK;
 
 # startup configuration
 __PACKAGE__->load_config() if -e _rcfile();
+__PACKAGE__->load_drivers();
 
 #
 # private functions
@@ -231,6 +232,10 @@ C<DBD> class is available.
 Called with no parameter (or anything not matching C<all> or C<available>), it will return
 the list of currently loaded drivers.
 
+=item load_drivers()
+
+Load the available drivers from the system (file-based drivers, usually).
+
 =item load_config( @files )
 
 Read configuration from the files in C<@files>.
@@ -240,6 +245,7 @@ If no file is provided, the local equivalent of F<~/.test-database> is used.
 =item clean_config()
 
 Empties whatever configuration has already been loaded.
+Also removes the loaded drivers list.
 
 =item handles( @requests )
 

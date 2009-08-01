@@ -127,7 +127,7 @@ sub make_handle {
     # otherwise create the database and update the mapper
     else {
         $handle = $self->create_database();
-        $self->{mapping}{ cwd() } = $handle->name();
+        $self->{mapping}{ cwd() } = $handle->{name};
         $self->_save_mapping();
     }
 

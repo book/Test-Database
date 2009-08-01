@@ -5,6 +5,7 @@ use Carp;
 use File::Spec;
 use File::Path;
 use version;
+use YAML::Tiny qw( LoadFile DumpFile );
 
 use Test::Database::Handle;
 
@@ -48,6 +49,7 @@ sub new {
         $class = "Test::Database::Driver::$args{dbd}";
         $class->__init();
     }
+
     my $self = bless {
         username => '',
         password => '',
@@ -56,12 +58,18 @@ sub new {
         },
         $class;
 
+    $self->load_mapping();
+
     # try to connect before returning the object
     if ( !$class->is_filebased() ) {
         eval { DBI->connect_cached( $self->connection_info() ) }
             or return undef;
     }
     return $self;
+}
+
+sub _mapping_file {
+    return File::Spec->catfile( $_[0]->base_dir(), 'mapping.yml' );
 }
 
 sub available_dbname {
@@ -73,6 +81,33 @@ sub available_dbname {
     return "$name$n";
 }
 
+sub load_mapping {
+    my ($self, $file)= @_;
+    $file = $self->_mapping_file() if ! defined $file;
+
+    # basic mapping info
+    $self->{mapping} = {};
+    return if !-e $file;
+
+    # load mapping from file
+    my $mapping = LoadFile( $file );
+    $self->{mapping} = $mapping->{$self->bare_dsn()} || {};
+}
+
+sub save_mapping {
+    my ($self, $file )= @_;
+    $file = $self->_mapping_file() if ! defined $file;
+
+    # update mapping information
+    my $mapping = {};
+    $mapping = LoadFile( $file ) if -e $file;
+    $mapping->{ $self->bare_dsn() } = $self->{mapping};
+
+    # save mapping information
+    DumpFile( "$file.tmp", $mapping );
+    rename "$file.tmp", $file
+        or croak "Can't rename $file.tmp to $file: $!";
+}
 
 #
 # ACCESSORS

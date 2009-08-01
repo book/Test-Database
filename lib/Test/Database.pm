@@ -350,22 +350,6 @@ Some of the items on the TODO list:
 
 =item *
 
-Bring back the C<Test::Database::Driver> modules from the limbo
-they were put after version 0.99_04. First, for file-based drivers,
-eventually for other database engines.
-
-=item *
-
-Simple support for always getting the same database between test scriptS.
-
-=item *
-
-Ensure each test suite gets a different database, if possible.
-(It's impossible with fixed DSN gotten from the configuration file,
-but rather trivial with file-based drivers.)
-
-=item *
-
 Write a Cookbook/Tutorial to make adoption easier for testers and module
 authors.
 
@@ -373,6 +357,10 @@ authors.
 
 Add a database engine autodetection script/module, to automatically
 write the F<.test-database> configuration file.
+
+=item *
+
+Include drivers in the F<.test-database> file.
 
 =back
 

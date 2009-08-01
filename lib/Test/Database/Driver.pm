@@ -161,12 +161,14 @@ sub _driver_dsn    { join ':', 'dbi', $_[0]->name(), ''; }
 #
 sub _basename { return lc 'TDD_' . $_[0]->name() . '_' }
 
+# generic implementations for file-based drivers
 sub _filebased_databases {
-    my ($self) = @_;
-    my $dir = $self->base_dir();
+    my ($self)   = @_;
+    my $dir      = $self->base_dir();
+    my $basename = qr/^@{[$self->_basename()]}/;
 
     opendir my $dh, $dir or croak "Can't open directory $dir for reading: $!";
-    my @databases = File::Spec->no_upwards( readdir($dh) );
+    my @databases = grep {/$basename/} File::Spec->no_upwards( readdir($dh) );
     closedir $dh;
 
     return @databases;

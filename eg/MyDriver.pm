@@ -17,11 +17,6 @@ sub dsn {
     # return a dsn for $dbname
 }
 
-sub essentials {
-    # OPTIONAL
-    # return the list of essentials fields for string representation
-}
-
 # this routine has a default implementation for file-based database engines
 sub create_database {
     my ( $self, $dbname, $keep ) = @_;
@@ -51,12 +46,6 @@ sub databases {
     # return the names of all databases existing in this driver
 }
 
-# this routine has a default implementation for file-based database engines
-sub cleanup {
-    my ($self) = @_;
-    # remove all databases created using available_dbname()
-}
-
 'MyDriver';
 
 __END__
@@ -68,7 +57,7 @@ Test::Database::Driver::MyDriver - A Test::Database driver for MyDriver
 =head1 SYNOPSIS
 
     use Test::Database;
-    my $dbh = Test::Database->dbh( 'MyDriver' );
+    my @handles = Test::Database->handles( 'MyDriver' );
 
 =head1 DESCRIPTION
 

@@ -37,7 +37,7 @@ Test::Database::Driver::DBM - A Test::Database driver for DBM
 =head1 SYNOPSIS
 
     use Test::Database;
-    my $dbh = Test::Database->dbh( 'DBM' );
+    my @handles = Test::Database->handles( 'DBM' );
 
 =head1 DESCRIPTION
 

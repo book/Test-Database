@@ -36,7 +36,7 @@ Test::Database::Driver::CSV - A Test::Database driver for CSV
 =head1 SYNOPSIS
 
     use Test::Database;
-    my $dbh = Test::Database->dbh( 'CSV' );
+    my @handles = Test::Database->handles( 'CSV' );
 
 =head1 DESCRIPTION
 

@@ -10,7 +10,7 @@ use File::Spec;
 
 sub is_filebased {1}
 
-sub _version { return DBI->connect( $_[0]->bare_dsn() )->{sqlite_version}; }
+sub _version { return DBI->connect( $_[0]->driver_dsn() )->{sqlite_version}; }
 
 sub dsn {
     my ( $self, $dbname ) = @_;
@@ -35,7 +35,7 @@ Test::Database::Driver::SQLite2 - A Test::Database driver for SQLite2
 =head1 SYNOPSIS
 
     use Test::Database;
-    my $dbh = Test::Database->dbh( 'SQLite2' );
+    my @handles = Test::Database->handles( 'SQLite2' );
 
 =head1 DESCRIPTION
 

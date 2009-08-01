@@ -91,7 +91,7 @@ sub load_mapping {
 
     # load mapping from file
     my $mapping = LoadFile( $file );
-    $self->{mapping} = $mapping->{$self->bare_dsn()} || {};
+    $self->{mapping} = $mapping->{$self->driver_dsn()} || {};
 }
 
 sub save_mapping {
@@ -101,7 +101,7 @@ sub save_mapping {
     # update mapping information
     my $mapping = {};
     $mapping = LoadFile( $file ) if -e $file;
-    $mapping->{ $self->bare_dsn() } = $self->{mapping};
+    $mapping->{ $self->driver_dsn() } = $self->{mapping};
 
     # save mapping information
     DumpFile( "$file.tmp", $mapping );
@@ -128,12 +128,12 @@ sub version {
     return $_[0]{version} ||= version->new( $_[0]->_version() );
 }
 
-sub bare_dsn { return $_[0]{dsn} ||= $_[0]->_bare_dsn() }
+sub driver_dsn { return $_[0]{dsn} ||= $_[0]->_driver_dsn() }
 sub username { return $_[0]{username} }
 sub password { return $_[0]{password} }
 
 sub connection_info {
-    return ( $_[0]->bare_dsn(), $_[0]->username(), $_[0]->password() );
+    return ( $_[0]->driver_dsn(), $_[0]->username(), $_[0]->password() );
 }
 
 # THESE MUST BE IMPLEMENTED IN THE DERIVED CLASSES
@@ -154,7 +154,7 @@ sub databases {
 
 # THESE MAY BE OVERRIDDEN IN THE DERIVED CLASSES
 sub is_filebased {0}
-sub _bare_dsn    { join ':', 'dbi', $_[0]->name(), ''; }
+sub _driver_dsn    { join ':', 'dbi', $_[0]->name(), ''; }
 
 #
 # PRIVATE METHODS
@@ -259,7 +259,7 @@ This object is build with the return value of C<_version()>.
 
 The DBI driver for this driver.
 
-=item bare_dsn()
+=item driver_dsn()
 
 Return a bare Data Source Name, sufficient to connect to the database
 engine without specifying an actual database.
@@ -274,7 +274,7 @@ Return the connection password.
 
 =item connection_info()
 
-Return the connection information triplet (C<bare_dsn>, C<username>,
+Return the connection information triplet (C<driver_dsn>, C<username>,
 C<password>).
 
 =back

@@ -6,6 +6,7 @@ use File::Spec;
 use File::Path;
 use version;
 use YAML::Tiny qw( LoadFile DumpFile );
+use Cwd;
 
 use Test::Database::Handle;
 
@@ -109,6 +110,29 @@ sub _save_mapping {
         or croak "Can't rename $file.tmp to $file: $!";
 }
 
+sub make_handle {
+    my ($self) = @_;
+    my $handle;
+
+    # return a handle for this driver, using the mapping
+    if ( my $dbname = $self->{mapping}{ cwd() } ) {
+        $handle = Test::Database::Handle->new(
+            dsn    => $self->dsn($dbname),
+            name   => $dbname,
+            driver => $self,
+        );
+    }
+
+    # otherwise create the database and update the mapper
+    else {
+        $handle = $self->create_database();
+        $self->{mapping}{ cwd() } = $handle->name();
+        $self->_save_mapping();
+    }
+
+    return $handle;
+}
+
 #
 # ACCESSORS
 #
@@ -141,6 +165,7 @@ sub drop_database { die "$_[0] doesn't have a drop_database() method\n" }
 sub _version      { die "$_[0] doesn't have a _version() method\n" }
 sub dsn           { die "$_[0] doesn't have a dsn() method\n" }
 
+# create_database creates the database and returns a handle
 sub create_database {
     my $class = ref $_[0] || $_[0];
     goto &_filebased_databases if $class->is_filebased();
@@ -243,6 +268,15 @@ Create a new C<Test::Database::Driver> object.
 If called as C<< Test::Database::Driver->new() >>, requires a C<driver>
 parameter to define the actual object class.
 
+=item make_handle()
+
+Create a new C<Test::Database::Handle> object, attached to an existing database
+or to a newly created one.
+
+The decision whether to create a new database or not is made by
+C<Test::Database::Driver> based on the information in the mapper.
+See L<TEMPORARY STORAGE ORGANIZATION> for details.
+
 =item name()
 
 The driver's short name (everything after C<Test::Database::Driver::>).
@@ -339,8 +373,30 @@ directory, and no external database server is needed.
 Return the names of all existing databases for this driver as a list
 (the default implementation is only valid for file-based drivers).
 
+=back
 
+=head1 TEMPORARY STORAGE ORGANIZATION
 
+Subclasses of C<Test::Database::Driver> store useful information
+in the system's temporary directory, under a directory named
+F<Test-Database-$user> (C<$user> being the current user's name).
+
+That directory contains the following files:
+
+=over 4
+
+=item database files
+
+The database files and directories created by file-based drivers
+controlled by C<Test::Database> are stored here, under names matching
+F<tdd_B<DRIVER>_B<N>>, where B<DRIVER> is the lowercased name of the
+driver and B<N> is a number.
+
+=item the F<mapping.yml> file
+
+A YAML file containing a C<cwd()> / database name mapping, to enable a
+given test suite to receive the same database handles in all the test
+scripts that call the C<Test::Database->handles()> method.
 
 =back
 

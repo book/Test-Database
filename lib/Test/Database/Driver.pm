@@ -64,8 +64,9 @@ sub new {
     # try to connect before returning the object
     if ( !$class->is_filebased() ) {
         eval { DBI->connect_cached( $self->connection_info() ) }
-            or return undef;
+            or return;
     }
+
     return $self;
 }
 
@@ -291,13 +292,9 @@ if needed. Typically used by file-based database drivers.
 C<version> object representing the version of the underlying database enginge.
 This object is build with the return value of C<_version()>.
 
-=item drh()
-
-The DBI driver for this driver.
-
 =item driver_dsn()
 
-Return a bare Data Source Name, sufficient to connect to the database
+Return a driver Data Source Name, sufficient to connect to the database
 engine without specifying an actual database.
 
 =item username()

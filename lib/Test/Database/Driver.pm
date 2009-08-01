@@ -169,7 +169,7 @@ sub dsn           { die "$_[0] doesn't have a dsn() method\n" }
 # create_database creates the database and returns a handle
 sub create_database {
     my $class = ref $_[0] || $_[0];
-    goto &_filebased_databases if $class->is_filebased();
+    goto &_filebased_create_database if $class->is_filebased();
     die "$class doesn't have a create_database() method\n";
 }
 

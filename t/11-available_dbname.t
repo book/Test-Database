@@ -11,7 +11,7 @@ my @db;
     *{"Test::Database::Driver::Zlonk::databases"} = sub {@db};
 }
 
-my $dbname   = "test_database_zlonk_";
+my $dbname   = "tdd_zlonk_";
 my @names    = map {"$dbname$_"} 0, 1, 3, 2, 4;
 my @expected = map {"$dbname$_"} 0, 1, 2, 2, 4, 5;
 

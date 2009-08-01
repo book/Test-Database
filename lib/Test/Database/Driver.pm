@@ -159,7 +159,7 @@ sub _bare_dsn    { join ':', 'dbi', $_[0]->name(), ''; }
 #
 # PRIVATE METHODS
 #
-sub _basename { return lc 'Test_Database_' . $_[0]->name() . '_' }
+sub _basename { return lc 'TDD_' . $_[0]->name() . '_' }
 
 sub _filebased_databases {
     my ($self) = @_;

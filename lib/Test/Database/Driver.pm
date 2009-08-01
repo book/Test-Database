@@ -138,6 +138,7 @@ sub make_handle {
 # ACCESSORS
 #
 sub name { return ( $_[0] =~ /^Test::Database::Driver::([:\w]*)/g )[0]; }
+*dbd = \&name;
 
 sub base_dir {
     my ($self) = @_;
@@ -279,6 +280,8 @@ C<Test::Database::Driver> based on the information in the mapper.
 See L<TEMPORARY STORAGE ORGANIZATION> for details.
 
 =item name()
+
+=item dbd()
 
 The driver's short name (everything after C<Test::Database::Driver::>).
 

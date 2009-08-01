@@ -58,7 +58,7 @@ sub new {
         },
         $class;
 
-    $self->load_mapping();
+    $self->_load_mapping();
 
     # try to connect before returning the object
     if ( !$class->is_filebased() ) {
@@ -81,7 +81,7 @@ sub available_dbname {
     return "$name$n";
 }
 
-sub load_mapping {
+sub _load_mapping {
     my ($self, $file)= @_;
     $file = $self->_mapping_file() if ! defined $file;
 
@@ -94,7 +94,7 @@ sub load_mapping {
     $self->{mapping} = $mapping->{$self->driver_dsn()} || {};
 }
 
-sub save_mapping {
+sub _save_mapping {
     my ($self, $file )= @_;
     $file = $self->_mapping_file() if ! defined $file;
 

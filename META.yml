@@ -1,6 +1,6 @@
 ---
 name: Test-Database
-version: 1.00
+version: 1.01
 author:
   - 'Philippe Bruhat (BooK) <book@cpan.org>'
 abstract: Database handles ready for testing
@@ -11,13 +11,26 @@ build_requires:
   DBI: 1
   File::HomeDir: 0.5
   Test::More: 0
+  YAML::Tiny: 0
   version: 0
 provides:
   Test::Database:
     file: lib/Test/Database.pm
-    version: 1.00
+    version: 1.01
+  Test::Database::Driver:
+    file: lib/Test/Database/Driver.pm
+  Test::Database::Driver::CSV:
+    file: lib/Test/Database/Driver/CSV.pm
+  Test::Database::Driver::DBM:
+    file: lib/Test/Database/Driver/DBM.pm
+  Test::Database::Driver::SQLite:
+    file: lib/Test/Database/Driver/SQLite.pm
+  Test::Database::Driver::SQLite2:
+    file: lib/Test/Database/Driver/SQLite2.pm
   Test::Database::Handle:
     file: lib/Test/Database/Handle.pm
+  Test::Database::Util:
+    file: lib/Test/Database/Util.pm
 generated_by: Module::Build version 0.280801
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

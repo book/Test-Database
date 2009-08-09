@@ -22,11 +22,11 @@ my $file   = File::Spec->catfile(qw< t database.rc >);
 my @config = _read_file($file);
 
 is( scalar @config, scalar @good,
-    "Got @{[scalar @good]} drivers from $file" );
+    "Got @{[scalar @good]} handles from $file" );
 
 for my $test (@good) {
     my $args = shift @config;
-    is_deeply( $args, $test, "Read args for driver $test->{dsn}" );
+    is_deeply( $args, $test, "Read args for handle $test->{dsn}" );
 }
 
 # try to load a bad file

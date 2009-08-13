@@ -13,6 +13,9 @@ my @good = (
         username => 'otheruser',
     },
     { dsn => 'dbi:SQLite:db.sqlite' },
+    {   driver_dsn => 'dbi:mysql:host=remotehost;port=5678',
+        username   => 'otheruser',
+    },
 );
 
 plan tests => 1 + @good + 3;
@@ -26,13 +29,13 @@ is( scalar @config, scalar @good,
 
 for my $test (@good) {
     my $args = shift @config;
-    is_deeply( $args, $test, "Read args for handle $test->{dsn}" );
+    is_deeply( $args, $test,
+        "Read args for handle " . ( $test->{dsn} || $test->{driver_dsn} ) );
 }
 
 # try to load a bad file
 $file = File::Spec->catfile(qw< t database.bad >);
-ok( !eval { _read_file($file); 1 },
-    "_read_file( $file ) failed" );
+ok( !eval { _read_file($file); 1 }, "_read_file( $file ) failed" );
 like(
     $@,
     qr/^Can't parse line at .*, line \d+:\n  <bad format> at /,

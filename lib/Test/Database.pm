@@ -44,13 +44,18 @@ sub load_drivers {
     # supported
     @DRIVERS_OK = grep { exists $DRIVERS_DBI{$_} } @DRIVERS_OUR;
 
+    # automatically load all drivers in @DRIVERS_OK
+    # (but ignore compilation errors)
+    eval "require Test::Database::Driver::$_" for @DRIVERS_OK;
+
     # actual driver objects
     @DRIVERS = map {
         my $driver;
         eval { $driver = Test::Database::Driver->new( dbd => $_ ); 1; }
             or warn "$@\n";
         $driver || ();
-    } @DRIVERS_OK;
+        }
+        grep { "Test::Database::Driver::$_"->is_filebased() } @DRIVERS_OK;
 }
 
 # startup configuration
@@ -77,9 +82,18 @@ sub load_config {
     my ( $class, @files ) = @_;
     @files = ( _rcfile() ) if !@files;
 
+    # fetch the items (dsn, driver_dsn) from the config files
+    my @items = map { _read_file($_) } @files;
+
+    # create the handles
     push @HANDLES,
         map { Test::Database::Handle->new(%$_) }
-        map { _read_file($_) } @files;
+        grep { exists $_->{dsn} } @items;
+
+    # create the handles
+    push @DRIVERS,
+        map { Test::Database::Driver->new(%$_) }
+        grep { exists $_->{driver_dsn} } @items;
 }
 
 sub list_drivers {

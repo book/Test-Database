@@ -23,7 +23,7 @@ sub _read_file {
 
         /\s*(\w+)\s*=\s*(.*)\s*/ && do {
             my ( $key, $value ) = ( $1, $2 );
-            if ( $key eq 'dsn' ) {
+            if ( $key eq 'dsn' || $key eq 'driver_dsn' ) {
                 push @config, {%args} if keys %args;
                 %args = ();
             }

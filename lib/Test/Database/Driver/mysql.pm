@@ -24,15 +24,13 @@ sub dsn {
 }
 
 sub create_database {
-    my ( $self, $dbname, $keep ) = @_;
-    $dbname = $self->available_dbname() if !$dbname;
+    my ( $self ) = @_;
+    my $dbname = $self->available_dbname();
 
-    # create the database if it doesn't exist
-    $self->drh()
+    DBI->install_driver( $self->name() )
         ->func( 'createdb', $dbname,
         join( ':', $self->{host}, $self->{port} ),
         $self->{username}, $self->{password}, 'admin' );
-    $self->register_drop($dbname) if !$keep;
 
     # return the handle
     return Test::Database::Handle->new(
@@ -46,20 +44,21 @@ sub create_database {
 
 sub drop_database {
     my ( $self, $dbname ) = @_;
-    $self->drh()
+
+    DBI->install_driver( $self->name() )
         ->func( 'dropdb', $dbname, join( ':', $self->{host}, $self->{port} ),
         $self->{username}, $self->{password}, 'admin' )
         if grep { $_ eq $dbname } $self->databases();
 }
 
 sub databases {
-    my ($self) = @_;
+    my ($self)    = @_;
+    my $basename  = qr/^@{[$self->_basename()]}/;
     my $databases = eval {
         DBI->connect_cached( $self->connection_info() )
             ->selectall_arrayref('SHOW DATABASES');
     };
-    return
-        grep { $_ !~ /^(?:information_schema|mysql)/ } map {@$_} @$databases;
+    return grep {/$basename/} map {@$_} @$databases;
 }
 
 'mysql';

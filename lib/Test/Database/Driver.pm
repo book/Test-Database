@@ -44,7 +44,12 @@ sub new {
     my ( $class, %args ) = @_;
 
     if ( $class eq __PACKAGE__ ) {
-        croak "dbd parameter required" if !exists $args{dbd};
+        if ( exists $args{driver_dsn} ) {
+            my ( $scheme, $driver, $attr_string, $attr_hash, $driver_dsn )
+                = DBI->parse_dsn( $args{driver_dsn} );
+            $args{dbd} = $driver;
+        }
+        croak "dbd or driver_dsn parameter required" if !exists $args{dbd};
         eval "require Test::Database::Driver::$args{dbd}"
             or do { $@ =~ s/ at .*?\z//s; croak $@; };
         $class = "Test::Database::Driver::$args{dbd}";
@@ -154,7 +159,7 @@ sub version {
     return $_[0]{version} ||= version->new( $_[0]->_version() );
 }
 
-sub driver_dsn { return $_[0]{dsn} ||= $_[0]->_driver_dsn() }
+sub driver_dsn { return $_[0]{driver_dsn} ||= $_[0]->_driver_dsn() }
 sub username { return $_[0]{username} }
 sub password { return $_[0]{password} }
 

@@ -12,7 +12,7 @@ sub _version {
         ->selectcol_arrayref('SELECT VERSION()')->[0];
 }
 
-sub _bare_dsn {
+sub _driver_dsn {
     return 'dbi:mysql:' . join ';',
         map {"$_=$_[0]->{$_}"} grep { $_[0]->{$_} } qw( host port );
 }
@@ -22,8 +22,6 @@ sub dsn {
         map( {"$_=$_[0]->{$_}"} grep { $_[0]->{$_} } qw( host port ) ),
         "database=$_[1]";
 }
-
-sub essentials {qw< host port username password >}
 
 sub create_database {
     my ( $self, $dbname, $keep ) = @_;
@@ -62,12 +60,6 @@ sub databases {
     };
     return
         grep { $_ !~ /^(?:information_schema|mysql)/ } map {@$_} @$databases;
-}
-
-sub cleanup {
-    my ($self) = @_;
-    my $basename = qr/@{[$self->_basename()]}/;
-    $self->drop_database($_) for grep {/$basename/} $self->databases();
 }
 
 'mysql';

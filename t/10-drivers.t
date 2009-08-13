@@ -36,12 +36,7 @@ for my $name ( Test::Database->list_drivers('available') ) {
             ok( $dir, "$desc has a base_dir(): $dir" );
             like( $dir, qr/Test-Database-.*\Q$name\E/,
                 "$desc\'s base_dir() looks like expected" );
-            if ( $driver->is_filebased() ) {
-                ok( -d $dir, "$desc base_dir() is a directory" );
-            }
-            else {
-                ok( !-e $dir, "$desc base_dir() does not exist" );
-            }
+            ok( -d $dir, "$desc base_dir() is a directory" );
 
             # version
             my $version;

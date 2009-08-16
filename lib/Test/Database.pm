@@ -11,7 +11,7 @@ use Test::Database::Util;
 use Test::Database::Driver;
 use Test::Database::Handle;
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 #
 # global configuration

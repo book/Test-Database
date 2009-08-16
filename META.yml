@@ -1,6 +1,6 @@
 ---
 name: Test-Database
-version: 1.01
+version: 1.02
 author:
   - 'Philippe Bruhat (BooK) <book@cpan.org>'
 abstract: Database handles ready for testing
@@ -16,7 +16,7 @@ build_requires:
 provides:
   Test::Database:
     file: lib/Test/Database.pm
-    version: 1.01
+    version: 1.02
   Test::Database::Driver:
     file: lib/Test/Database/Driver.pm
   Test::Database::Driver::CSV:
@@ -27,6 +27,8 @@ provides:
     file: lib/Test/Database/Driver/SQLite.pm
   Test::Database::Driver::SQLite2:
     file: lib/Test/Database/Driver/SQLite2.pm
+  Test::Database::Driver::mysql:
+    file: lib/Test/Database/Driver/mysql.pm
   Test::Database::Handle:
     file: lib/Test/Database/Handle.pm
   Test::Database::Util:

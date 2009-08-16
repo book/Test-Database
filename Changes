@@ -1,5 +1,10 @@
 Revision history for Test-Database
 
+1.02 Sun Aug 16 14:47:04 CEST 2009
+        [IMPROVEMENTS]
+        - re-introduced Test::Database::Driver::mysql
+        - add support for driver_dsn in configuration file
+
 1.01 Sun Aug  2 01:03:22 CEST 2009
         [IMPROVEMENTS]
         - re-introduced Test::Database::Driver

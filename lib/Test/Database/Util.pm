@@ -70,7 +70,7 @@ The following functions are provided:
 
 =item _read_file( $file )
 
-Return a list of hash references, read in given C<$file> file.
+Return a list of hash references, read in the given C<$file> file.
 
 =back
 

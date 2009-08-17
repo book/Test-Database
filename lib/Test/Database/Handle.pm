@@ -19,6 +19,15 @@ sub new {
     my ( $scheme, $driver, $attr_string, $attr_hash, $driver_dsn )
         = DBI->parse_dsn( $args{dsn} );
 
+    # try to provide a Test::Database::Driver object
+    if ( !exists $args{driver} ) {
+        eval {
+            $args{driver}
+                = "Test::Database::Driver::$driver"
+                ->new( driver_dsn => $args{dsn} );
+        };
+    }
+
     return bless {
         username => '',
         password => '',

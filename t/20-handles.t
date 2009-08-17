@@ -16,6 +16,7 @@ my %handle = (
     ),
     sqlite => Test::Database::Handle->new( dsn => 'dbi:SQLite:db.sqlite', ),
 );
+delete $_->{driver} for values %handle;
 
 # test description:
 # 1st char is variable to look at: array (@) or scalar ($)
@@ -98,6 +99,7 @@ for my $test (@tests) {
             = $got eq '$' ? [$handle]
             : $got eq '@' ? \@handles
             :               die "Unknown variable symbol $got";
+        ref && delete $_->{driver} for @$got;
         is_deeply( $got, $expected{$expected}, $mesg );
     }
 }

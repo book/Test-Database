@@ -26,6 +26,7 @@ t/20-handles.t
 t/25-sql.t
 t/database.bad
 t/database.empty
+t/database.good
 t/database.rc
 t/pod-coverage.t
 t/pod.t

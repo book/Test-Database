@@ -12,3 +12,6 @@ username = otheruser
 # sqlite
 dsn      = dbi:SQLite:db.sqlite
 
+# a database driver
+driver_dsn = dbi:mysql:host=remotehost;port=5678
+username   = otheruser

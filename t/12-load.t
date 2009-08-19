@@ -28,7 +28,7 @@ my @bad = (
 plan tests => 1 + @good + 2 * @bad + 1;
 
 # load a correct file
-my $file   = File::Spec->catfile(qw< t database.rc >);
+my $file   = File::Spec->catfile(qw< t database.good >);
 my @config = _read_file($file);
 
 is( scalar @config, scalar @good,

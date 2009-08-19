@@ -139,6 +139,21 @@ sub make_handle {
     return $handle;
 }
 
+sub version_matches {
+    my ( $self, $request ) = @_;
+    my $version = $self->version();
+    return
+        if exists $request->{version}
+            && $version != $request->{version};
+    return
+        if exists $request->{min_version}
+            && $version < $request->{min_version};
+    return
+        if exists $request->{max_version}
+            && $version >= $request->{max_version};
+    return 1;
+}
+
 #
 # ACCESSORS
 #
@@ -317,6 +332,12 @@ Return the connection password.
 
 Return the connection information triplet (C<driver_dsn>, C<username>,
 C<password>).
+
+=item version_matches( $request )
+
+Return a boolean indicating if the driver's version matches the version
+constraints in the given request (see L<Test::Database> documentation's
+section about requests).
 
 =back
 

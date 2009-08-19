@@ -122,15 +122,28 @@ sub handles {
 
     # get the matching handles
     for my $handle (@HANDLES) {
-        push @handles, $handle
-            if grep { $_->{dbd} eq $handle->dbd() } @requests;
+        my $ok;
+        my $driver = $handle->{driver};
+        for my $request (@requests) {
+            next if $request->{dbd} ne $handle->dbd();
+            if ($driver) { next if !$driver->version_matches($request); }
+            $ok = 1;
+            last;
+        }
+        push @handles, $handle if $ok;
     }
 
     # get the matching drivers
     my @drivers;
     for my $driver (@DRIVERS) {
-        push @drivers, $driver
-            if grep { $_->{dbd} eq $driver->dbd() } @requests;
+        my $ok;
+        for my $request (@requests) {
+            next if $request->{dbd} ne $driver->dbd();
+            next if !$driver->version_matches($request);
+            $ok = 1;
+            last;
+        }
+        push @drivers, $driver if $ok;
     }
 
     # get a new database handle from the drivers
@@ -290,6 +303,29 @@ C<dbd>: driver name (based on the C<DBD::> name).
 
 C<driver> is an alias for C<dbd>.
 If the two keys are present, the C<driver> key will be ignored.
+
+If missing, all available drivers will match.
+
+=item *
+
+C<version>: exact database engine version
+
+Only database engines having a version number identical to the
+given version will match.
+
+=item *
+
+C<min_version>: minimum database engine version
+
+Only database engines having a version number greater or equal to the
+given minimum version will match.
+
+=item *
+
+C<max_version>: maximum database engine version
+
+Only database engines having a version number lower (and not equal) to the
+given maximum version will match.
 
 =back
 

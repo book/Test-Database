@@ -59,8 +59,8 @@ sub load_drivers {
 }
 
 # startup configuration
-__PACKAGE__->load_config() if -e _rcfile();
 __PACKAGE__->load_drivers();
+__PACKAGE__->load_config() if -e _rcfile();
 
 #
 # private functions

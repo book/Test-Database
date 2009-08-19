@@ -27,7 +27,7 @@ is_deeply( [ Test::Database->list_drivers('available') ],
 
 # available DBI drivers we could load (should only be file-based)
 my @filebased
-    = grep { "Test::Database::Driver::$_"->is_filebased() } @all_drivers;
+    = grep { "Test::Database::Driver::$_"->is_filebased() } @available_drivers;
 is_deeply( [ Test::Database->list_drivers() ], \@filebased,
     'list_drivers()' );
 

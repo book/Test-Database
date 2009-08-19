@@ -105,6 +105,8 @@ sub list_drivers {
         :                        map { $_->name() } @DRIVERS;
 }
 
+sub drivers { @DRIVERS }
+
 # requests for handles
 sub handles {
     my ( $class, @requests ) = @_;

@@ -9,6 +9,7 @@ use version;
 my @requests;
 
 my @ok = (
+    {},
     { version     => '1.2.3' },
     { min_version => '1.2.2' },
     { min_version => '1.2.3' },

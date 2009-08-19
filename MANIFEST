@@ -20,6 +20,7 @@ t/09-handle-dsn.t
 t/10-drivers.t
 t/10-list_drivers.t
 t/11-available_dbname.t
+t/11-version_matches.t
 t/12-load.t
 t/20-handles.t
 t/25-sql.t

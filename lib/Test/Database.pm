@@ -126,7 +126,9 @@ sub handles {
         my $driver = $handle->{driver};
         for my $request (@requests) {
             next if $request->{dbd} ne $handle->dbd();
-            if ($driver) { next if !$driver->version_matches($request); }
+            if ( grep /^version(?:_m(?:ax|in))$/, keys %$request ) {
+                next if !$driver || !$driver->version_matches($request);
+            }
             $ok = 1;
             last;
         }

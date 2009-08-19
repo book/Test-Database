@@ -123,9 +123,11 @@ sub make_handle {
     # return a handle for this driver, using the mapping
     if ( my $dbname = $self->{mapping}{ cwd() } ) {
         $handle = Test::Database::Handle->new(
-            dsn    => $self->dsn($dbname),
-            name   => $dbname,
-            driver => $self,
+            dsn      => $self->dsn($dbname),
+            username => $self->username(),
+            password => $self->password(),
+            name     => $dbname,
+            driver   => $self,
         );
     }
 

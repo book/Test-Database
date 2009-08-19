@@ -16,17 +16,22 @@ sub _read_file {
     my @config;
 
     open my $fh, '<', $file or croak "Can't open $file for reading: $!";
+    my $re_header = qr/^(?:driver_)?dsn$/;
     my %args;
+    my $records;
     while (<$fh>) {
         next if /^\s*(?:#|$)/;    # skip blank lines and comments
         chomp;
 
         /\s*(\w+)\s*=\s*(.*)\s*/ && do {
             my ( $key, $value ) = ( $1, $2 );
-            if ( $key eq 'dsn' || $key eq 'driver_dsn' ) {
+            if ( $key =~ $re_header ) {
                 push @config, {%args} if keys %args;
+                $records++;
                 %args = ();
             }
+            croak "Record doesn't start with dsn or driver_dsn at $file, line $.:\n  <$_>"
+                if !$records && $key !~ $re_header;
             $args{$key} = $value;
             next;
         };

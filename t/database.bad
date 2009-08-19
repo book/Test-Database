@@ -1,8 +1,8 @@
 # example correct .test-database.rc file
 
 # mysql
-driver = mysql
-host   = localhost
+driver_dsn = mysql
+host       = localhost
 username = root
 password = "s3k r3t"
 

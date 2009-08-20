@@ -120,8 +120,11 @@ sub make_handle {
     my ($self) = @_;
     my $handle;
 
-    # return a handle for this driver, using the mapping
-    if ( my $dbname = $self->{mapping}{ cwd() } ) {
+    # get the database name from the ḿapping
+    my $dbname = $self->{mapping}{ cwd() };
+
+    # if the database still exists, return it
+    if ( grep { $_ eq $dbname } $self->databases() ) {
         $handle = Test::Database::Handle->new(
             dsn      => $self->dsn($dbname),
             username => $self->username(),

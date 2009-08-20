@@ -263,6 +263,11 @@ C<DBD> class is available.
 Called with no parameter (or anything not matching C<all> or C<available>), it will return
 the list of currently loaded drivers.
 
+=item drivers()
+
+Returns the C<Test::Database::Driver> instances that are setup by
+C<load_drivers()> and updated by C<load_config()>.
+
 =item load_drivers()
 
 Load the available drivers from the system (file-based drivers, usually).

@@ -3,12 +3,9 @@ use warnings;
 use Test::More;
 use File::Spec;
 
-my @drivers;
-
 use Test::Database;
 
-@drivers = Test::Database->list_drivers();
-@drivers = @ARGV if @ARGV;
+my @drivers = Test::Database->drivers();
 
 plan skip_all => 'No drivers available for testing' if !@drivers;
 
@@ -21,15 +18,11 @@ my @sql = (
 my $select = "SELECT id, name FROM users";
 my $drop   = 'DROP TABLE users';
 
-# clear config
-Test::Database->clean_config();
-Test::Database->load_drivers();
-
 plan tests => ( 1 + ( 3 + @sql + 1 ) * 2 + 1 + 2) * @drivers;
 
-for my $drname (@drivers) {
-    diag "Testing driver $drname";
-    my $driver = Test::Database::Driver->new( dbd => $drname );
+for my $driver (@drivers) {
+    my $drname = $driver->name();
+    diag "Testing driver $drname " . $driver->version();
     isa_ok( $driver, 'Test::Database::Driver' );
 
     my $count = 0;
@@ -42,7 +35,6 @@ for my $drname (@drivers) {
 
         # database handle to a database (created by the driver)
         my ($handle) = Test::Database->handles($request);
-
         my $dbname = $handle->{name};
         isa_ok( $handle, 'Test::Database::Handle', "$drname $dbname" );
 

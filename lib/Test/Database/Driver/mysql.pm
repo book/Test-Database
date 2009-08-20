@@ -23,6 +23,8 @@ sub dsn {
         "database=$_[1]";
 }
 
+sub _defaults { qw( host port ) }
+
 sub create_database {
     my ( $self ) = @_;
     my $dbname = $self->available_dbname();

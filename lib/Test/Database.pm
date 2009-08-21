@@ -345,7 +345,7 @@ interpreted as a shortcut for C<{ dbd => $string }>.
 
 The list of available, authorized DSN is stored in the local equivalent
 of F<~/.test-database>. It's a simple list of key/value pairs, with the
-C<dsn> key being used to split successive entries:
+C<dsn> or C<driver_dsn> keys being used to split successive entries:
 
     # mysql
     dsn      = dbi:mysql:database=mydb;host=localhost;port=1234
@@ -357,6 +357,10 @@ C<dsn> key being used to split successive entries:
     
     # sqlite
     dsn      = dbi:SQLite:db.sqlite
+
+    # a "driver" with full access (create/drop databases)
+    driver_dsn = dbi:mysql:
+    username   = root
 
 The C<username> and C<password> keys are optional and empty strings will be
 used if they are not provided.

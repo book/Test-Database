@@ -59,7 +59,6 @@ sub new {
     my $self = bless {
         username => '',
         password => '',
-        map ( { $_ => '' } $class->_defaults() ),
         %args,
         dbd => $class->name() || $args{dbd},
         },
@@ -189,9 +188,8 @@ sub version {
 }
 
 sub driver_dsn { return $_[0]{driver_dsn} ||= $_[0]->_driver_dsn() }
-sub username   { return $_[0]{username} }
-sub password   { return $_[0]{password} }
-sub _defaults  { }
+sub username { return $_[0]{username} }
+sub password { return $_[0]{password} }
 
 sub connection_info {
     return ( $_[0]->driver_dsn(), $_[0]->username(), $_[0]->password() );
@@ -426,14 +424,6 @@ directory, and no external database server is needed.
 
 Return the names of all existing databases for this driver as a list
 (the default implementation is only valid for file-based drivers).
-
-=item _defaults()
-
-Return a list of extra parameters (to C<username> and C<password>)
-that may be needed by the driver. If the default keys are not provided
-to the C<new()> constructor, they will be set to the empty string.
-
-The default implementation returns an empty list.
 
 =back
 

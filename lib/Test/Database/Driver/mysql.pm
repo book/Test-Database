@@ -12,16 +12,12 @@ sub _version {
         ->selectcol_arrayref('SELECT VERSION()')->[0];
 }
 
-sub _defaults { qw( host port ) }
-
 sub create_database {
     my ( $self ) = @_;
     my $dbname = $self->available_dbname();
 
-    DBI->install_driver( $self->name() )
-        ->func( 'createdb', $dbname,
-        join( ':', $self->{host}, $self->{port} ),
-        $self->{username}, $self->{password}, 'admin' );
+    DBI->connect_cached( $self->connection_info() )
+        ->do("CREATE DATABASE $dbname");
 
     # return the handle
     return Test::Database::Handle->new(
@@ -36,9 +32,8 @@ sub create_database {
 sub drop_database {
     my ( $self, $dbname ) = @_;
 
-    DBI->install_driver( $self->name() )
-        ->func( 'dropdb', $dbname, join( ':', $self->{host}, $self->{port} ),
-        $self->{username}, $self->{password}, 'admin' )
+    DBI->connect_cached( $self->connection_info() )
+        ->do("DROP DATABASE $dbname")
         if grep { $_ eq $dbname } $self->databases();
 }
 

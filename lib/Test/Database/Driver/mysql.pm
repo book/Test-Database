@@ -12,17 +12,6 @@ sub _version {
         ->selectcol_arrayref('SELECT VERSION()')->[0];
 }
 
-sub _driver_dsn {
-    return 'dbi:mysql:' . join ';',
-        map {"$_=$_[0]->{$_}"} grep { $_[0]->{$_} } qw( host port );
-}
-
-sub dsn {
-    return 'dbi:mysql:' . join ';',
-        map( {"$_=$_[0]->{$_}"} grep { $_[0]->{$_} } qw( host port ) ),
-        "database=$_[1]";
-}
-
 sub _defaults { qw( host port ) }
 
 sub create_database {

@@ -14,8 +14,8 @@ sub _version { return DBI->connect( $_[0]->driver_dsn() )->{sqlite_version}; }
 
 sub dsn {
     my ( $self, $dbname ) = @_;
-    return 'dbi:SQLite:dbname='
-        . File::Spec->catdir( $self->base_dir(), $dbname );
+    return $self->make_dsn(
+        dbname => File::Spec->catdir( $self->base_dir(), $dbname ) );
 }
 
 sub drop_database {

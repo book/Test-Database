@@ -16,7 +16,7 @@ sub dsn {
     my ( $self, $dbname ) = @_;
     my $dbdir = File::Spec->catdir( $self->base_dir(), $dbname );
     mkpath( [$dbdir] );
-    return "dbi:CSV:f_dir=$dbdir";
+    return $self->make_dsn( f_dir => $dbdir );
 }
 
 sub drop_database {

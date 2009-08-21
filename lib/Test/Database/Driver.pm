@@ -117,6 +117,14 @@ sub _save_mapping {
         or croak "Can't rename $file.tmp to $file: $!";
 }
 
+sub make_dsn {
+    my ($self, %args) = @_;
+    my $dsn = $self->driver_dsn();
+    return $dsn
+        . ( $dsn =~ /^dbi:[^:]+:$/ ? '' : ';' )
+        . join( ';', map "$_=$args{$_}", keys %args );
+}
+
 sub make_handle {
     my ($self) = @_;
     my $handle;
@@ -192,7 +200,6 @@ sub connection_info {
 # THESE MUST BE IMPLEMENTED IN THE DERIVED CLASSES
 sub drop_database { die "$_[0] doesn't have a drop_database() method\n" }
 sub _version      { die "$_[0] doesn't have a _version() method\n" }
-sub dsn           { die "$_[0] doesn't have a dsn() method\n" }
 
 # create_database creates the database and returns a handle
 sub create_database {
@@ -209,6 +216,11 @@ sub databases {
 # THESE MAY BE OVERRIDDEN IN THE DERIVED CLASSES
 sub is_filebased {0}
 sub _driver_dsn    { join ':', 'dbi', $_[0]->name(), ''; }
+
+sub dsn {
+    my ( $self, $dbname ) = @_;
+    return $self->make_dsn( database => $dbname );
+}
 
 #
 # PRIVATE METHODS
@@ -306,6 +318,14 @@ The decision whether to create a new database or not is made by
 C<Test::Database::Driver> based on the information in the mapper.
 See L<TEMPORARY STORAGE ORGANIZATION> for details.
 
+=item make_dsn( %args )
+
+Return a Data Source Name based on the driver's DSN, with the key/value
+pairs contained in C<%args> as additional parameters.
+
+This is typically used by C<dsn()> to make a DSN for a specific database,
+based on the driver's DSN.
+
 =item name()
 
 =item dbd()
@@ -360,7 +380,8 @@ for the driver.
 
 =item dsn( $dbname )
 
-Return a bare Data Source Name, for the database with the given C<$dbname>.
+Build a Data Source Name  for the database with the given C<$dbname>,
+based on the driver's DSN.
 
 =back
 

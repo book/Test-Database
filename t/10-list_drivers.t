@@ -4,7 +4,7 @@ use Test::More;
 use Test::Database;
 
 # hardcoded sorted list of our drivers
-my @all_drivers = sort qw( CSV DBM SQLite SQLite2 mysql );
+my @all_drivers = sort qw( CSV DBM Pg SQLite SQLite2 mysql );
 
 # intersection with DBI->available_drivers
 my %all_drivers = map { $_ => 1 } @all_drivers;

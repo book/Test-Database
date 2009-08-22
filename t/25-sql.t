@@ -6,6 +6,10 @@ use File::Spec;
 use Test::Database;
 
 my @drivers = Test::Database->drivers();
+@drivers = grep {
+    my $name = $_->name();
+    grep { $name eq $_ } @ARGV
+} @drivers if @ARGV;
 
 plan skip_all => 'No drivers available for testing' if !@drivers;
 

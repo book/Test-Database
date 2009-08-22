@@ -12,33 +12,12 @@ sub _version {
     return $1;
 }
 
-sub _bare_dsn {
-    return 'dbi:Pg:' . join ';',
-        map ( {"$_=$_[0]->{$_}"} grep { $_[0]->{$_} } qw( host port ) ),
-        'dbname=postgres';
-}
-
-sub dsn {
-    my ( $self, $dbname ) = @_;
-    return 'dbi:Pg:' . join ';',
-        map( {"$_=$_[0]->{$_}"} grep { $_[0]->{$_} } qw( host port ) ),
-        "dbname=$_[1]";
-}
-
-sub essentials {qw< host port username password >}
-
 sub create_database {
-    my ( $self, $dbname, $keep ) = @_;
-    $dbname = $self->available_dbname() if !$dbname;
-    croak "Invalid database name '$dbname'" if $dbname !~ /^\w+$/;
+    my ($self) = @_;
+    my $dbname = $self->available_dbname();
 
-    # create the database if it doesn't exist
-    if ( !grep { $_ eq $dbname } $self->databases() ) {
-        my $dbh = DBI->connect_cached( $self->connection_info() );
-        $dbh->do( "CREATE DATABASE $dbname" );
-    }
-
-    $self->register_drop($dbname) if !$keep;
+    DBI->connect_cached( $self->connection_info() )
+        ->do("CREATE DATABASE $dbname");
 
     # return the handle
     return Test::Database::Handle->new(
@@ -52,27 +31,21 @@ sub create_database {
 
 sub drop_database {
     my ( $self, $dbname ) = @_;
-    return if !grep { $_ eq $dbname } $self->databases();
 
-    croak "Invalid database name '$dbname'" if $dbname !~ /^\w+$/;
-    my $dbh = DBI->connect_cached( $self->connection_info() );
-    $dbh->do( "DROP DATABASE $dbname" );
+    DBI->connect_cached( $self->connection_info() )
+        ->do("DROP DATABASE $dbname")
+        if grep { $_ eq $dbname } $self->databases();
 }
 
 sub databases {
-    my ($self) = @_;
+    my ($self)    = @_;
+    my $basename  = qr/^@{[$self->_basename()]}/;
     my $databases = eval {
         DBI->connect_cached( $self->connection_info() )
             ->selectall_arrayref(
             'SELECT datname FROM pg_catalog.pg_database');
     };
-    return grep { $_ !~ /^(?:postgres|template\d*)/ } map {@$_} @$databases;
-}
-
-sub cleanup {
-    my ($self) = @_;
-    my $basename = qr/@{[$self->_basename()]}/;
-    $self->drop_database($_) for grep {/$basename/} $self->databases();
+    return grep {/$basename/} map {@$_} @$databases;
 }
 
 'Pg';

@@ -58,7 +58,7 @@ Test::Database::Driver::mysql - A Test::Database driver for mysql
 =head1 SYNOPSIS
 
     use Test::Database;
-    my $dbh = Test::Database->dbh( 'mysql' );
+    my @handles = Test::Database->handles( 'mysql' );
 
 =head1 DESCRIPTION
 

@@ -59,7 +59,7 @@ Test::Database::Driver::Pg - A Test::Database driver for Pg
 =head1 SYNOPSIS
 
     use Test::Database;
-    my $dbh = Test::Database->dbh( 'Pg' );
+    my @handles = Test::Database->handles( 'Pg' );
 
 =head1 DESCRIPTION
 

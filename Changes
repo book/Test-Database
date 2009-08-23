@@ -1,5 +1,12 @@
 Revision history for Test-Database
 
+1.04 Sun Aug 23 03:10:11 CEST 2009
+        [IMPROVEMENTS]
+        - re-introduced Test::Database::Driver::Pg
+        - more robust computation of base_dir()
+        [TESTS]
+        - tests for make_dsn()
+
 1.03 Fri Aug 21 23:01:10 CEST 2009
         [IMPROVEMENTS]
         - improved dsn and driver_dsn management

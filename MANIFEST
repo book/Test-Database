@@ -6,6 +6,7 @@ lib/Test/Database/Driver.pm
 lib/Test/Database/Driver/CSV.pm
 lib/Test/Database/Driver/DBM.pm
 lib/Test/Database/Driver/mysql.pm
+lib/Test/Database/Driver/Pg.pm
 lib/Test/Database/Driver/SQLite.pm
 lib/Test/Database/Driver/SQLite2.pm
 lib/Test/Database/Handle.pm
@@ -20,6 +21,7 @@ t/09-handle-dsn.t
 t/10-drivers.t
 t/10-list_drivers.t
 t/11-available_dbname.t
+t/11-make_dsn.t
 t/11-version_matches.t
 t/12-load.t
 t/20-handles.t

@@ -79,5 +79,88 @@ automatic detection of "file-based" database engines (typically, SQLite).
 The rest of this document describes various use cases for C<Test::Database>.
 
 
+=head1 MODULE AND TEST AUTHOR
+
+C<Test::Database> has a single interface for test authors:
+
+    my @handles = Test::Database->handles( @requests );
+
+C<@request> is a list of "requests" for databases handles. Requests
+must declare the DBD they expect, and can optionaly add version-based
+limitations (only available for drivers supported by C<Test::Database>).
+
+The handles returned are objects of the C<Test::Database::Handle> class.
+
+The data contained in the database is never destroyed or cleaned
+up by C<Test::Database>, so it's perfectly fine to have a startup script
+that will setup the necessary tables and test data, several tests scripts
+that will build and update the data, and a eventually a teardown script
+that will drop all created tables.
+
+C<Test::Database> can return two types of databases handles:
+
+=over 4
+
+=item *
+
+either a handle to a newly created database (created especially at the
+test script's request)
+
+=item *
+
+or a handle to an already existing database
+
+=back
+
+There is no way for the test script to tell the difference.
+
+In any case, the database is assumed to provide C<DROP TABLE> and
+C<CREATE TABLE> rights, and the test script is by definition allowed
+to do whatever it pleases with the tables that exist in the database.
+
+Note that C<Test::Database> supports any DSN, not just those for which
+it has a driver. If your module supports Oracle, you can add C<'Oracle'>
+to your list of requests, and if the host owner configured a C<dsn>
+pointing at an Oracle database, then it will be available for your tests.
+
+=head2 Specific database support
+
+It is possible to request specific versions of a database engine.
+
+    use Test::Database;
+
+    # request database handles for all available databases
+    my @handles = Test::Database->handles();
+
+    # or for only the databases we support
+    my @handles = Test::Database->handles(
+        { driver => 'SQLite' },
+        { driver => 'SQLite2' },
+        { driver => 'mysql', min_version => '4.0' },
+    );
+
+See L<Test::Database> documentation for details about how
+to write a request.
+
+=head2 Testing on a development box
+
+The first systems on which you are going to test your module are the
+ones you own. On these system, it's up to you to configure the databases
+you want to make available.
+
+A typical F<~/.test-database> configuration file would look like this:
+
+    dsn      = dbi:mysql:database=test
+    username = root
+
+    dsn      = dbi:Pg:database=test
+    username = postgres
+
+    dsn      = dbi:Oracle:test
+
+There is no need to worry about the file-based drivers, as they can
+create databases as needed.
+
+
 =cut
 

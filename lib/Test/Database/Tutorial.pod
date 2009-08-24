@@ -1,0 +1,55 @@
+=head1 NAME
+
+Test::Database::Tutorial - How to use Test::Database
+
+=head1 INTRODUCTION
+
+The goal of the C<Test::Database> module is to provide easy to use test
+databases for test scripts that need them.
+
+Until now, when a test script needed a database, it either used SQLite
+(or some other easy to setup database), or required some environment
+variables to be present, or used default credentials, or even set up
+the database by itself.
+
+Most of those methods have pros and cons:
+
+=over 4
+
+=item *
+
+using SQLite
+
+No setup needed, but the test script can only use SQLite's dialect of SQL.
+So much for portability across database engines.
+
+=item *
+
+using environement variables
+
+The environment variables are different for every module to test, and
+usually only the main developers/testers know about them. Since most of
+the CPAN testers probably don't bother setting them up, these modules
+are most certainly undertested.
+
+=item *
+
+using default credentials
+
+Typically using C<'root'> and C<''> to connect to the C<test> MySQL
+database, these test script assume a default installation on the host
+system. These credentials often provide full access to the database
+engine, which is a security risk in itself (see below).
+
+=item *
+
+setting up the database by itself
+
+This method usually uses the default credentials to access an account
+with enough privileges to create a database. The host system data may
+be at risk!
+
+=back
+
+=cut
+

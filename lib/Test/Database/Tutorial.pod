@@ -7,6 +7,8 @@ Test::Database::Tutorial - How to use Test::Database
 The goal of the C<Test::Database> module is to provide easy to use test
 databases for test scripts that need them.
 
+=head2 The problem
+
 Until now, when a test script needed a database, it either used SQLite
 (or some other easy to setup database), or required some environment
 variables to be present, or used default credentials, or even set up
@@ -50,6 +52,32 @@ with enough privileges to create a database. The host system data may
 be at risk!
 
 =back
+
+
+=head2 A solution: C<Test::Database>
+
+Many modules use a database to store their data, and often support
+several database engines.
+
+Wouldn't it be nice to be able to test on all the supported databases
+that are available on the test system? Without breaking (into) anything?
+
+This is the goal of the C<Test::Database> module. It supports:
+
+=over 4
+
+=item *
+
+getting DSN information from a list of pre-configured database and engines
+
+=item *
+
+automatic detection of "file-based" database engines (typically, SQLite).
+
+=back
+
+The rest of this document describes various use cases for C<Test::Database>.
+
 
 =cut
 

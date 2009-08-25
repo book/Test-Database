@@ -201,5 +201,45 @@ For C<Pg>, I had to edit the F<pg_hba.cong> file in F</etc> to make sure
 anyone would be able to connect as the C<postgres> user, for example.
 
 
+=head2 Cleaning the test drivers
+
+When given a C<driver_dsn>, C<Test::Database> will use it to create a
+database for each test suite that requests one. Some mapping information
+is created to ensure the same test suite always receives a handle to
+the same database. (The mapping of test suite to database is based on
+the current working directory when C<Test::Database> is loaded).
+
+After a while, your database engine may fill up with unused test databases.
+
+All drivers store their mapping information in the system's temporary
+directory, so the mapping information is relatively volatile, which implies
+more unused test databases (at least for non file-based drivers, since the
+file-based drivers store their database files in the system's temporary
+directory too).
+
+The following one-liner will list all the existing databases that were
+created by C<Test::Database> in your configured drivers:
+
+    perl -MTest::Database -le 'print join "\n  ", $_->name, $_->databases for Test::Database->drivers'
+
+Example output:
+
+    CSV
+      tdd_csv_0
+      tdd_csv_1
+    DBM
+    SQLite
+      tdd_sqlite_0
+      tdd_sqlite_1
+    SQLite2
+      tdd_sqlite2_0
+    mysql
+      tdd_mysql_0
+      tdd_mysql_1
+
+The following one-liner will drop them all:
+
+    perl -MTest::Database -le 'for$d(Test::Database->drivers){$d->drop_database($_)for$d->databases}'
+
 =cut
 

@@ -241,5 +241,19 @@ The following one-liner will drop them all:
 
     perl -MTest::Database -le 'for$d(Test::Database->drivers){$d->drop_database($_)for$d->databases}'
 
+=head1 ADDING SUPPORT FOR A NEW DATABASE ENGINE
+
+C<Test::Database> currently supports the following DBD drivers:
+C<CSV>, C<DBM>, C<mysql>, C<Pg>, C<SQLite2>, C<SQLite>.
+
+Adding a new driver requires writing a corresponding
+C<Test::Database::Driver> subclass, having the same name as the original
+C<DBD> driver.
+
+An example module is provided in F<eg/MyDriver.pm>, and the other
+drivers can also be used as an example. See also the I<WRITING A
+DRIVER FOR YOUR DATABASE OF CHOICE> section in the documentation for
+C<Test::Database::Driver>.
+
 =cut
 

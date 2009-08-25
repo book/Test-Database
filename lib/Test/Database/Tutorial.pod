@@ -162,5 +162,44 @@ There is no need to worry about the file-based drivers, as they can
 create databases as needed.
 
 
+=head1 CPAN TESTER
+
+The main goal of C<Test::Database> from the point of view of a tester
+is: "configure once, test everything".
+
+As a CPAN tester, once you have installed C<Test::Database>, you
+should edit the local equivalent of F<~/.test-database> for the
+user that will be running the CPAN test suites.
+
+=head2 C<dsn> versus C<driver_dsn>
+
+C<dsn> sections define the information needed to connect to a single
+database. Any database listed here can be used by any test script that
+requests it.
+
+C<driver_dsn> sections define the information needed to connect to a
+database engine (a "driver") with sufficient rights to run a
+C<CREATE DATABASE> command. This allows C<Test::Database> to create the
+databases on demand, thus ensuring every test suite will get a specific
+database.
+
+If you have file-based database engine, there is nothing to setup, as
+C<Test::Database> is able to detect available file-based engines and
+use them as needed.
+
+Other database engines like C<mysql> and C<Pg> require a little more
+configuration. For example, here's the content of my F<~/.test-database>
+configuration file:
+
+    driver_dsn  = dbi:mysql:
+    username    = root
+    
+    driver_dsn  = dbi:Pg:
+    username    = postgres
+
+For C<Pg>, I had to edit the F<pg_hba.cong> file in F</etc> to make sure
+anyone would be able to connect as the C<postgres> user, for example.
+
+
 =cut
 

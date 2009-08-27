@@ -10,6 +10,7 @@ lib/Test/Database/Driver/Pg.pm
 lib/Test/Database/Driver/SQLite.pm
 lib/Test/Database/Driver/SQLite2.pm
 lib/Test/Database/Handle.pm
+lib/Test/Database/Tutorial.pod
 lib/Test/Database/Util.pm
 Makefile.PL
 MANIFEST			This list of files

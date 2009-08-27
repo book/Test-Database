@@ -16,7 +16,7 @@ CVS/.*
 ^Makefile\.[a-z]+$
 ^pm_to_blib$
 ~$
-^TODO$
+^TODO
 ^.cvsignore$
 ^Build$
 ^cover_db/

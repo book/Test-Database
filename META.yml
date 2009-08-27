@@ -1,6 +1,6 @@
 ---
 name: Test-Database
-version: 1.04
+version: 1.05
 author:
   - 'Philippe Bruhat (BooK) <book@cpan.org>'
 abstract: Database handles ready for testing
@@ -16,7 +16,7 @@ build_requires:
 provides:
   Test::Database:
     file: lib/Test/Database.pm
-    version: 1.04
+    version: 1.05
   Test::Database::Driver:
     file: lib/Test/Database/Driver.pm
   Test::Database::Driver::CSV:

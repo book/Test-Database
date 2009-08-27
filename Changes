@@ -1,5 +1,14 @@
 Revision history for Test-Database
 
+1.05 Fri Aug 28 00:09:31 CEST 2009
+        [IMPROVEMENTS]
+        - the key configuration item allows to add a unique key
+          to database created by Test::Database (useful when
+          sharing a database between several test hosts)
+        [DOCUMENTATION]
+        - Test::Database::Tutorial now documents how to use the
+          module as a CPAN author or CPAN tester
+
 1.04 Sun Aug 23 03:10:11 CEST 2009
         [IMPROVEMENTS]
         - re-introduced Test::Database::Driver::Pg

@@ -200,6 +200,25 @@ configuration file:
 For C<Pg>, I had to edit the F<pg_hba.cong> file in F</etc> to make sure
 anyone would be able to connect as the C<postgres> user, for example.
 
+=head2 Several test hosts accessing the same database engine
+
+If you have a large scale testing setup, you may want to setup a single
+MySQL or Postgres instance for all your test hosts, rather than one per
+test host.
+
+Databases created by C<Test::Database::Driver> (using a configured
+C<driver_dsn> have a name built after the following template:
+C<tdd_I<driver>_I<login>_I<n>>, where I<driver> is the DBD name, I<login>
+is the login of the user running C<Test::Database> and I<n> a number that
+
+If the same database server is used by several host running
+C<Test::Database> from the same user account, there is a race condition
+during with two different host may try to create the a database with
+the same name. A simple trick to avoid this is to add a C<key> section
+to the F<~/.test-database> configuration file.
+
+If the C<key> entry exists, the template used by C<Test::Database::Driver>
+to create new databases is C<tdd_I<driver>_I<login>_I<key>_I<n>>.
 
 =head2 Cleaning the test drivers
 
@@ -225,21 +244,24 @@ created by C<Test::Database> in your configured drivers:
 Example output:
 
     CSV
-      tdd_csv_0
-      tdd_csv_1
+      tdd_csv_book_0
+      tdd_csv_book_1
     DBM
     SQLite
-      tdd_sqlite_0
-      tdd_sqlite_1
+      tdd_sqlite_book_0
+      tdd_sqlite_book_1
     SQLite2
-      tdd_sqlite2_0
+      tdd_sqlite2_book_0
     mysql
-      tdd_mysql_0
-      tdd_mysql_1
+      tdd_mysql_book_0
+      tdd_mysql_book_1
 
 The following one-liner will drop them all:
 
     perl -MTest::Database -le 'for$d(Test::Database->drivers){$d->drop_database($_)for$d->databases}'
+
+If a C<key> has been defined in the configuration, only the databases
+corresponding to that key will be dropped.
 
 =head1 ADDING SUPPORT FOR A NEW DATABASE ENGINE
 

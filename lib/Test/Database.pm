@@ -85,6 +85,10 @@ sub load_config {
     # fetch the items (dsn, driver_dsn) from the config files
     my @items = map { _read_file($_) } @files;
 
+    # load the key
+    Test::Database::Driver->_set_key( $_->{key} )
+        for grep { exists $_->{key} } @items;
+
     # create the handles
     push @HANDLES,
         map { Test::Database::Handle->new(%$_) }
@@ -345,7 +349,7 @@ interpreted as a shortcut for C<{ dbd => $string }>.
 
 The list of available, authorized DSN is stored in the local equivalent
 of F<~/.test-database>. It's a simple list of key/value pairs, with the
-C<dsn> or C<driver_dsn> keys being used to split successive entries:
+C<dsn>, C<driver_dsn> or C<key> keys being used to split successive entries:
 
     # mysql
     dsn      = dbi:mysql:database=mydb;host=localhost;port=1234
@@ -358,6 +362,9 @@ C<dsn> or C<driver_dsn> keys being used to split successive entries:
     # sqlite
     dsn      = dbi:SQLite:db.sqlite
 
+    # set a unique key when creating databases
+    key = thwapp
+
     # a "driver" with full access (create/drop databases)
     driver_dsn = dbi:mysql:
     username   = root
@@ -366,6 +373,12 @@ The C<username> and C<password> keys are optional and empty strings will be
 used if they are not provided.
 
 Empty lines and comments are ignored.
+
+Optionaly, the C<key> section is used to add a "unique" element to the
+databases created by the drivers (as defined by C<driver_dsn>). It
+allows several hosts to share access to the same database server
+without risking a race condition when creating a new database. See
+L<Test::Database::Tutorial> for a longer explanation.
 
 =head1 AUTHOR
 

@@ -11,14 +11,24 @@ my @db;
     *{"Test::Database::Driver::Zlonk::databases"} = sub {@db};
 }
 
-my $dbname   = "tdd_zlonk_";
-my @names    = map {"$dbname$_"} 0, 1, 3, 2, 4;
-my @expected = map {"$dbname$_"} 0, 1, 2, 2, 4, 5;
+# our test plans
+my @names = ( 0, 1, 3, 2, 4 );
+my @expected = ( 0, 1, 2, 2, 4, 5 );
 
-plan tests => 1 + @expected;
+plan tests => 2 + @expected;
 
-is( Test::Database::Driver::Zlonk->_basename(),
-    $dbname, "_basename = $dbname" );
+# check the basename
+like( Test::Database::Driver::Zlonk->_basename(),
+    qr/^tdd_zlonk_(\w+)_/, "_basename looks correct" );
+
+Test::Database::Driver->_set_key( 'clunk' );
+like( Test::Database::Driver::Zlonk->_basename(),
+    qr/^tdd_zlonk_([a-z]+_clunk)_/, "_basename looks correct (with key)" );
+
+# now correctly compute our expectations
+my $dbname = Test::Database::Driver::Zlonk->_basename();
+@names    = map {"$dbname$_"} @names;
+@expected = map {"$dbname$_"} @expected;
 
 for my $expected (@expected) {
     is( Test::Database::Driver::Zlonk->available_dbname(),

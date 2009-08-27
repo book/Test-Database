@@ -15,12 +15,10 @@ use Test::Database::Handle;
 #
 
 # the location where all drivers-related files will be stored
-my $root = File::Spec->rel2abs(
-    File::Spec->catdir(
-        File::Spec->tmpdir(),
-        'Test-Database-' . ( getlogin() || getpwuid($<) )
-    )
-);
+my $KEY   = '';
+my $login = getlogin() || getpwuid($<);
+my $root  = File::Spec->rel2abs(
+    File::Spec->catdir( File::Spec->tmpdir(), "Test-Database-$login" ) );
 
 # generic driver class initialisation
 sub __init {
@@ -228,7 +226,11 @@ sub dsn {
 #
 # PRIVATE METHODS
 #
-sub _basename { return lc 'TDD_' . $_[0]->name() . '_' }
+sub _set_key { $KEY = $_[1] || '' }
+
+sub _basename {
+    lc join '_', 'TDD', $_[0]->name(), $login, ( $KEY ? $KEY : (), '' );
+}
 
 # generic implementations for file-based drivers
 sub _filebased_databases {

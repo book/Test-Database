@@ -16,7 +16,7 @@ sub _read_file {
     my @config;
 
     open my $fh, '<', $file or croak "Can't open $file for reading: $!";
-    my $re_header = qr/^(?:driver_)?dsn$/;
+    my $re_header = qr/^(?:(?:driver_)?dsn|key)$/;
     my %args;
     my $records;
     while (<$fh>) {

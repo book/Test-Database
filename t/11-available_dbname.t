@@ -19,11 +19,11 @@ plan tests => 2 + @expected;
 
 # check the basename
 like( Test::Database::Driver::Zlonk->_basename(),
-    qr/^tdd_zlonk_(\w+)_/, "_basename looks correct" );
+    qr/^tdd_zlonk_\w+_$/, "_basename looks correct" );
 
 Test::Database::Driver->_set_key( 'clunk' );
 like( Test::Database::Driver::Zlonk->_basename(),
-    qr/^tdd_zlonk_([a-z]+_clunk)_/, "_basename looks correct (with key)" );
+    qr/^tdd_zlonk_\w+_clunk_$/, "_basename looks correct (with key)" );
 
 # now correctly compute our expectations
 my $dbname = Test::Database::Driver::Zlonk->_basename();

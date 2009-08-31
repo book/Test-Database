@@ -17,6 +17,7 @@ use Test::Database::Handle;
 # the location where all drivers-related files will be stored
 my $KEY   = '';
 my $login = getlogin() || getpwuid($<);
+$login =~ s/\W+//g;
 my $root  = File::Spec->rel2abs(
     File::Spec->catdir( File::Spec->tmpdir(), "Test-Database-$login" ) );
 
@@ -226,7 +227,10 @@ sub dsn {
 #
 # PRIVATE METHODS
 #
-sub _set_key { $KEY = $_[1] || '' }
+sub _set_key {
+    $KEY = $_[1] || '';
+    croak "Invalid format for key '$KEY'" if $KEY !~ /^\w*$/;
+}
 
 sub _basename {
     lc join '_', 'TDD', $_[0]->name(), $login, ( $KEY ? $KEY : (), '' );

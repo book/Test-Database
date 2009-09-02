@@ -6,9 +6,28 @@ use Test::Database::Driver;
 
 my @drivers = Test::Database->list_drivers('available');
 
-plan tests => @drivers * ( 1 + 2 * 11 ) + 2;
+plan tests => 5 + @drivers * ( 1 + 2 * 11 ) + 2;
 
 my $base = 'Test::Database::Driver';
+
+# tests for Test::Database::Driver directly
+{
+    ok( !eval { Test::Database::Driver->new(); 1 },
+        'Test::Database::Driver->new() failed'
+    );
+    like(
+        $@,
+        qr/^dbd or driver_dsn parameter required at/,
+        'Expected error message'
+    );
+    my $dir = $base->base_dir();
+    ok( $dir, "$base has a base_dir(): $dir" );
+    like( $dir, qr/Test-Database-.*/,
+        "$base\'s base_dir() looks like expected" );
+    ok( -d $dir, "$base base_dir() is a directory" );
+}
+
+# now test the subclasses
 
 for my $name ( Test::Database->list_drivers('available') ) {
     my $class = "Test::Database::Driver::$name";

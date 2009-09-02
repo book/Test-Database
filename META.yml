@@ -1,6 +1,6 @@
 ---
 name: Test-Database
-version: 1.05
+version: 1.06
 author:
   - 'Philippe Bruhat (BooK) <book@cpan.org>'
 abstract: Database handles ready for testing
@@ -11,12 +11,12 @@ build_requires:
   DBI: 1
   File::HomeDir: 0.5
   Test::More: 0
-  YAML::Tiny: 0
+  YAML::Tiny: 1.27
   version: 0
 provides:
   Test::Database:
     file: lib/Test/Database.pm
-    version: 1.05
+    version: 1.06
   Test::Database::Driver:
     file: lib/Test/Database/Driver.pm
   Test::Database::Driver::CSV:

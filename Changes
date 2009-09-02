@@ -1,6 +1,11 @@
 Revision history for Test-Database
 
-1.06
+1.06 Thu Sep  3 00:39:49 CEST 2009
+        [IMPROVEMENTS]
+        - better basename computation for database created by the module
+        [DOCUMENTATION]
+        - added explanations on how database handles are provided
+          in Test::Database::Tutorial
         [PREREQUISITES]
         - Need YAML::Tiny 1.27, since we use LoadFile in scalar context
 

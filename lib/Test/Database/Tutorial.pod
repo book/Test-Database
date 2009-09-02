@@ -158,8 +158,24 @@ A typical F<~/.test-database> configuration file would look like this:
 
     dsn      = dbi:Oracle:test
 
-There is no need to worry about the file-based drivers, as they can
-create databases as needed.
+There is no need to add C<dsn> sections for file-based drivers
+(at least the ones that have a corresponding C<Test::Database::Driver>),
+since the module will automatically detect the available ones and create
+databases as needed.
+
+To find out which of the DBD that C<Test::Database> supports are
+installed, use the following one-liner:
+
+    $ perl -MTest::Database -le 'print for Test::Database->list_drivers("available")'
+    DBM
+    SQLite
+    mysql
+
+With no parameter, it will return the list of configured ones:
+
+    $ perl -MTest::Database -le 'print for Test::Database->list_drivers()'
+    DBM
+    SQLite
 
 
 =head1 CPAN TESTER

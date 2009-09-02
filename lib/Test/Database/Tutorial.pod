@@ -293,5 +293,62 @@ drivers can also be used as an example. See also the I<WRITING A
 DRIVER FOR YOUR DATABASE OF CHOICE> section in the documentation for
 C<Test::Database::Driver>.
 
+
+=head1 WHERE DO DSN COME FROM?
+
+The following ASCII-art graph shows where the C<Test::Database::Handle>
+objects returned by the C<handles()> method come from:
+
+
+    ,-------------,      ,-------------,      ,--------------,
+    |   DSN from  |      | File-based  |      | Drivers from |
+    | config file |      |   drivers   |      |  config file |
+    '-------------'      '-------------'      '--------------'
+           |                   |                      |
+           |                   |    ,-----------,     |
+           |                   '--->| Available |<----'
+           |                        |  drivers  |
+           |                        '-----------'
+           |                              |
+           |              ,-----------,   |
+           '------------->| Available |<--'
+                          |    DSN    |
+                          '-----------'
+
+
+Here are a few details about the C<handles()> method works:
+
+=over 4
+
+=item *
+
+C<Test::Database> maintains a list of C<Test::Database::Handle> objects
+computed from the DSN listed in the configuration.
+
+The handles matching the request are selected.
+
+=item *
+
+C<Test::Database> also maintains a list of C<Test::Database::Driver>
+objects computed from the list of supported file-based drivers that are
+locally available and from the list in the configuration file.
+
+The list of matching drivers is computed from the requests.  Each driver
+is then requested to provide an existing database (using its existing
+mapping information) or to create one if needed, and returns the
+corresponding C<Test::Database::Handle> objects.
+
+=item *
+
+Finally, all the collected C<Test::Database::Handle> objects are returned.
+
+=back
+
+So, without any configuration, C<Test::Database> will only be able to
+provide file-based databases. It is also recommended to B<not> put DSN
+or driver information for the file-based database engines that have
+a corresponding C<Test::Database::Driver> class, since it will cause
+C<handles()> to return several handles for the same database engine.
+
 =cut
 

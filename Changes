@@ -1,5 +1,9 @@
 Revision history for Test-Database
 
+1.06
+        [PREREQUISITES]
+        - Need YAML::Tiny 1.27, since we use LoadFile in scalar context
+
 1.05 Fri Aug 28 00:09:31 CEST 2009
         [IMPROVEMENTS]
         - the key configuration item allows to add a unique key

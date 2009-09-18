@@ -29,7 +29,7 @@ my $base = 'Test::Database::Driver';
 
 # now test the subclasses
 
-for my $name ( Test::Database->list_drivers('available') ) {
+for my $name ( @drivers ) {
     my $class = "Test::Database::Driver::$name";
     use_ok($class);
 

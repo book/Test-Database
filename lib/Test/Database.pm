@@ -375,6 +375,9 @@ allows several hosts to share access to the same database server
 without risking a race condition when creating a new database. See
 L<Test::Database::Tutorial> for a longer explanation.
 
+Individual drivers may accept extra parameters. See their documetation
+for details. Unrecognized parameters and not used, and therefore ignored.
+
 =head1 AUTHOR
 
 Philippe Bruhat (BooK), C<< <book@cpan.org> >>

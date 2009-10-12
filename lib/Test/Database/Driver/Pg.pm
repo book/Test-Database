@@ -17,7 +17,8 @@ sub create_database {
     my $dbname = $self->available_dbname();
 
     DBI->connect_cached( $self->connection_info() )
-        ->do("CREATE DATABASE $dbname");
+        ->do( "CREATE DATABASE $dbname"
+            . ( $self->{template} ? " TEMPLATE $self->{template}" : '' ) );
 
     # return the handle
     return Test::Database::Handle->new(
@@ -64,6 +65,19 @@ Test::Database::Driver::Pg - A Test::Database driver for Pg
 =head1 DESCRIPTION
 
 This module is the C<Test::Database> driver for C<DBD::Pg>.
+
+=head1 EXTRA PARAMETERS
+
+This driver understands the following extra parameters in the configuration
+file:
+
+=over 4
+
+=item template
+
+The template to use when creating a new database.
+
+=back
 
 =head1 SEE ALSO
 

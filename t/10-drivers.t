@@ -4,7 +4,14 @@ use Test::More;
 use Test::Database;
 use Test::Database::Driver;
 
-my @drivers = Test::Database->list_drivers('available');
+# for file-based drivers, the dbd parameter is enough
+# but for other drivers, we'll need the driver_dsn, username and password
+my @drivers = (
+    map {
+        my $d = $_;
+        +{ map { $_ => $d->{$_} } qw( driver_dsn dbd username password ) }
+        } Test::Database->drivers()
+);
 
 plan tests => 5 + @drivers * ( 1 + 2 * 12 ) + 2;
 
@@ -29,13 +36,14 @@ my $base = 'Test::Database::Driver';
 
 # now test the subclasses
 
-for my $name ( @drivers ) {
+for my $args (@drivers) {
+    my $name  = $args->{dbd};
     my $class = "Test::Database::Driver::$name";
     use_ok($class);
 
     for my $t (
-        [ $base => eval { $base->new( dbd => $name ) } || ( '', $@ ) ],
-        [ $class => eval { $class->new() } || ( '', $@ ) ],
+        [ $base  => eval { $base->new(%$args) }  || ( '', $@ ) ],
+        [ $class => eval { $class->new(%$args) } || ( '', $@ ) ],
         )
     {
         my ( $created_by, $driver, $at ) = @$t;

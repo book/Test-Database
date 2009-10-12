@@ -65,6 +65,7 @@ for my $driver (@drivers) {
 
         # remove everything
         ok( $dbh->do($drop), "$desc: $drop" );
+        $dbh->disconnect();
     }
 
     ok( grep ( { $_ eq $old } $driver->databases() ),

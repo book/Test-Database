@@ -1,5 +1,14 @@
 Revision history for Test-Database
 
+1.07 Mon Oct 12 23:25:26 CEST 2009
+        [IMPROVEMENTS]
+        - Test::Database::Driver now has a dbd_version() method
+        - Fixed a bug that created some warnings (thanks to Nicholas Bamber)
+        - Test::Database::Driver::Pg now accepts a 'template' parameter
+          (requested by Adam Kennedy)
+        [TESTS]
+        - Fixed warnings in t/10-drivers.t and t/25-sql.t
+
 1.06 Thu Sep  3 00:39:49 CEST 2009
         [IMPROVEMENTS]
         - better basename computation for database created by the module

@@ -19,21 +19,26 @@ sub new {
     my ( $scheme, $driver, $attr_string, $attr_hash, $driver_dsn )
         = DBI->parse_dsn( $args{dsn} );
 
-    # try to provide a Test::Database::Driver object
-    if ( !exists $args{driver} ) {
-        eval {
-            $args{driver}
-                = "Test::Database::Driver::$driver"
-                ->new( driver_dsn => $args{dsn} );
-        };
-    }
-
-    return bless {
+    # fix args
+    %args = (
         username => '',
         password => '',
         %args,
         dbd => $driver,
-    }, $class;
+    );
+
+    # try to provide a Test::Database::Driver object
+    if ( !exists $args{driver} ) {
+        eval {
+            $args{driver} = "Test::Database::Driver::$driver"->new(
+                driver_dsn => $args{dsn},
+                username   => $args{username},
+                password   => $args{password},
+            );
+        };
+    }
+
+    return bless { %args }, $class;
 }
 
 sub connection_info { return @{ $_[0] }{qw( dsn username password )} }

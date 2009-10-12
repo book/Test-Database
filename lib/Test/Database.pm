@@ -225,8 +225,6 @@ the same one:
 You can use the same requests again if you need to use the same
 test databases over several test scripts.
 
-The C<cleanup()> method will drop all tables from C<supported> databases.
-
 =head1 DESCRIPTION
 
 Quoting Michael Schwern:

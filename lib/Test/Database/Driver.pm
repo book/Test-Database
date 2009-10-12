@@ -191,6 +191,8 @@ sub version {
     return $_[0]{version} ||= version->new( $_[0]->_version() );
 }
 
+sub dbd_version { return "DBD::$_[0]{dbd}"->VERSION; }
+
 sub driver_dsn { return $_[0]{driver_dsn} ||= $_[0]->_driver_dsn() }
 sub username { return $_[0]{username} }
 sub password { return $_[0]{password} }
@@ -350,6 +352,11 @@ if needed. Typically used by file-based database drivers.
 
 C<version> object representing the version of the underlying database enginge.
 This object is build with the return value of C<_version()>.
+
+=item dbd_version()
+
+The version of the DBD used to connect to the database engine, as returned
+by C<VERSION()>.
 
 =item driver_dsn()
 

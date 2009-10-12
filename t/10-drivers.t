@@ -6,7 +6,7 @@ use Test::Database::Driver;
 
 my @drivers = Test::Database->list_drivers('available');
 
-plan tests => 5 + @drivers * ( 1 + 2 * 11 ) + 2;
+plan tests => 5 + @drivers * ( 1 + 2 * 12 ) + 2;
 
 my $base = 'Test::Database::Driver';
 
@@ -41,7 +41,7 @@ for my $name ( @drivers ) {
         my ( $created_by, $driver, $at ) = @$t;
         $at =~ s/ at .*\n// if $at;
     SKIP: {
-            skip "Failed to create $name driver with $created_by ($at)", 11
+            skip "Failed to create $name driver with $created_by ($at)", 12
                 if !$driver;
             diag "$name driver (created by $created_by)";
 
@@ -62,7 +62,14 @@ for my $name ( @drivers ) {
             ok( eval { $version = $driver->version() },
                 "$desc has a version(): $version"
             );
+            diag $@ if $@;
             isa_ok( $version, 'version', "$desc version()" );
+
+            # version_dbd
+            my $version;
+            ok( eval { $version = $driver->dbd_version() },
+                "$desc has a dbd_version(): $version"
+            );
             diag $@ if $@;
 
             # driver_dsn, username, password, connection_info

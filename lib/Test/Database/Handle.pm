@@ -5,7 +5,7 @@ use Carp;
 use DBI;
 
 # basic accessors
-for my $attr (qw( dbd dsn username password )) {
+for my $attr (qw( dbd dsn username password name driver )) {
     no strict 'refs';
     *{$attr} = sub { return $_[0]{$attr} };
 }
@@ -116,9 +116,17 @@ connection triplet returned by C<connection_info()>.
 The optional parameter C<$attr> is a reference to a hash of connection
 attributes, passed directly to DBI's C<connect()> method.
 
+=item name()
+
+Return the database name attached to the handle.
+
 =item dbd()
 
 Return the DBI driver name, as computed from the C<dsn>.
+
+=item driver()
+
+Return the C<Test::Database::Driver> object attached to the handle.
 
 =back
 

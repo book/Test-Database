@@ -136,7 +136,7 @@ sub make_handle {
     my $dbname = $self->{mapping}{ cwd() };
 
     # if the database still exists, return it
-    if ( grep { $_ eq $dbname } $self->databases() ) {
+    if ( $dbname && grep { $_ eq $dbname } $self->databases() ) {
         $handle = Test::Database::Handle->new(
             dsn      => $self->dsn($dbname),
             username => $self->username(),

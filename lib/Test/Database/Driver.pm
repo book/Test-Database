@@ -100,6 +100,9 @@ sub _load_mapping {
     # load mapping from file
     my $mapping = LoadFile( $file );
     $self->{mapping} = $mapping->{$self->driver_dsn()} || {};
+
+    # remove stale entries
+    $self->_save_mapping( $file ) if $self->_check_mapping();
 }
 
 sub _save_mapping {
@@ -115,6 +118,22 @@ sub _save_mapping {
     DumpFile( "$file.tmp", $mapping );
     rename "$file.tmp", $file
         or croak "Can't rename $file.tmp to $file: $!";
+}
+
+sub _check_mapping {
+    my ($self) = @_;
+    my $mapping = $self->{mapping};
+    my %database = map { $_ => undef } $self->databases();
+    my $updated;
+
+    # check that all databases in the mapping exist
+    for my $cwd ( keys %$mapping ) {
+        if ( !exists $database{ $mapping->{$cwd} } ) {
+            delete $mapping->{$cwd};
+            $updated++;
+        }
+    }
+    return $updated;
 }
 
 sub make_dsn {

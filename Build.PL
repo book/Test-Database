@@ -1,3 +1,4 @@
+use 5.006;
 use strict;
 use warnings;
 use Module::Build;
@@ -14,6 +15,7 @@ my $builder = Module::Build->new(
         'YAML::Tiny' => 1.27,
         'File::Spec' => 0,
         'File::Path' => 0,
+        'perl'       => 5.006,
     },
     build_requires => {
         'Test::More' => 0,

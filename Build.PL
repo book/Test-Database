@@ -20,6 +20,11 @@ my $builder = Module::Build->new(
     build_requires => {
         'Test::More' => 0,
     },
+    meta_merge => {
+        resources => {
+            repository => 'http://github.com/book/Test-Database',
+        },
+    },
     add_to_cleanup      => [ 'Test-Database-*' ],
 );
 

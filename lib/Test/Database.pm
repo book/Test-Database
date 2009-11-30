@@ -1,4 +1,5 @@
 package Test::Database;
+use 5.006;
 use warnings;
 use strict;
 

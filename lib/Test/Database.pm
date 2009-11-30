@@ -424,17 +424,8 @@ Some of the items on the TODO list:
 
 =item *
 
-Write a Cookbook/Tutorial to make adoption easier for testers and module
-authors.
-
-=item *
-
 Add a database engine autodetection script/module, to automatically
 write the F<.test-database> configuration file.
-
-=item *
-
-Include drivers in the F<.test-database> file.
 
 =back
 

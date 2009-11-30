@@ -91,12 +91,12 @@ sub load_config {
 
     # create the handles
     push @HANDLES,
-        map { Test::Database::Handle->new(%$_) }
+        map { eval { Test::Database::Handle->new(%$_) } || () }
         grep { exists $_->{dsn} } @items;
 
-    # create the handles
+    # create the drivers
     push @DRIVERS,
-        map { Test::Database::Driver->new(%$_) }
+        map { eval { Test::Database::Driver->new(%$_) } || () }
         grep { exists $_->{driver_dsn} } @items;
 }
 

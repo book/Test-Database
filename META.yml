@@ -1,22 +1,27 @@
 ---
 name: Test-Database
-version: 1.07
+version: 1.08
 author:
   - 'Philippe Bruhat (BooK) <book@cpan.org>'
 abstract: Database handles ready for testing
 license: perl
 resources:
   license: http://dev.perl.org/licenses/
-build_requires:
+  repository: http://github.com/book/Test-Database
+requires:
   DBI: 1
   File::HomeDir: 0.5
-  Test::More: 0
+  File::Path: 0
+  File::Spec: 0
   YAML::Tiny: 1.27
+  perl: 5.006
   version: 0
+build_requires:
+  Test::More: 0
 provides:
   Test::Database:
     file: lib/Test/Database.pm
-    version: 1.07
+    version: 1.08
   Test::Database::Driver:
     file: lib/Test/Database/Driver.pm
   Test::Database::Driver::CSV:
@@ -35,7 +40,7 @@ provides:
     file: lib/Test/Database/Handle.pm
   Test::Database::Util:
     file: lib/Test/Database/Util.pm
-generated_by: Module::Build version 0.3
+generated_by: Module::Build version 0.280801
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
   version: 1.2

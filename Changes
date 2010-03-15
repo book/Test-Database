@@ -1,5 +1,11 @@
 Revision history for Test-Database
 
+1.08 Mon Mar 15 15:00:45 CET 2010
+        [IMPROVEMENTS]
+        - better dependencies lists and META.yml (Alexandr Ciornii)
+        - ignore errors when loading configuration
+        - more accessors added to Test::Database::Handle
+
 1.07 Mon Oct 12 23:25:26 CEST 2009
         [IMPROVEMENTS]
         - Test::Database::Driver now has a dbd_version() method

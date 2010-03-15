@@ -74,9 +74,9 @@ for my $args (@drivers) {
             isa_ok( $version, 'version', "$desc version()" );
 
             # version_dbd
-            my $version;
-            ok( eval { $version = $driver->dbd_version() },
-                "$desc has a dbd_version(): $version"
+            my $version_dbd;
+            ok( eval { $version_dbd = $driver->dbd_version() },
+                "$desc has a dbd_version(): $version_dbd"
             );
             diag $@ if $@;
 

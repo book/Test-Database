@@ -457,7 +457,7 @@ and Adam Kennedy (ADAMK).
 
 =head1 COPYRIGHT
 
-Copyright 2008-2009 Philippe Bruhat (BooK), all rights reserved.
+Copyright 2008-2010 Philippe Bruhat (BooK), all rights reserved.
 
 =head1 LICENSE
 

@@ -350,5 +350,18 @@ or driver information for the file-based database engines that have
 a corresponding C<Test::Database::Driver> class, since it will cause
 C<handles()> to return several handles for the same database engine.
 
+=head1 AUTHOR
+
+Philippe Bruhat (BooK), C<< <book@cpan.org> >>
+
+=head1 COPYRIGHT
+
+Copyright 2009-2010 Philippe Bruhat (BooK), all rights reserved.
+
+=head1 LICENSE
+
+You can redistribute this tutorial and/or modify it under the same terms
+as Perl itself.
+
 =cut
 

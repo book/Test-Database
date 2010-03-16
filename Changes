@@ -1,5 +1,12 @@
 Revision history for Test-Database
 
+1.09 Tue Mar 16 12:43:08 CET 2010
+        [TESTS]
+        - added t/24-cleanup.t to ensure all databases used by the test suite
+        [DOCUMENTATION]
+        - fixed copyright dates, added an author/license section to the
+          tutorial
+
 1.08 Mon Mar 15 15:00:45 CET 2010
         [IMPROVEMENTS]
         - better dependencies lists and META.yml (Alexandr Ciornii)

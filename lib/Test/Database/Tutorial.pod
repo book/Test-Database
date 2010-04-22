@@ -27,7 +27,7 @@ So much for portability across database engines.
 
 =item *
 
-using environement variables
+using environment variables
 
 The environment variables are different for every module to test, and
 usually only the main developers/testers know about them. Since most of

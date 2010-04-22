@@ -9,7 +9,9 @@ use Test::Database::Driver;
 my @drivers = (
     map {
         my $d = $_;
-        +{ map { $_ => $d->{$_} } qw( driver_dsn dbd username password ) }
+        +{ map { $_ => $d->{$_} }
+                grep { exists $d->{$_} }
+                qw( driver_dsn dbd username password ) }
         } Test::Database->drivers()
 );
 

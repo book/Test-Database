@@ -69,8 +69,10 @@ sub new {
 
     # try to connect before returning the object
     if ( !$class->is_filebased() ) {
-        eval { DBI->connect_cached( $self->connection_info() ) }
-            or return;
+        eval {
+            DBI->connect_cached( $self->connection_info(),
+                { PrintError => 0 } );
+        } or return;
     }
 
     return $self;

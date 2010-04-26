@@ -42,7 +42,7 @@ sub databases {
     my ($self)    = @_;
     my $basename  = qr/^@{[$self->_basename()]}/;
     my $databases = eval {
-        DBI->connect_cached( $self->connection_info() )
+        DBI->connect_cached( $self->connection_info(), { PrintError => 0 } )
             ->selectall_arrayref(
             'SELECT datname FROM pg_catalog.pg_database');
     };

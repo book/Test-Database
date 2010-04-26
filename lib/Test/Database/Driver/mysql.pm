@@ -41,7 +41,7 @@ sub databases {
     my ($self)    = @_;
     my $basename  = qr/^@{[$self->_basename()]}/;
     my $databases = eval {
-        DBI->connect_cached( $self->connection_info() )
+        DBI->connect_cached( $self->connection_info(), { PrintError => 0 } )
             ->selectall_arrayref('SHOW DATABASES');
     };
     return grep {/$basename/} map {@$_} @$databases;

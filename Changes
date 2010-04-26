@@ -1,5 +1,13 @@
 Revision history for Test-Database
 
+1.10 Tue Apr 27 00:58:22 CEST 2010
+        [IMPROVEMENTS]
+        - Do not print errors when errors are expected and will be ignored.
+          (Thanks to Barbie - RT #56516)
+        [TESTS]
+        - clean t/10-drivers.t of warnings and errors
+          (Thanks to Barbie & Martin J Evans - RT #56516)
+
 1.09 Tue Mar 16 12:43:08 CET 2010
         [TESTS]
         - added t/24-cleanup.t to ensure all databases used by the test suite

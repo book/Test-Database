@@ -379,6 +379,11 @@ if needed. Typically used by file-based database drivers.
 C<version> object representing the version of the underlying database enginge.
 This object is build with the return value of C<_version()>.
 
+=item version_string()
+
+Version string representing the version of the underlying database enginge.
+This string is the actual return value of C<_version()>.
+
 =item dbd_version()
 
 The version of the DBD used to connect to the database engine, as returned

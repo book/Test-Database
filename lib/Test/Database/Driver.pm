@@ -182,7 +182,7 @@ sub version_matches {
     my $version = $self->version();
     return
         if exists $request->{version}
-            && $version != $request->{version};
+            && $self->version_string() ne $request->{version};
     return
         if exists $request->{min_version}
             && $version < $request->{min_version};
@@ -209,7 +209,12 @@ sub base_dir {
 
 sub version {
     no warnings;
-    return $_[0]{version} ||= version->new( $_[0]->_version() );
+    return $_[0]{version}
+        ||= version->new( $_[0]->_version() =~ /^([0123456789._]+)/ );
+}
+
+sub version_string {
+    return $_[0]{version_string} ||= $_[0]->_version();
 }
 
 sub dbd_version { return "DBD::$_[0]{dbd}"->VERSION; }

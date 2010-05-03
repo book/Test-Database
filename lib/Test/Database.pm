@@ -133,7 +133,7 @@ sub handles {
         my $driver = $handle->{driver};
         for my $request (@requests) {
             next if $request->{dbd} ne $handle->dbd();
-            if ( grep /^version(?:_m(?:ax|in))?$/, keys %$request ) {
+            if ( grep /^(?:(?:max|min|regex)_)?version$/, keys %$request ) {
                 next if !$driver || !$driver->version_matches($request);
             }
             $ok = 1;
@@ -322,8 +322,8 @@ If missing, all available drivers will match.
 
 C<version>: exact database engine version
 
-Only database engines having a version number identical to the
-given version will match.
+Only database engines having a version string identical to the
+given version string will match.
 
 =item *
 
@@ -338,6 +338,13 @@ C<max_version>: maximum database engine version
 
 Only database engines having a version number lower (and not equal) to the
 given maximum version will match.
+
+=item *
+
+C<regex_version>: matching database engine version
+
+Only database engines having a version string that matches the
+given regular expression will match.
 
 =back
 

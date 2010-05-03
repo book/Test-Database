@@ -18,19 +18,23 @@ my @ok = (
     { version     => '1.2.3', max_version => '1.4.3' },
     { min_version => '1.2.0', max_version => '2.0' },
     { version     => '1.2.3', min_version => '1.2.0', max_version => '2.0' },
+    { regex_version => qr/^1\.2/ },
 );
 
 my @ok_beta
     = map { my %r = %$_; $r{version} = '1.2.3-beta' if $r{version}; \%r } @ok;
+push @ok_beta, { regex_version => qr/beta/ };
 
 my @not_ok = (
-    { min_version => '1.3.0' },
-    { max_version => '1.002' },
-    { max_version => '1.2.3' },
-    { version     => '1.2.3-beta' },
-    { version     => '1.3.4' },
-    { min_version => '1.3.0', max_version => '2.1' },
-    { min_version => '0.1.3', max_version => '1.002' },
+    { min_version   => '1.3.0' },
+    { max_version   => '1.002' },
+    { max_version   => '1.2.3' },
+    { version       => '1.2.3-beta' },
+    { version       => '1.3.4' },
+    { min_version   => '1.3.0', max_version => '2.1' },
+    { min_version   => '0.1.3', max_version => '1.002' },
+    { regex_version => qr/^1\.2\.[1245]$/ },
+    { regex_version => qr/^1\.2$/ },
 );
 
 my @not_ok_beta = map {

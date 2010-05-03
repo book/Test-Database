@@ -3,6 +3,15 @@ use warnings;
 use Test::More;
 use File::Spec;
 
+# DBD::DBM uses SQL::Statement if available
+# but SQL::Statement versions > 1.20 make the test fail
+# (see RT #56463, #56561)
+BEGIN {
+    if ( eval { require SQL::Statement; $SQL::Statement::VERSION > 1.20; } ) {
+       $ENV{DBI_SQL_NANO} = 1;
+    }
+}
+
 use Test::Database;
 
 my @drivers = Test::Database->drivers();

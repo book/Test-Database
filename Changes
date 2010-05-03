@@ -1,5 +1,14 @@
 Revision history for Test-Database
 
+1.11 Tue May  4 01:03:10 CEST 2010
+        [IMPROVEMENTS]
+        - new version_string() method ensures version constraints on
+          requests work correctly (thanks to Erik Rijkers)
+        - new paramater for requests: regex_version
+        [TESTS]
+        - workaround for DBD::DBM errors in t/25-sql.t, thanks to
+          Birmingham.pm
+
 1.10 Tue Apr 27 00:58:22 CEST 2010
         [IMPROVEMENTS]
         - Do not print errors when errors are expected and will be ignored.

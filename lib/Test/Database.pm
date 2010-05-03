@@ -12,7 +12,7 @@ use Test::Database::Util;
 use Test::Database::Driver;
 use Test::Database::Handle;
 
-our $VERSION = '1.10';
+our $VERSION = '1.11';
 
 #
 # global configuration

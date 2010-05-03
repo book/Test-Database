@@ -26,7 +26,6 @@ t/11-make_dsn.t
 t/11-version_matches.t
 t/12-load.t
 t/20-handles.t
-t/24-cleanup.t
 t/25-sql.t
 t/database.bad
 t/database.bad2

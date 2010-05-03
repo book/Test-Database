@@ -1,6 +1,6 @@
 ---
 name: Test-Database
-version: 1.10
+version: 1.11
 author:
   - 'Philippe Bruhat (BooK) <book@cpan.org>'
 abstract: Database handles ready for testing
@@ -21,7 +21,7 @@ build_requires:
 provides:
   Test::Database:
     file: lib/Test/Database.pm
-    version: 1.10
+    version: 1.11
   Test::Database::Driver:
     file: lib/Test/Database/Driver.pm
   Test::Database::Driver::CSV:
@@ -40,7 +40,7 @@ provides:
     file: lib/Test/Database/Handle.pm
   Test::Database::Util:
     file: lib/Test/Database/Util.pm
-generated_by: Module::Build version 0.280801
+generated_by: Module::Build version 0.33
 meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4

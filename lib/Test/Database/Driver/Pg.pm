@@ -8,7 +8,7 @@ our @ISA = qw( Test::Database::Driver );
 
 sub _version {
     DBI->connect_cached( $_[0]->connection_info() )
-        ->selectcol_arrayref('SELECT VERSION()')->[0] =~ /^PostgreSQL (\S+) /;
+        ->selectcol_arrayref('SELECT VERSION()')->[0] =~ /^PostgreSQL (\S+)/;
     return $1;
 }
 

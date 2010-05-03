@@ -133,7 +133,7 @@ sub handles {
         my $driver = $handle->{driver};
         for my $request (@requests) {
             next if $request->{dbd} ne $handle->dbd();
-            if ( grep /^(?:(?:max|min|regex)_)?version$/, keys %$request ) {
+            if ( grep /version/, keys %$request ) {
                 next if !$driver || !$driver->version_matches($request);
             }
             $ok = 1;

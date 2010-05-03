@@ -210,7 +210,7 @@ sub base_dir {
 sub version {
     no warnings;
     return $_[0]{version}
-        ||= version->new( $_[0]->_version() =~ /^([0123456789._]+)/ );
+        ||= version->new( $_[0]->_version() =~ /^([0-9._]*[0-9])/ );
 }
 
 sub version_string {

@@ -51,6 +51,8 @@ sub databases {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Test::Database::Driver::mysql - A Test::Database driver for mysql
@@ -74,7 +76,7 @@ Philippe Bruhat (BooK), C<< <book@cpan.org> >>
 
 =head1 ACKNOWLEDGEMENTS
 
-Many thanks to Kristian Köhntopp who helped me while writing a
+Many thanks to Kristian KÃ¶hntopp who helped me while writing a
 previous version of this module (before C<Test::Database> 0.03).
 
 =head1 COPYRIGHT

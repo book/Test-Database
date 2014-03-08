@@ -1,4 +1,5 @@
 package Test::Database::Driver::SQLite2;
+
 use strict;
 use warnings;
 

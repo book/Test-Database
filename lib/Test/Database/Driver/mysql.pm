@@ -1,4 +1,5 @@
 package Test::Database::Driver::mysql;
+
 use strict;
 use warnings;
 

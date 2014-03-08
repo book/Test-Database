@@ -1,4 +1,5 @@
 package Test::Database::Driver::Pg;
+
 use strict;
 use warnings;
 use Carp;

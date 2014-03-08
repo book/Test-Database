@@ -1,4 +1,5 @@
 package Test::Database;
+
 use 5.006;
 use warnings;
 use strict;
@@ -11,8 +12,6 @@ use Carp;
 use Test::Database::Util;
 use Test::Database::Driver;
 use Test::Database::Handle;
-
-our $VERSION = '1.11';
 
 #
 # global configuration

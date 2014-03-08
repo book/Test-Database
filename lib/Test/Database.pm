@@ -372,7 +372,7 @@ C<dsn>, C<driver_dsn> or C<key> keys being used to split successive entries:
     driver_dsn = dbi:mysql:
     username   = root
 
-The C<username> and C<password> keys are optional and empty strings will be
+The C<username> and C<password> keys are optional and C<undef> will be
 used if they are not provided.
 
 Empty lines and comments are ignored.

@@ -33,7 +33,7 @@ my $handle = Test::Database::Handle->new( dsn => $dsn );
 
 is_deeply(
     [ $handle->connection_info() ],
-    [ $dsn, '', '' ],
+    [ $dsn, undef, undef ],
     'connection_info()'
 );
 isa_ok( my $dbh2 = $handle->dbh(), 'DBI::db' );

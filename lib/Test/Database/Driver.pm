@@ -58,8 +58,6 @@ sub new {
     }
 
     my $self = bless {
-        username => '',
-        password => '',
         %args,
         dbd => $class->name() || $args{dbd},
         },

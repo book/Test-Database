@@ -11,8 +11,8 @@ my @tests = (
     [ [ dbd => 'Zlonk' ], undef, qr/^dsn argument required/ ],
     [   [ driver => 'Foo', dsn => 'dbi:SQLite:dbname=zlonk' ],
         {   dsn      => 'dbi:SQLite:dbname=zlonk',
-            username => '',
-            password => '',
+            username => undef,
+            password => undef ,
             dbd      => 'SQLite',
             driver   => 'Foo',
         }
@@ -22,8 +22,8 @@ my @tests = (
             name => 'zlonk'
         ],
         {   dsn      => 'dbi:SQLite:dbname=zlonk',
-            username => '',
-            password => '',
+            username => undef,
+            password => undef,
             dbd      => 'SQLite',
             name     => 'zlonk',
         }

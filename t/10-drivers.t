@@ -15,7 +15,7 @@ my @drivers = (
         } Test::Database->drivers()
 );
 
-plan tests => 5 + @drivers * ( 1 + 2 * 12 ) + 2;
+plan tests => 5 + @drivers * ( 1 + 2 * 10 ) + 2;
 
 my $base = 'Test::Database::Driver';
 
@@ -84,8 +84,9 @@ for my $args (@drivers) {
 
             # driver_dsn, username, password, connection_info
             ok( $driver->driver_dsn(),       "$desc has a driver_dsn()" );
-            ok( defined $driver->username(), "$desc has a username()" );
-            ok( defined $driver->password(), "$desc has a password()" );
+            # skip these now that username and password default to undef
+            #ok( defined $driver->username(), "$desc has a username()" );
+            #ok( defined $driver->password(), "$desc has a password()" );
             is_deeply(
                 [ $driver->connection_info() ],
                 [ map { $driver->$_ } qw< driver_dsn username password > ],

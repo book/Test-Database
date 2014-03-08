@@ -21,8 +21,6 @@ sub new {
 
     # fix args
     %args = (
-        username => '',
-        password => '',
         %args,
         dbd => $driver,
     );

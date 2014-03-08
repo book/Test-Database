@@ -248,6 +248,8 @@ test host configuration.
 
 See L<SYNOPSIS> for typical usage.
 
+See L<Test::Database::Tutorial> for more detailed explanations.
+
 =head1 METHODS
 
 C<Test::Database> provides the following methods:

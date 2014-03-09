@@ -64,23 +64,23 @@ Test::Database::Handle - A class for Test::Database handles
 
 =head1 DESCRIPTION
 
-C<Test::Database::Handle> is a very simple class for encapsulating the
+Test::Database::Handle is a very simple class for encapsulating the
 information about a test database handle.
 
-C<Test::Database::Handle> objects are used within a test script to
+Test::Database::Handle objects are used within a test script to
 obtain the necessary information about a test database handle.
 Handles are obtained through the C<< Test::Database->handles() >>
 or C<< Test::Database->handle() >> methods.
 
 =head1 METHODS
 
-C<Test::Database::Handle> provides the following methods:
+Test::Database::Handle provides the following methods:
 
 =over 4
 
 =item new( %args )
 
-Return a new C<Test::Database::Handle> with the given parameters
+Return a new Test::Database::Handle with the given parameters
 (C<dsn>, C<username>, C<password>).
 
 The only mandatory argument is C<dsn>.
@@ -125,7 +125,7 @@ Return the DBI driver name, as computed from the C<dsn>.
 
 =item driver()
 
-Return the C<Test::Database::Driver> object attached to the handle.
+Return the L<Test::Database::Driver> object attached to the handle.
 
 =back
 

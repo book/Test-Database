@@ -42,7 +42,7 @@ Test::Database::Driver::DBM - A Test::Database driver for DBM
 
 =head1 DESCRIPTION
 
-This module is the C<Test::Database> driver for C<DBD::DBM>.
+This module is the L<Test::Database> driver for L<DBD::DBM>.
 
 =head1 SEE ALSO
 

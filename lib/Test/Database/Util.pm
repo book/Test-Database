@@ -64,12 +64,12 @@ Test::Database::Util - Utility functions for Test::Database modules
 
 =head1 DESCRIPTION
 
-C<Test::Database::Util> exports a collection of functions used by
+Test::Database::Util exports a collection of functions used by
 several modules in the C<Test-Database> distribution.
 
 =head1 EXPORTED FUNCTIONS
 
-All functions provided by C<Test::Database::Util> are exported in the
+All functions provided by Test::Database::Util are exported in the
 calling package.
 
 The following functions are provided:

@@ -65,7 +65,7 @@ Test::Database::Driver::mysql - A Test::Database driver for mysql
 
 =head1 DESCRIPTION
 
-This module is the C<Test::Database> driver for C<DBD::mysql>.
+This module is the L<Test::Database> driver for L<DBD::mysql>.
 
 =head1 SEE ALSO
 
@@ -78,7 +78,7 @@ Philippe Bruhat (BooK), C<< <book@cpan.org> >>
 =head1 ACKNOWLEDGEMENTS
 
 Many thanks to Kristian Köhntopp who helped me while writing a
-previous version of this module (before C<Test::Database> 0.03).
+previous version of this module (before L<Test::Database> 0.03).
 
 =head1 COPYRIGHT
 

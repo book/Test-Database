@@ -227,7 +227,7 @@ test databases over several test scripts.
 
 =head1 DESCRIPTION
 
-C<Test::Database> provides a simple way for test authors to request
+Test::Database provides a simple way for test authors to request
 a test database, without worrying about environment variables or the
 test host configuration.
 
@@ -237,7 +237,7 @@ See L<Test::Database::Tutorial> for more detailed explanations.
 
 =head1 METHODS
 
-C<Test::Database> provides the following methods:
+Test::Database provides the following methods:
 
 =over 4
 
@@ -245,9 +245,9 @@ C<Test::Database> provides the following methods:
 
 Return a list of driver names of the given "type".
 
-C<all> returns the list of all existing C<Test::Database::Driver> subclasses.
+C<all> returns the list of all existing L<Test::Database::Driver> subclasses.
 
-C<available> returns the list of C<Test::Database::Driver> subclasses for which the matching
+C<available> returns the list of L<Test::Database::Driver> subclasses for which the matching
 C<DBD> class is available.
 
 Called with no parameter (or anything not matching C<all> or C<available>), it will return
@@ -255,7 +255,7 @@ the list of currently loaded drivers.
 
 =item drivers()
 
-Returns the C<Test::Database::Driver> instances that are setup by
+Returns the L<Test::Database::Driver> instances that are setup by
 C<load_drivers()> and updated by C<load_config()>.
 
 =item load_drivers()
@@ -275,7 +275,7 @@ Also removes the loaded drivers list.
 
 =item handles( @requests )
 
-Return a set of C<Test::Database::Handle> objects that match the
+Return a set of L<Test::Database::Handle> objects that match the
 given C<@requests>.
 
 If C<@requests> is not provided, return all the available handles.
@@ -438,13 +438,13 @@ user through the configuration process. Once it's done, it writes out
 a config file and then it's done for good.>
 
 See L<http://www.nntp.perl.org/group/perl.qa/2008/10/msg11645.html>
-for the thread that led to the creation of C<Test::Database>.
+for the thread that led to the creation of Test::Database.
 
 =head1 ACKNOWLEDGEMENTS
 
 Thanks to C<< <perl-qa@perl.org> >> for early comments.
 
-Thanks to Nelson Ferraz for writing C<DBIx::Slice>, the testing of
+Thanks to Nelson Ferraz for writing L<DBIx::Slice>, the testing of
 which made me want to have a generic way to obtain a test database.
 
 Thanks to Mark Lawrence for discussing this module with me, and

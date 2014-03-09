@@ -40,7 +40,7 @@ Test::Database::Driver::SQLite - A Test::Database driver for SQLite
 
 =head1 DESCRIPTION
 
-This module is the C<Test::Database> driver for C<DBD::SQLite>.
+This module is the L<Test::Database> driver for L<DBD::SQLite>.
 
 =head1 SEE ALSO
 

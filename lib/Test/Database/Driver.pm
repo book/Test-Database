@@ -338,7 +338,7 @@ Test::Database::Driver - Base class for Test::Database drivers
 
 =head1 DESCRIPTION
 
-C<Test::Database::Driver> is a base class for creating C<Test::Database>
+Test::Database::Driver is a base class for creating L<Test::Database>
 drivers.
 
 =head1 METHODS
@@ -349,18 +349,18 @@ The class provides the following methods:
 
 =item new( %args )
 
-Create a new C<Test::Database::Driver> object.
+Create a new Test::Database::Driver object.
 
 If called as C<< Test::Database::Driver->new() >>, requires a C<driver>
 parameter to define the actual object class.
 
 =item make_handle()
 
-Create a new C<Test::Database::Handle> object, attached to an existing database
+Create a new L<Test::Database::Handle> object, attached to an existing database
 or to a newly created one.
 
 The decision whether to create a new database or not is made by
-C<Test::Database::Driver> based on the information in the mapper.
+Test::Database::Driver based on the information in the mapper.
 See L<TEMPORARY STORAGE ORGANIZATION> for details.
 
 =item make_dsn( %args )
@@ -443,7 +443,7 @@ based on the driver's DSN.
 =head1 WRITING A DRIVER FOR YOUR DATABASE OF CHOICE
 
 The L<SYNOPSIS> contains a good template for writing a
-C<Test::Database::Driver> class.
+Test::Database::Driver class.
 
 Creating a driver requires writing the following methods:
 
@@ -457,7 +457,7 @@ Return the version of the underlying database engine.
 
 Create the database for the corresponding DBD driver.
 
-Return a C<Test::Database::Handle> in case of success, and nothing in
+Return a L<Test::Database::Handle> in case of success, and nothing in
 case of failure to create the database.
 
 =item drop_database( $name )
@@ -466,7 +466,7 @@ Drop the database named C<$name>.
 
 =back
 
-Some methods have defaults implementations in C<Test::Database::Driver>,
+Some methods have defaults implementations in Test::Database::Driver,
 but those can be overridden in the derived class:
 
 =over 4
@@ -486,7 +486,7 @@ Return the names of all existing databases for this driver as a list
 
 =head1 TEMPORARY STORAGE ORGANIZATION
 
-Subclasses of C<Test::Database::Driver> store useful information
+Subclasses of Test::Database::Driver store useful information
 in the system's temporary directory, under a directory named
 F<Test-Database-$user> (C<$user> being the current user's name).
 
@@ -497,7 +497,7 @@ That directory contains the following files:
 =item database files
 
 The database files and directories created by file-based drivers
-controlled by C<Test::Database> are stored here, under names matching
+controlled by L<Test::Database> are stored here, under names matching
 F<tdd_B<DRIVER>_B<N>>, where B<DRIVER> is the lowercased name of the
 driver and B<N> is a number.
 

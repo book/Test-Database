@@ -1,4 +1,5 @@
 package Test::Database::Handle;
+
 use strict;
 use warnings;
 use Carp;

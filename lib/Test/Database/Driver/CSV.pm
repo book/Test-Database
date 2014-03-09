@@ -1,4 +1,5 @@
 package Test::Database::Driver::CSV;
+
 use strict;
 use warnings;
 

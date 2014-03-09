@@ -227,20 +227,6 @@ test databases over several test scripts.
 
 =head1 DESCRIPTION
 
-Quoting Michael Schwern:
-
-I<There's plenty of modules which need a database, and they all have
-to be configured differently and they're always a PITA when you first
-install and each and every time they upgrade.>
-
-I<User setup can be dealt with by making Test::Database a build
-dependency. As part of Test::Database's install process it walks the
-user through the configuration process. Once it's done, it writes out
-a config file and then it's done for good.>
-
-See L<http://www.nntp.perl.org/group/perl.qa/2008/10/msg11645.html>
-for the thread that led to the creation of C<Test::Database>.
-
 C<Test::Database> provides a simple way for test authors to request
 a test database, without worrying about environment variables or the
 test host configuration.
@@ -437,6 +423,22 @@ Add a database engine autodetection script/module, to automatically
 write the F<.test-database> configuration file.
 
 =back
+
+=head1 HISTORY
+
+Quoting Michael Schwern:
+
+I<There's plenty of modules which need a database, and they all have
+to be configured differently and they're always a PITA when you first
+install and each and every time they upgrade.>
+
+I<User setup can be dealt with by making Test::Database a build
+dependency. As part of Test::Database's install process it walks the
+user through the configuration process. Once it's done, it writes out
+a config file and then it's done for good.>
+
+See L<http://www.nntp.perl.org/group/perl.qa/2008/10/msg11645.html>
+for the thread that led to the creation of C<Test::Database>.
 
 =head1 ACKNOWLEDGEMENTS
 

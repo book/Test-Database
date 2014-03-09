@@ -345,16 +345,20 @@ drivers.
 
 The class provides the following methods:
 
-=over 4
+=head2 new
 
-=item new( %args )
+    my $driver = Test::Database::Driver->new( driver => 'SQLite' );
+
+    my $driver = Test::Database::Driver::SQLite->new();
 
 Create a new Test::Database::Driver object.
 
 If called as C<< Test::Database::Driver->new() >>, requires a C<driver>
 parameter to define the actual object class.
 
-=item make_handle()
+=head2 make_handle
+
+    my $handle = $driver->make_handle();
 
 Create a new L<Test::Database::Handle> object, attached to an existing database
 or to a newly created one.
@@ -363,7 +367,9 @@ The decision whether to create a new database or not is made by
 Test::Database::Driver based on the information in the mapper.
 See L<TEMPORARY STORAGE ORGANIZATION> for details.
 
-=item make_dsn( %args )
+=head2 make_dsn
+
+    my $dsn = $driver->make_dsn( %args )
 
 Return a Data Source Name based on the driver's DSN, with the key/value
 pairs contained in C<%args> as additional parameters.
@@ -371,74 +377,96 @@ pairs contained in C<%args> as additional parameters.
 This is typically used by C<dsn()> to make a DSN for a specific database,
 based on the driver's DSN.
 
-=item name()
+=head2 name
 
-=item dbd()
+=head2 dbd
+
+    my $name = $driver->dbd;
 
 The driver's short name (everything after C<Test::Database::Driver::>).
 
-=item base_dir()
+=head2 base_dir
+
+    my $dir = $driver->base_dir;
 
 The directory where the driver should store all the files for its databases,
 if needed. Typically used by file-based database drivers.
 
-=item version()
+=head2 version
+
+    my $db_version = $driver->version;
 
 C<version> object representing the version of the underlying database enginge.
 This object is build with the return value of C<_version()>.
 
-=item version_string()
+=head2 version_string
+
+    my $db_version = $driver->version_string;
 
 Version string representing the version of the underlying database enginge.
 This string is the actual return value of C<_version()>.
 
-=item dbd_version()
+=head2 dbd_version
+
+    my $dbd_version = $driver->dbd_version;
 
 The version of the DBD used to connect to the database engine, as returned
 by C<VERSION()>.
 
-=item driver_dsn()
+=head2 driver_dsn
+
+    my $dsn = $driver->driver_dsn;
 
 Return a driver Data Source Name, sufficient to connect to the database
 engine without specifying an actual database.
 
-=item username()
+=head2 username
 
-Return the connection username.
+    my $username = $driver->username;
 
-=item password()
+Return the connection username. Defaults to C<undef>.
 
-Return the connection password.
+=head2 password
 
-=item connection_info()
+    my $password = $driver->password;
+
+Return the connection password. Defaults to C<undef>.
+
+=head2 connection_info()
+
+    my @info = $driver->connection_info;
 
 Return the connection information triplet (C<driver_dsn>, C<username>,
 C<password>).
 
-=item version_matches( $request )
+=head2 version_matches
+
+    if ( $driver->version_matches($request) ) {
+        ...;
+    }
 
 Return a boolean indicating if the driver's version matches the version
 constraints in the given request (see L<Test::Database> documentation's
 section about requests).
 
-=back
+=head1 METHODS FOR DRIVER AUTHORS
 
 The class also provides a few helpful commands that may be useful for driver
 authors:
 
-=over 4
+=head2 available_dbname
 
-=item available_dbname()
+    my $dbname = $self->available_dbname();
 
 Return an unused database name that can be used to create a new database
 for the driver.
 
-=item dsn( $dbname )
+=head2 dsn
 
-Build a Data Source Name  for the database with the given C<$dbname>,
+    my $dns = $self->dsn( $dbname )
+
+Build a Data Source Name for the database with the given C<$dbname>,
 based on the driver's DSN.
-
-=back
 
 =head1 WRITING A DRIVER FOR YOUR DATABASE OF CHOICE
 
@@ -447,42 +475,44 @@ Test::Database::Driver class.
 
 Creating a driver requires writing the following methods:
 
-=over 4
+=head2 _version
 
-=item _version()
+    my $version = $driver->_version;
 
 Return the version of the underlying database engine.
 
-=item create_database( $name )
+=head2 create_database
+
+    $driver->create_database( $name );
 
 Create the database for the corresponding DBD driver.
 
 Return a L<Test::Database::Handle> in case of success, and nothing in
 case of failure to create the database.
 
-=item drop_database( $name )
+=head2 drop_database( $name )
+
+    $driver->drop_database( $name );
 
 Drop the database named C<$name>.
 
-=back
+=head1 OVERRIDABLE METHODS WHEN WRITING A DRIVER
 
 Some methods have defaults implementations in Test::Database::Driver,
 but those can be overridden in the derived class:
 
-=over 4
-
-=item is_filebased()
+=head2 is_filebased
 
 Return a boolean value indicating if the database engine is file-based
 or not, i.e. if all the database information is stored in a file or a
 directory, and no external database server is needed.
 
-=item databases()
+=head2 databases
+
+    my @db = $driver->databases();
 
 Return the names of all existing databases for this driver as a list
 (the default implementation is only valid for file-based drivers).
-
-=back
 
 =head1 TEMPORARY STORAGE ORGANIZATION
 

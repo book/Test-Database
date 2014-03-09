@@ -239,9 +239,10 @@ See L<Test::Database::Tutorial> for more detailed explanations.
 
 Test::Database provides the following methods:
 
-=over 4
+=head2 list_drivers
 
-=item list_drivers( [$type] )
+    my @drivers = Test::Database->list_drivers();
+    my @drivers = Test::Database->list_drivers('available');
 
 Return a list of driver names of the given "type".
 
@@ -253,27 +254,33 @@ C<DBD> class is available.
 Called with no parameter (or anything not matching C<all> or C<available>), it will return
 the list of currently loaded drivers.
 
-=item drivers()
+=head2 drivers
 
 Returns the L<Test::Database::Driver> instances that are setup by
 C<load_drivers()> and updated by C<load_config()>.
 
-=item load_drivers()
+=head2 load_drivers
 
 Load the available drivers from the system (file-based drivers, usually).
 
-=item load_config( @files )
+=head2 load_config
+
+    Test::Database->load_config($config);
 
 Read configuration from the files in C<@files>.
 
 If no file is provided, the local equivalent of F<~/.test-database> is used.
 
-=item clean_config()
+=head2 clean_config
+
+    Test::Database->clean_config();
 
 Empties whatever configuration has already been loaded.
 Also removes the loaded drivers list.
 
-=item handles( @requests )
+=head2 handles
+
+    my @handles = Test::Database->handles(@requests);
 
 Return a set of L<Test::Database::Handle> objects that match the
 given C<@requests>.
@@ -282,12 +289,12 @@ If C<@requests> is not provided, return all the available handles.
 
 See L<REQUESTS> for details about writing requests.
 
-=item handle( @request )
+=head2 handle
+
+    my $handle = Test::Database->handle(@requests);
 
 I<Singular> version of C<handles()>, that returns the first matching
 handle.
-
-=back
 
 =head1 REQUESTS
 

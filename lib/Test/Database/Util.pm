@@ -74,13 +74,11 @@ calling package.
 
 The following functions are provided:
 
-=over 4
+=head2 _read_file
 
-=item _read_file( $file )
+    _read_file( $file )
 
 Return a list of hash references, read in the given C<$file> file.
-
-=back
 
 =head1 AUTHOR
 

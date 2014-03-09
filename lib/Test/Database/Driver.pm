@@ -505,7 +505,7 @@ driver and B<N> is a number.
 
 A YAML file containing a C<cwd()> / database name mapping, to enable a
 given test suite to receive the same database handles in all the test
-scripts that call the C<Test::Database->handles()> method.
+scripts that call the C<< Test::Database->handles() >> method.
 
 =back
 

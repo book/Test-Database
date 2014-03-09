@@ -1,5 +1,18 @@
 Revision history for Test-Database
 
+{{$NEXT}}
+
+1.111 Sun Mar 9 2014
+        [IMPROVEMENTS]
+        - the default value for username() and password() is now undef
+          (RT #93128, thanks to TIMB)
+        [TESTS]
+        - pod tests are now "release" tests, thanks to dzil (RT #85198)
+        [DOCUMENTATION]
+        - declare character encoding for files not in us-ascii (RT #92660)
+        - point to Test::Database::Tutorial in the DESCRIPTION (RT #78337)
+        - improve linkability by having each method at the =head2 level
+
 1.11 Tue May  4 01:03:10 CEST 2010
         [IMPROVEMENTS]
         - new version_string() method ensures version constraints on

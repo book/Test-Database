@@ -67,7 +67,13 @@ __PACKAGE__->load_config() if -e _rcfile();
 #
 # location of our resource file
 sub _rcfile {
-    File::Spec->catfile( File::HomeDir->my_data(), '.test-database' );
+    my $basename = '.test-database';
+    my $rc = File::Spec->catfile( File::HomeDir->my_home(), $basename );
+    return $rc if -e $rc;
+
+    # while transitioning to the new scheme, give the old name if it exists
+    my $old = File::Spec->catfile( File::HomeDir->my_data(), $basename );
+    return -e $old ? $old : $rc;
 }
 
 #

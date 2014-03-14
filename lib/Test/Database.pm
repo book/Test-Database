@@ -60,7 +60,7 @@ sub load_drivers {
 
 # startup configuration
 __PACKAGE__->load_drivers();
-__PACKAGE__->load_config() if -e _rcfile();
+__PACKAGE__->load_config();
 
 #
 # private functions
@@ -86,7 +86,7 @@ sub clean_config {
 
 sub load_config {
     my ( $class, @files ) = @_;
-    @files = ( _rcfile() ) if !@files;
+    @files = grep -e, _rcfile() if !@files;
 
     # fetch the items (dsn, driver_dsn) from the config files
     my @items = map { _read_file($_) } @files;

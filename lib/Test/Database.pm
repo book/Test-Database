@@ -383,7 +383,7 @@ allows several hosts to share access to the same database server
 without risking a race condition when creating a new database. See
 L<Test::Database::Tutorial> for a longer explanation.
 
-Individual drivers may accept extra parameters. See their documetation
+Individual drivers may accept extra parameters. See their documentation
 for details. Unrecognized parameters and not used, and therefore ignored.
 
 =head1 AUTHOR

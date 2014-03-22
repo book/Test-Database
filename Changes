@@ -2,6 +2,11 @@ Revision history for Test-Database
 
 {{$NEXT}}
 
+1.112 Sat Mar 22 2014
+        [IMPROVEMENTS]
+        - use File::HomeDir's my_home() instead of my_data() (RT #93678)
+        - require YAML::Tiny 1.62 (RT #92916)
+
 1.111 Sun Mar 9 2014
         [IMPROVEMENTS]
         - the default value for username() and password() is now undef

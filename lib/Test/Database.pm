@@ -377,7 +377,7 @@ used if they are not provided.
 
 Empty lines and comments are ignored.
 
-Optionaly, the C<key> section is used to add a "unique" element to the
+Optionally, the C<key> section is used to add a "unique" element to the
 databases created by the drivers (as defined by C<driver_dsn>). It
 allows several hosts to share access to the same database server
 without risking a race condition when creating a new database. See

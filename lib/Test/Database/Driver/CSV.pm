@@ -16,14 +16,16 @@ sub _version { return Text::CSV_XS->VERSION; }
 sub dsn {
     my ( $self, $dbname ) = @_;
     my $dbdir = File::Spec->catdir( $self->base_dir(), $dbname );
-    mkpath( [$dbdir] );
+    $self->{'_created_dir'} = mkpath( [$dbdir] );
     return $self->make_dsn( f_dir => $dbdir );
 }
 
 sub drop_database {
     my ( $self, $dbname ) = @_;
     my $dbdir = File::Spec->catdir( $self->base_dir(), $dbname );
-    rmtree( [$dbdir] );
+    if ( $self->{'_created_dir'} ) {
+        rmtree( [$dbdir] );
+    }
 }
 
 'CSV';
